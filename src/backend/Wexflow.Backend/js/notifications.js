@@ -113,8 +113,8 @@
                     + "<tr>"
                     + "<th class='check'><input id='check-all' type='checkbox'></th>"
                     + "<th class='id'></th>"
-                    + "<th id='th-assigned-by' class='assigned-by'>" + "Assigned By" + "</th>"
-                    + "<th id='th-assigned-on' class='assigned-on'>" + "Assigned On" + "</th>"
+                    + "<th id='th-assigned-by' class='assigned-by'>" + "Assigned by" + "</th>"
+                    + "<th id='th-assigned-on' class='assigned-on'>" + "Assigned on" + "</th>"
                     + "<th id='th-message' class='message'>" + "Message" + "</th>"
                     + "</tr>"
                     + "</thead>"
@@ -138,7 +138,7 @@
                         if (this.checked === true) {
                             notificationIds.push(notificationId);
                         } else {
-                            notificationIds = removeItemOnce(notificationIds, notificationId);
+                            notificationIds = Common.removeItemOnce(notificationIds, notificationId);
                         }
                     };
                 }
@@ -217,7 +217,7 @@
                                             let row = rows[i];
                                             let id = row.getElementsByClassName("id")[0].innerHTML;
                                             if (notificationId === id) {
-                                                notificationIds = removeItemOnce(notificationIds, notificationId);
+                                                notificationIds = Common.removeItemOnce(notificationIds, notificationId);
                                                 row.remove();
                                             }
                                         }
@@ -236,21 +236,13 @@
 
                         if (checkBox.checked === true) {
                             checkBox.checked = false;
-                            notificationIds = removeItemOnce(notificationIds, notificationId);
+                            notificationIds = Common.removeItemOnce(notificationIds, notificationId);
                         } else {
                             checkBox.checked = true;
                             notificationIds.push(notificationId);
                         }
                     }
                 };
-
-                function removeItemOnce(arr, value) {
-                    var index = arr.indexOf(value);
-                    if (index > -1) {
-                        arr.splice(index, 1);
-                    }
-                    return arr;
-                }
 
             }, function () { }, auth);
         }

@@ -4347,8 +4347,7 @@ namespace Wexflow.Server
                     if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
                     {
                         var json = RequestStream.FromStream(Request.Body).AsString();
-                        var o = JObject.Parse(json);
-                        var recordIds = JsonConvert.DeserializeObject<string[]>(((JArray)o.SelectToken("recordsToDelete")).ToString());
+                        var recordIds = JsonConvert.DeserializeObject<string[]>(JArray.Parse(json).ToString());
                         res = WexflowServer.WexflowEngine.DeleteRecords(recordIds);
                     }
 
@@ -4400,22 +4399,25 @@ namespace Wexflow.Server
                     List<Contracts.Record> recordsList = new List<Contracts.Record>();
                     foreach (var record in recordsArray)
                     {
+                        Core.Db.User createdBy = !string.IsNullOrEmpty(record.CreatedBy) ? WexflowServer.WexflowEngine.GetUserById(record.CreatedBy) : null;
+                        Core.Db.User modifiedBy = !string.IsNullOrEmpty(record.ModifiedBy) ? WexflowServer.WexflowEngine.GetUserById(record.ModifiedBy) : null;
+                        Core.Db.User assignedTo = !string.IsNullOrEmpty(record.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(record.AssignedTo) : null;
                         var r = new Contracts.Record
                         {
                             Id = record.GetDbId(),
                             Name = record.Name,
                             Description = record.Description,
-                            StartDate = record.StartDate.HasValue ? record.StartDate.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
-                            EndDate = record.EndDate.HasValue ? record.EndDate.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            StartDate = record.StartDate != null ? record.StartDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            EndDate = record.EndDate != null ? record.EndDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
                             Comments = record.Comments,
                             Approved = record.Approved,
                             ManagerComments = record.ManagerComments,
-                            ModifiedBy = record.ModifiedBy,
-                            ModifiedOn = record.ModifiedOn.HasValue ? record.ModifiedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
-                            CreatedBy = record.CreatedBy,
+                            ModifiedBy = modifiedBy != null ? modifiedBy.Username : string.Empty,
+                            ModifiedOn = record.ModifiedOn != null ? record.ModifiedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            CreatedBy = createdBy != null ? createdBy.Username : string.Empty,
                             CreatedOn = record.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
-                            AssignedTo = record.AssignedTo,
-                            AssignedOn = record.AssignedOn.HasValue ? record.AssignedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
+                            AssignedTo = assignedTo != null ? assignedTo.Username : string.Empty,
+                            AssignedOn = record.AssignedOn != null ? record.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
                         };
 
                         var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());
@@ -4472,6 +4474,9 @@ namespace Wexflow.Server
                     List<Contracts.Record> recordsList = new List<Contracts.Record>();
                     foreach (var record in recordsArray)
                     {
+                        Core.Db.User createdByUser = !string.IsNullOrEmpty(record.CreatedBy) ? WexflowServer.WexflowEngine.GetUserById(record.CreatedBy) : null;
+                        Core.Db.User modifiedByUser = !string.IsNullOrEmpty(record.ModifiedBy) ? WexflowServer.WexflowEngine.GetUserById(record.ModifiedBy) : null;
+                        Core.Db.User assignedToUser = !string.IsNullOrEmpty(record.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(record.AssignedTo) : null;
                         var r = new Contracts.Record
                         {
                             Id = record.GetDbId(),
@@ -4482,11 +4487,11 @@ namespace Wexflow.Server
                             Comments = record.Comments,
                             Approved = record.Approved,
                             ManagerComments = record.ManagerComments,
-                            ModifiedBy = record.ModifiedBy,
+                            ModifiedBy = modifiedByUser != null ? modifiedByUser.Username : string.Empty,
                             ModifiedOn = record.ModifiedOn.HasValue ? record.ModifiedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
-                            CreatedBy = record.CreatedBy,
+                            CreatedBy = createdByUser != null ? createdByUser.Username : string.Empty,
                             CreatedOn = record.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
-                            AssignedTo = record.AssignedTo,
+                            AssignedTo = assignedToUser != null ? assignedToUser.Username : string.Empty,
                             AssignedOn = record.AssignedOn.HasValue ? record.AssignedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
                         };
 
@@ -4547,6 +4552,9 @@ namespace Wexflow.Server
                     List<Contracts.Record> recordsList = new List<Contracts.Record>();
                     foreach (var record in recordsArray)
                     {
+                        Core.Db.User createdByUser = !string.IsNullOrEmpty(record.CreatedBy) ? WexflowServer.WexflowEngine.GetUserById(record.CreatedBy) : null;
+                        Core.Db.User modifiedByUser = !string.IsNullOrEmpty(record.ModifiedBy) ? WexflowServer.WexflowEngine.GetUserById(record.ModifiedBy) : null;
+                        Core.Db.User assignedToUser = !string.IsNullOrEmpty(record.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(record.AssignedTo) : null;
                         var r = new Contracts.Record
                         {
                             Id = record.GetDbId(),
@@ -4557,11 +4565,11 @@ namespace Wexflow.Server
                             Comments = record.Comments,
                             Approved = record.Approved,
                             ManagerComments = record.ManagerComments,
-                            ModifiedBy = record.ModifiedBy,
+                            ModifiedBy = modifiedByUser != null ? modifiedByUser.Username : string.Empty,
                             ModifiedOn = record.ModifiedOn.HasValue ? record.ModifiedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
-                            CreatedBy = record.CreatedBy,
+                            CreatedBy = createdByUser != null ? createdByUser.Username : string.Empty,
                             CreatedOn = record.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
-                            AssignedTo = record.AssignedTo,
+                            AssignedTo = assignedToUser != null ? assignedToUser.Username : string.Empty,
                             AssignedOn = record.AssignedOn.HasValue ? record.AssignedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
                         };
 
@@ -4799,14 +4807,14 @@ namespace Wexflow.Server
                     List<Contracts.Notification> notificationList = new List<Contracts.Notification>();
                     foreach (var notification in notificationsArray)
                     {
-                        Core.Db.User assignedByUser = WexflowServer.WexflowEngine.GetUserById(notification.AssignedBy);
-                        Core.Db.User assignedToUser = WexflowServer.WexflowEngine.GetUserById(notification.AssignedTo);
+                        Core.Db.User assignedByUser = !string.IsNullOrEmpty(notification.AssignedBy) ? WexflowServer.WexflowEngine.GetUserById(notification.AssignedBy) : null;
+                        Core.Db.User assignedToUser = !string.IsNullOrEmpty(notification.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(notification.AssignedTo) : null;
                         var n = new Contracts.Notification
                         {
                             Id = notification.GetDbId(),
-                            AssignedBy = assignedByUser.Username,
+                            AssignedBy = assignedByUser != null ? assignedByUser.Username : string.Empty,
                             AssignedOn = notification.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
-                            AssignedTo = assignedToUser.Username,
+                            AssignedTo = assignedToUser != null ? assignedToUser.Username : string.Empty,
                             Message = notification.Message,
                             IsRead = notification.IsRead
                         };
