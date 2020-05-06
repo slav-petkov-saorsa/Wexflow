@@ -201,6 +201,7 @@
                                 jBoxContent.querySelector(".record-created-on").value = record.CreatedOn;
                                 jBoxContent.querySelector(".record-modified-by").value = record.ModifiedBy;
                                 jBoxContent.querySelector(".record-modified-on").value = record.ModifiedOn;
+                                jBoxContent.querySelector(".record-assigned-to").value = record.AssignedTo;
                                 jBoxContent.querySelector(".record-assigned-on").value = record.AssignedOn;
 
                                 let versions = [];

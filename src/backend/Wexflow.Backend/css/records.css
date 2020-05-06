@@ -197,7 +197,50 @@
     display: none;
 }
 
-#edit-record-footer{
+.edit-record-table{
+    width: 730px;
+}
+
+.edit-record-title {
+    font-weight: bold;
+    width: 100px;
+}
+
+.edit-record-value{
+    width: calc(100% - 100px);
+}
+
+.edit-record-value input, textarea{
+    width: 100%;
+    margin-bottom: 7px;
+}
+
+.edit-record-value textarea{
+    height: 100px;
+    resize: none;
+}
+
+.record-versions {
+    width: calc(100% - 100px);
+}
+
+.version-file-name{
+    width: 100px;
+}
+
+.version-created-on{
+    width: 50px;
+}
+
+.version-delete{
+    width: 50px;
+}
+
+.version-delete input{
+    width: auto;
+}
+
+#edit-record-footer {
     display: none;
 }
 
