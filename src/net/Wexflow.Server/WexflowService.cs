@@ -1,6 +1,7 @@
 ﻿using Nancy;
 using Nancy.Extensions;
 using Nancy.IO;
+using Nancy.Responses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -102,6 +103,8 @@ namespace Wexflow.Server
             //
             UploadVerion();
             DeleteVersions();
+            DeleteTempVersionFile();
+            DownloadFile();
             SaveRecord();
             DeleteRecords();
             SearchRecords();
@@ -4128,7 +4131,7 @@ namespace Wexflow.Server
             {
                 try
                 {
-                    var ressr = new SaveResult { FilePath = string.Empty, Result = false };
+                    var ressr = new SaveResult { FilePath = string.Empty, FileName = string.Empty, Result = false };
                     var auth = GetAuth(Request);
                     var username = auth.Username;
                     var password = auth.Password;
@@ -4143,19 +4146,29 @@ namespace Wexflow.Server
                     if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
                     {
                         var recordId = Request.Query["r"].ToString();
-                        var filePath = Path.Combine(WexflowServer.WexflowEngine.RecordsTempFolder, Guid.NewGuid().ToString(), fileName);
-                        File.WriteAllBytes(filePath, ms.ToArray());
-                        var version = new Core.Db.Version
+                        var guid = Guid.NewGuid().ToString();
+                        var dir = Path.Combine(WexflowServer.WexflowEngine.RecordsTempFolder, recordId, guid);
+                        if (!Directory.Exists(dir))
                         {
-                            RecordId = recordId,
-                            FilePath = filePath
-                        };
-                        var versionId = WexflowServer.WexflowEngine.SaveVersion(version);
-                        if (versionId != "-1")
-                        {
-                            ressr.Result = true;
-                            ressr.FilePath = filePath;
+                            Directory.CreateDirectory(dir);
                         }
+                        var filePath = Path.Combine(dir, fileName);
+                        //File.Create(filePath);
+                        File.WriteAllBytes(filePath, ms.ToArray());
+                        ressr.Result = true;
+                        ressr.FilePath = filePath;
+                        ressr.FileName = Path.GetFileName(filePath);
+                        //var version = new Core.Db.Version
+                        //{
+                        //    RecordId = recordId,
+                        //    FilePath = filePath
+                        //};
+                        //var versionId = WexflowServer.WexflowEngine.SaveVersion(version);
+                        //if (versionId != "-1")
+                        //{
+                        //    ressr.Result = true;
+                        //    ressr.FilePath = filePath;
+                        //}
                     }
 
                     var resStr = JsonConvert.SerializeObject(ressr);
@@ -4172,6 +4185,38 @@ namespace Wexflow.Server
                     Console.WriteLine(e);
 
                     var resStr = JsonConvert.SerializeObject(new SaveResult { FilePath = string.Empty, Result = false });
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Downloads a file.
+        /// </summary>
+        private void DownloadFile()
+        {
+            Get(Root + "downloadFile", args =>
+            {
+                try
+                {
+                    var path = Request.Query["p"].ToString();
+                    var file = new FileStream(path, FileMode.Open);
+                    string fileName = Path.GetFileName(path);
+
+                    var response = new StreamResponse(() => file, MimeTypes.GetMimeType(fileName));
+                    return response.AsAttachment(fileName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
                     var resBytes = Encoding.UTF8.GetBytes(resStr);
 
                     return new Response
@@ -4234,6 +4279,73 @@ namespace Wexflow.Server
         }
 
         /// <summary>
+        /// Deletes a temp version file.
+        /// </summary>
+        private void DeleteTempVersionFile()
+        {
+            Post(Root + "deleteTempVersionFile", args =>
+            {
+                try
+                {
+                    var res = false;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        string path = Request.Query["p"].ToString();
+
+                        if (path.Contains(WexflowServer.WexflowEngine.RecordsTempFolder))
+                        {
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                                res = true;
+
+                                var parentDir = Path.GetDirectoryName(path);
+                                if (WexflowServer.WexflowEngine.IsDirectoryEmpty(parentDir))
+                                {
+                                    Directory.Delete(parentDir);
+                                    var recordTempDir = Directory.GetParent(parentDir).FullName;
+                                    if (WexflowServer.WexflowEngine.IsDirectoryEmpty(recordTempDir))
+                                    {
+                                        Directory.Delete(recordTempDir);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
         /// Saves a record.
         /// </summary>
         private void SaveRecord()
@@ -4267,7 +4379,8 @@ namespace Wexflow.Server
                         var createdOn = o.Value<string>("CreatedOn");
                         var assignedTo = o.Value<string>("AssignedTo");
                         var assignedOn = o.Value<string>("AssignedOn");
-                        var versions = o.Value<Contracts.Version[]>("Versions");
+                        //var versions = o.Value<Contracts.Version[]>("Versions");
+                        var versions = JsonConvert.DeserializeObject<Contracts.Version[]>(o.Value<JArray>("Versions").ToString());
 
                         var record = new Core.Db.Record
                         {
@@ -4278,11 +4391,11 @@ namespace Wexflow.Server
                             Comments = comments,
                             Approved = approved,
                             ManagerComments = managerComments,
-                            ModifiedBy = modifiedBy,
+                            ModifiedBy = !string.IsNullOrEmpty(modifiedBy) ? WexflowServer.WexflowEngine.GetUser(modifiedBy).GetDbId() : null,
                             ModifiedOn = string.IsNullOrEmpty(modifiedOn) ? null : (DateTime?)DateTime.Parse(modifiedOn),
-                            CreatedBy = createdBy,
+                            CreatedBy = !string.IsNullOrEmpty(createdBy) ? WexflowServer.WexflowEngine.GetUser(createdBy).GetDbId() : null,
                             CreatedOn = DateTime.Parse(createdOn),
-                            AssignedTo = assignedTo,
+                            AssignedTo = !string.IsNullOrEmpty(assignedTo) ? WexflowServer.WexflowEngine.GetUser(assignedTo).GetDbId() : null,
                             AssignedOn = string.IsNullOrEmpty(assignedOn) ? null : (DateTime?)DateTime.Parse(assignedOn)
                         };
 
@@ -4292,7 +4405,7 @@ namespace Wexflow.Server
                             recordVersions.Add(new Core.Db.Version
                             {
                                 RecordId = version.RecordId,
-                                CreatedOn = DateTime.Parse(version.CreatedOn),
+                                //CreatedOn = DateTime.Parse(version.CreatedOn),
                                 FilePath = version.FilePath
                             });
                         }
@@ -4429,6 +4542,7 @@ namespace Wexflow.Server
                                 Id = version.GetDbId(),
                                 RecordId = version.RecordId,
                                 FilePath = version.FilePath,
+                                FileName = Path.GetFileName(version.FilePath),
                                 CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
                             };
                             versionsList.Add(v);
@@ -4504,6 +4618,7 @@ namespace Wexflow.Server
                                 Id = version.GetDbId(),
                                 RecordId = version.RecordId,
                                 FilePath = version.FilePath,
+                                FileName = Path.GetFileName(version.FilePath),
                                 CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
                             };
                             versionsList.Add(v);
@@ -4582,6 +4697,7 @@ namespace Wexflow.Server
                                 Id = version.GetDbId(),
                                 RecordId = version.RecordId,
                                 FilePath = version.FilePath,
+                                FileName = Path.GetFileName(version.FilePath),
                                 CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
                             };
                             versionsList.Add(v);

@@ -231,6 +231,8 @@ namespace Wexflow.Core
             TempFolder = GetWexflowSetting(xdoc, "tempFolder");
             TasksFolder = GetWexflowSetting(xdoc, "tasksFolder");
             if (!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
+            RecordsTempFolder = Path.Combine(TempFolder, "Records");
+            if (!Directory.Exists(RecordsTempFolder)) Directory.CreateDirectory(RecordsTempFolder);
             ApprovalFolder = GetWexflowSetting(xdoc, "approvalFolder");
             XsdPath = GetWexflowSetting(xdoc, "xsd");
             TasksNamesFile = GetWexflowSetting(xdoc, "tasksNamesFile");
@@ -1361,6 +1363,16 @@ namespace Wexflow.Core
         }
 
         /// <summary>
+        /// Checks if a directory is empty.
+        /// </summary>
+        /// <param name="path">Directory path.</param>
+        /// <returns>Result.</returns>
+        public bool IsDirectoryEmpty(string path)
+        {
+            return !Directory.EnumerateFileSystemEntries(path).Any();
+        }
+
+        /// <summary>
         /// Saves a record in the database.
         /// </summary>
         /// <param name="recordId">Record id.</param>
@@ -1383,7 +1395,16 @@ namespace Wexflow.Core
                         var fileName = Path.GetFileName(version.FilePath);
                         var destPath = Path.Combine(RecordsFolder, id, versionId, fileName);
                         File.Move(version.FilePath, destPath);
-                        Directory.Delete(Path.GetDirectoryName(version.FilePath));
+                        var parentDir = Path.GetDirectoryName(version.FilePath);
+                        if (IsDirectoryEmpty(parentDir))
+                        {
+                            Directory.Delete(parentDir);
+                            var recordTempDir = Directory.GetParent(parentDir).FullName;
+                            if (IsDirectoryEmpty(recordTempDir))
+                            {
+                                Directory.Delete(recordTempDir);
+                            }
+                        }
 
                         // Update version.
                         version.FilePath = destPath;
@@ -1399,14 +1420,35 @@ namespace Wexflow.Core
                     var recordVersions = Database.GetVersions(recordId);
 
                     List<string> versionsToDelete = new List<string>();
+                    List<Db.Version> versionsToDeleteObjs = new List<Db.Version>();
                     foreach (var version in recordVersions)
                     {
                         if (!versions.Any(v => v.GetDbId() == version.GetDbId()))
                         {
                             versionsToDelete.Add(version.GetDbId());
+                            versionsToDeleteObjs.Add(version);
                         }
                     }
                     Database.DeleteVersions(versionsToDelete.ToArray());
+
+                    foreach (var version in versionsToDeleteObjs)
+                    {
+                        if (File.Exists(version.FilePath))
+                        {
+                            File.Delete(version.FilePath);
+                        }
+
+                        var versionDir = Path.GetDirectoryName(version.FilePath);
+                        if (IsDirectoryEmpty(versionDir))
+                        {
+                            Directory.Delete(versionDir);
+                            var recordDir = Directory.GetParent(versionDir).FullName;
+                            if (IsDirectoryEmpty(recordDir))
+                            {
+                                Directory.Delete(recordDir);
+                            }
+                        }
+                    }
 
                     foreach (var version in versions)
                     {
@@ -1416,9 +1458,23 @@ namespace Wexflow.Core
 
                             // Move version file from temp folder to Records folder.
                             var fileName = Path.GetFileName(version.FilePath);
-                            var destPath = Path.Combine(RecordsFolder, recordId, versionId, fileName);
+                            var destDir = Path.Combine(RecordsFolder, recordId, versionId);
+                            if (!Directory.Exists(destDir))
+                            {
+                                Directory.CreateDirectory(destDir);
+                            }
+                            var destPath = Path.Combine(destDir, fileName);
                             File.Move(version.FilePath, destPath);
-                            Directory.Delete(Path.GetDirectoryName(version.FilePath));
+                            var parentDir = Path.GetDirectoryName(version.FilePath);
+                            if (IsDirectoryEmpty(parentDir))
+                            {
+                                Directory.Delete(parentDir);
+                                var recordTempDir = Directory.GetParent(parentDir).FullName;
+                                if (IsDirectoryEmpty(recordTempDir))
+                                {
+                                    Directory.Delete(recordTempDir);
+                                }
+                            }
 
                             // Update version.
                             version.FilePath = destPath;
@@ -1446,6 +1502,28 @@ namespace Wexflow.Core
             try
             {
                 Database.DeleteRecords(recordIds);
+                foreach (var recordId in recordIds)
+                {
+                    var versions = Database.GetVersions(recordId);
+                    foreach (var version in versions)
+                    {
+                        if (File.Exists(version.FilePath))
+                        {
+                            File.Delete(version.FilePath);
+
+                            var versionDir = Path.GetDirectoryName(version.FilePath);
+                            if (IsDirectoryEmpty(versionDir))
+                            {
+                                Directory.Delete(versionDir);
+                                var recordDir = Directory.GetParent(versionDir).FullName;
+                                if (IsDirectoryEmpty(recordDir))
+                                {
+                                    Directory.Delete(recordDir);
+                                }
+                            }
+                        }
+                    }
+                }
                 return true;
             }
             catch (Exception e)

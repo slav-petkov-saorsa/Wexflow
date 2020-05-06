@@ -1501,15 +1501,18 @@ namespace Wexflow.Core.Db.LiteDB
             lock (padlock)
             {
                 var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var bsonId = int.Parse(recordId);
+                var recordFromDb = col.FindById(bsonId);
                 var r = new Record
                 {
-                    Id = int.Parse(recordId),
+                    Id = bsonId,
                     Approved = record.Approved,
                     AssignedOn = record.AssignedOn,
                     AssignedTo = record.AssignedTo,
                     Comments = record.Comments,
                     CreatedBy = record.CreatedBy,
-                    CreatedOn = record.CreatedOn,
+                    //CreatedOn = record.CreatedOn,
+                    CreatedOn = recordFromDb.CreatedOn,
                     Description = record.Description,
                     EndDate = record.EndDate,
                     ManagerComments = record.ManagerComments,
@@ -1584,10 +1587,14 @@ namespace Wexflow.Core.Db.LiteDB
             lock (padlock)
             {
                 var col = db.GetCollection<Version>(Core.Db.Version.DocumentName);
+                var bsonId = int.Parse(versionId);
+                var versionFromDb = col.FindById(bsonId);
                 var v = new Version
                 {
+                    Id = bsonId,
                     RecordId = version.RecordId,
-                    CreatedOn = version.CreatedOn,
+                    //CreatedOn = version.CreatedOn,
+                    CreatedOn = versionFromDb.CreatedOn,
                     FilePath = version.FilePath
                 };
                 col.Update(v);

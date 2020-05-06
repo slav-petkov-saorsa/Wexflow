@@ -25,6 +25,7 @@
     let imgNotifications = document.getElementById("img-notifications");
     let searchText = document.getElementById("search-records");
     let username = "";
+    let password = "";
     let userProfile = -1;
     let auth = "";
 
@@ -36,7 +37,7 @@
         let user = JSON.parse(suser);
 
         username = user.Username;
-        let password = user.Password;
+        password = user.Password;
         auth = "Basic " + btoa(username + ":" + password);
 
         Common.get(uri + "/user?username=" + encodeURIComponent(user.Username),
@@ -133,9 +134,20 @@
                 let divNotifications = document.getElementById("content");
                 divNotifications.innerHTML = table;
 
+                let getRecord = function (recordId) {
+                    for (let i = 0; i < records.length; i++) {
+                        let record = records[i];
+                        if (record.Id === recordId) {
+                            return record;
+                        }
+                    }
+                    return null;
+                };
+
                 let recordsTable = document.getElementById("records-table");
                 let rows = recordsTable.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
                 let recordIds = [];
+                let modal = null;
                 for (let i = 0; i < rows.length; i++) {
                     let row = rows[i];
                     let checkBox = row.getElementsByClassName("check")[0].firstChild;
@@ -147,6 +159,211 @@
                         } else {
                             recordIds = Common.removeItemOnce(recordIds, recordId);
                         }
+                    };
+
+                    row.onclick = function (e) {
+                        if (e.target.type && e.target.type === "checkbox") {
+                            return;
+                        }
+                        let recordId = this.getElementsByClassName("id")[0].innerHTML;
+                        let record = getRecord(recordId);
+
+                        if (modal) {
+                            modal.destroy();
+                        }
+
+                        modal = new jBox('Modal', {
+                            width: 800,
+                            height: 420,
+                            title: "Record information",
+                            content: document.getElementById("edit-record").innerHTML,
+                            footer: document.getElementById("edit-record-footer").innerHTML,
+                            overlay: true,
+                            isolateScroll: false,
+                            delayOpen: 0,
+                            onOpen: function () {
+                                let editedRecord = JSON.parse(JSON.stringify(record));
+                                editedRecord.ModifiedBy = username;
+                                let jBoxContent = document.getElementsByClassName("jBox-content")[0];
+                                jBoxContent.querySelector(".record-id").value = record.Id;
+                                jBoxContent.querySelector(".record-name").value = record.Name;
+                                jBoxContent.querySelector(".record-description").innerHTML = record.Description;
+                                jBoxContent.querySelector(".record-approved").checked = record.Approved;
+                                jBoxContent.querySelector(".record-start-date").value = record.StartDate;
+                                jBoxContent.querySelector(".record-end-date").value = record.EndDate;
+                                jBoxContent.querySelector(".record-comments").innerHTML = record.Comments;
+                                jBoxContent.querySelector(".record-manager-comments").innerHTML = record.ManagerComments;
+                                jBoxContent.querySelector(".record-created-by").value = record.CreatedBy;
+                                jBoxContent.querySelector(".record-created-on").value = record.CreatedOn;
+                                jBoxContent.querySelector(".record-modified-by").value = record.ModifiedBy;
+                                jBoxContent.querySelector(".record-modified-on").value = record.ModifiedOn;
+                                jBoxContent.querySelector(".record-assigned-on").value = record.AssignedOn;
+
+                                let versions = [];
+                                for (let i = 0; i < record.Versions.length; i++) {
+                                    let version = record.Versions[i];
+                                    versions.push("<tr>"
+                                        + "<td class='version-id'>" + version.Id + "</td>"
+                                        + "<td class='version-file-name'><a class='lnk-version-file-name' href='#'>" + version.FileName + "</a></td>"
+                                        + "<td class='version-created-on'>" + version.CreatedOn + "</td>"
+                                        + "<td class='version-delete'><input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'></td>"
+                                        + "</tr>");
+                                }
+                                let versionsTable = jBoxContent.querySelector(".record-versions");
+                                versionsTable.innerHTML = versions.join("");
+
+                                // Download
+                                let versionFiles = versionsTable.querySelectorAll(".lnk-version-file-name");
+                                for (let i = 0; i < versionFiles.length; i++) {
+                                    let versionFile = versionFiles[i];
+                                    versionFile.onclick = function () {
+                                        let versionId = this.parentElement.parentElement.querySelector(".version-id").innerHTML;
+                                        let version = null;
+                                        for (let j = 0; j < record.Versions.length; j++) {
+                                            if (record.Versions[j].Id === versionId) {
+                                                version = record.Versions[j];
+                                                break;
+                                            }
+                                        }
+                                        let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(version.FilePath);
+                                        window.open(url, "_self");
+                                    };
+                                }
+
+                                // Delete 
+                                let deleteVersionBtns = versionsTable.querySelectorAll(".btn-delete-version");
+                                for (let i = 0; i < deleteVersionBtns.length; i++) {
+                                    let deleteVersionBtn = deleteVersionBtns[i];
+                                    deleteVersionBtn.onclick = function () {
+                                        let versionId = this.parentElement.parentElement.querySelector(".version-id").innerHTML;
+                                        let versionIndex = -1;
+                                        for (let j = 0; j < editedRecord.Versions.length; j++) {
+                                            if (editedRecord.Versions[j].Id === versionId) {
+                                                versionIndex = j;
+                                                break;
+                                            }
+                                        }
+                                        if (versionIndex > -1) {
+                                            editedRecord.Versions.splice(versionIndex, 1);
+                                            // Update versions table
+                                            let rows = versionsTable.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+                                            for (let j = 0; j < rows.length; j++) {
+                                                let row = rows[j];
+                                                let rowVersionId = row.querySelector(".version-id").innerHTML;
+                                                if (rowVersionId === versionId) {
+                                                    row.remove();
+                                                }
+                                            }
+                                        }
+                                    };
+                                }
+
+                                jBoxContent.querySelector(".btn-upload-version").onclick = function () {
+                                    let filedialog = document.getElementById("file-dialog");
+                                    filedialog.click();
+
+                                    filedialog.onchange = function (e) {
+                                        jBoxContent.querySelector(".spn-upload-version").innerHTML = "Uploading...";
+
+                                        let file = e.target.files[0];
+                                        let fd = new FormData();
+                                        fd.append("file", file);
+
+                                        Common.post(uri + "/uploadVersion?r=" + recordId, function (res) {
+                                            if (res.Result === true) {
+                                                editedRecord.Versions.push({
+                                                    RecordId: recordId,
+                                                    FilePath: res.FilePath,
+                                                    FileName: res.FileName,
+                                                    CreatedOn: ""
+                                                });
+
+                                                // Add row in .record-versions
+                                                let row = versionsTable.insertRow(-1);
+                                                let cell1 = row.insertCell(0);
+                                                let cell2 = row.insertCell(1);
+                                                let cell3 = row.insertCell(2);
+                                                let cell4 = row.insertCell(3);
+
+                                                cell1.classList.add("version-id");
+                                                cell1.innerHTML = "";
+                                                cell2.classList.add("version-file-name");
+                                                cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
+                                                cell3.classList.add("version-created-on");
+                                                cell3.innerHTML = "-";
+                                                cell4.classList.add("version-delete");
+                                                cell4.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
+
+                                                cell2.querySelector(".lnk-version-file-name").onclick = function () {
+                                                    let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
+                                                    window.open(url, "_self");
+                                                };
+
+                                                cell4.querySelector(".btn-delete-version").onclick = function () {
+                                                    // Delete file
+                                                    Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (res) {
+                                                        if (res === true) {
+                                                            Common.toastSuccess("Version file deleted successfully.");
+                                                            // Update versions table
+                                                            row.remove();
+                                                        } else {
+                                                            Common.toastError("An error occured while deleting the version file.");
+                                                        }
+
+                                                    }, function () { }, "", auth);
+                                                };
+
+                                                jBoxContent.querySelector(".spn-upload-version").innerHTML = "";
+                                            }
+                                            filedialog.value = "";
+                                        }, function () { }, fd, auth, true);
+                                    };
+                                };
+
+                                let jBoxFooter = document.getElementsByClassName("jBox-footer")[0];
+                                jBoxFooter.querySelector(".record-save").onclick = function () {
+                                    editedRecord.Name = jBoxContent.querySelector(".record-name").value;
+                                    editedRecord.Description = jBoxContent.querySelector(".record-description").value;
+                                    editedRecord.StartDate = jBoxContent.querySelector(".record-start-date").value;
+                                    editedRecord.EndDate = jBoxContent.querySelector(".record-end-date").value;
+                                    editedRecord.Comments = jBoxContent.querySelector(".record-comments").innerHTML;
+                                    editedRecord.ManagerComments = jBoxContent.querySelector(".record-manager-comments").innerHTML;
+                                    Common.post(uri + "/saveRecord", function (res) {
+                                        if (res === true) {
+                                            modal.close();
+                                            modal.destroy();
+                                            loadRecords();
+                                            Common.toastSuccess("Record saved successfully.");
+                                        } else {
+                                            Common.toastError("An error occured while saing the record.");
+                                        }
+                                    }, function () { }, editedRecord, auth);
+                                };
+
+                                jBoxFooter.querySelector(".record-delete").onclick = function () {
+                                    let cres = confirm("Are you sure you want to delete this record?");
+                                    if (cres === true) {
+                                        Common.post(uri + "/deleteRecords", function (res) {
+                                            if (res === true) {
+                                                for (let i = 0; i < rows.length; i++) {
+                                                    let row = rows[i];
+                                                    let id = row.getElementsByClassName("id")[0].innerHTML;
+                                                    if (recordId === id) {
+                                                        recordIds = Common.removeItemOnce(recordIds, recordId);
+                                                        row.remove();
+                                                        modal.destroy();
+                                                    }
+                                                }
+
+                                            }
+                                        }, function () { }, [recordId], auth);
+                                    }
+                                };
+                            },
+                            onClose: function () {
+                            }
+                        });
+                        modal.open();
                     };
                 }
 
@@ -189,6 +406,10 @@
                             }, function () { }, recordIds, auth);
                         }
                     }
+                };
+
+                document.getElementById("btn-new-record").onclick = function () {
+
                 };
 
             };

@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.toast.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/jBox.all.min.css" />
     <link rel="stylesheet" type="text/css" href="css/records.css" />
 
     <!--<link rel="stylesheet" type="text/css" href="css/records.min.css" />-->
@@ -16,6 +17,7 @@
 
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/jquery.toast.min.js"></script>
+    <script type="text/javascript" src="js/jBox.all.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/common.js"></script>
     <script type="text/javascript" src="js/authenticate.js"></script>
@@ -50,8 +52,88 @@
             <div id="btn-new-record">New record</div>
         </div>
     </div>
-    <div id="content">
-
+    <div id="content"></div>
+    <div id="edit-record">
+        <table>
+            <tbody>
+                <tr>
+                    <td>Id</td>
+                    <td><input class="record-id" type="text" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td><input class="record-name" type="text" /></td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td><textarea class="record-description"></textarea></td>
+                </tr>
+                <tr>
+                    <td>Approved</td>
+                    <td><input class="record-approved" type="checkbox" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Startd date</td>
+                    <td><input class="record-start-date" type="text" placeholder="dd-MM-yyyy HH:mm:ss" /></td>
+                </tr>
+                <tr>
+                    <td>End date</td>
+                    <td><input class="record-end-date" type="text" placeholder="dd-MM-yyyy HH:mm:ss" /></td>
+                </tr>
+                <tr>
+                    <td>Comments</td>
+                    <td><textarea class="record-comments"></textarea></td>
+                </tr>
+                <tr>
+                    <td>Manager comments</td>
+                    <td><textarea class="record-manager-comments"></textarea></td>
+                </tr>
+                <tr>
+                    <td>Created by</td>
+                    <td><input class="record-created-by" type="text" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Created on</td>
+                    <td><input class="record-created-on" type="text" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Modified by</td>
+                    <td><input class="record-modified-by" type="text" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Modified on</td>
+                    <td><input class="record-modified-on" type="text" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Assigned to</td>
+                    <td><input class="record-assigned-to" type="text" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Assigned on</td>
+                    <td><input class="record-assigned-on" type="text" disabled /></td>
+                </tr>
+                <tr>
+                    <td>Versions</td>
+                    <td>
+                        <table class="record-versions"></table>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="button" class='btn-upload-version btn btn-primary btn-xs' value="Upload" />
+                        <span class="spn-upload-version"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <input id="file-dialog" type="file" style="position: fixed; top: -100em" />
+    <div id="edit-record-footer">
+        <div id="edit-record-footer-content">
+            <div class="record-save">Save</div>
+            <div class="record-delete">Delete</div>
+        </div>
     </div>
 </body>
 </html>
