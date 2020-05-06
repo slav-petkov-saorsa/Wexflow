@@ -4756,17 +4756,17 @@ namespace Wexflow.Server
                             Id = record.GetDbId(),
                             Name = record.Name,
                             Description = record.Description,
-                            StartDate = record.StartDate.HasValue ? record.StartDate.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
-                            EndDate = record.EndDate.HasValue ? record.EndDate.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            StartDate = record.StartDate != null ? record.StartDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            EndDate = record.EndDate != null ? record.EndDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
                             Comments = record.Comments,
                             Approved = record.Approved,
                             ManagerComments = record.ManagerComments,
                             ModifiedBy = modifiedByUser != null ? modifiedByUser.Username : string.Empty,
-                            ModifiedOn = record.ModifiedOn.HasValue ? record.ModifiedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            ModifiedOn = record.ModifiedOn != null ? record.ModifiedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
                             CreatedBy = createdByUser != null ? createdByUser.Username : string.Empty,
                             CreatedOn = record.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
                             AssignedTo = assignedToUser != null ? assignedToUser.Username : string.Empty,
-                            AssignedOn = record.AssignedOn.HasValue ? record.AssignedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
+                            AssignedOn = record.AssignedOn != null ? record.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
                         };
 
                         var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());

@@ -59,6 +59,10 @@
                                 lnkProfiles.style.display = "inline";
                             }
 
+                            if (u.UserProfile === 1) {
+                                document.getElementById("btn-delete").style.display = "none";
+                            }
+
                             if (hasNotifications === true) {
                                 imgNotifications.src = "images/notification-active.png";
                             } else {
@@ -101,7 +105,7 @@
                 for (let i = 0; i < records.length; i++) {
                     let record = records[i];
                     items.push("<tr>"
-                        + "<td class='check'><input type='checkbox'></td>"
+                        + "<td class='check' " + (userProfile == 1 ? "style='display: none;'" : "") + "><input type='checkbox'></td>"
                         + "<td class='id'>" + record.Id + "</td>"
                         + "<td class='name'>" + record.Name + "</td>"
                         + "<td class='approved'>" + "<input type='checkbox' " + (record.Approved === true ? "checked" : "") + " disabled>" + "</td>"
@@ -116,7 +120,7 @@
                 let table = "<table id='records-table' class='table'>"
                     + "<thead class='thead-dark'>"
                     + "<tr>"
-                    + "<th class='check'><input id='check-all' type='checkbox'></th>"
+                    + "<th class='check' " + (userProfile == 1 ? "style='display: none;'" : "") + "><input id='check-all' type='checkbox'></th>"
                     + "<th class='id'></th>"
                     + "<th id='th-assigned-by' class='name'>" + "Name" + "</th>"
                     + "<th id='th-assigned-on' class='approved'>" + "Approved" + "</th>"
@@ -322,6 +326,10 @@
                                 };
 
                                 let jBoxFooter = document.getElementsByClassName("jBox-footer")[0];
+                                if (userProfile === 1 && record.CreatedBy !== username) {
+                                    jBoxFooter.querySelector(".record-delete").style.display = "none";
+                                }
+
                                 jBoxFooter.querySelector(".record-save").onclick = function () {
                                     editedRecord.Name = jBoxContent.querySelector(".record-name").value;
                                     editedRecord.Description = jBoxContent.querySelector(".record-description").value;
@@ -437,7 +445,7 @@
                     loadRecordsTable(records);
                 }, function () { }, auth);
             } else if (userProfile === 1) {
-                Common.get(uri + "/searchRecordsCreatedByOrAssignedTo?s=" + encodeURIComponent(searchText.value), function (records) {
+                Common.get(uri + "/searchRecordsCreatedByOrAssignedTo?s=" + encodeURIComponent(searchText.value) + "&c=" + encodeURIComponent(username) + "&a=" + encodeURIComponent(username), function (records) {
                     loadRecordsTable(records);
                 }, function () { }, auth);
             }
