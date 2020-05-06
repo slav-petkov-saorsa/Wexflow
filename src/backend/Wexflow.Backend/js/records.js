@@ -568,9 +568,9 @@
                                 newRecord.Description = jBoxContent.querySelector(".record-description").value;
                                 newRecord.StartDate = jBoxContent.querySelector(".record-start-date").value;
                                 newRecord.EndDate = jBoxContent.querySelector(".record-end-date").value;
-                                newRecord.Comments = jBoxContent.querySelector(".record-comments").innerHTML;
+                                newRecord.Comments = jBoxContent.querySelector(".record-comments").value;
                                 newRecord.Approved = false;
-                                newRecord.ManagerComments = jBoxContent.querySelector(".record-manager-comments").innerHTML;
+                                newRecord.ManagerComments = jBoxContent.querySelector(".record-manager-comments").value;
                                 newRecord.ModifiedBy = "";
                                 newRecord.ModifiedOn = "";
                                 newRecord.CreatedBy = username;
