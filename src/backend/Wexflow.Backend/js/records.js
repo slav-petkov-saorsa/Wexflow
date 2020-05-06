@@ -167,6 +167,8 @@
                         }
                         let recordId = this.getElementsByClassName("id")[0].innerHTML;
                         let record = getRecord(recordId);
+                        let editedRecord = JSON.parse(JSON.stringify(record));
+                        editedRecord.ModifiedBy = username;
 
                         if (modal) {
                             modal.destroy();
@@ -182,8 +184,6 @@
                             isolateScroll: false,
                             delayOpen: 0,
                             onOpen: function () {
-                                let editedRecord = JSON.parse(JSON.stringify(record));
-                                editedRecord.ModifiedBy = username;
                                 let jBoxContent = document.getElementsByClassName("jBox-content")[0];
                                 jBoxContent.querySelector(".record-id").value = record.Id;
                                 jBoxContent.querySelector(".record-name").value = record.Name;
@@ -230,7 +230,7 @@
                                     };
                                 }
 
-                                // Delete 
+                                // Delete version
                                 let deleteVersionBtns = versionsTable.querySelectorAll(".btn-delete-version");
                                 for (let i = 0; i < deleteVersionBtns.length; i++) {
                                     let deleteVersionBtn = deleteVersionBtns[i];
@@ -258,6 +258,7 @@
                                     };
                                 }
 
+                                // Upload version
                                 jBoxContent.querySelector(".btn-upload-version").onclick = function () {
                                     let filedialog = document.getElementById("file-dialog");
                                     filedialog.click();
@@ -340,6 +341,18 @@
                                     }, function () { }, editedRecord, auth);
                                 };
 
+                                jBoxFooter.querySelector(".record-cancel").onclick = function () {
+                                    Common.post(uri + "/deleteTempVersionFiles", function (res) {
+                                        if (res === true) {
+                                            Common.toastSuccess("Modifications canceled successfully.");
+                                        } else {
+                                            Common.toastError("An error occurred while canceling modifications.");
+                                        }
+                                        modal.close();
+                                        modal.destroy();
+                                    }, function () { }, editedRecord, auth);
+                                };
+
                                 jBoxFooter.querySelector(".record-delete").onclick = function () {
                                     let cres = confirm("Are you sure you want to delete this record?");
                                     if (cres === true) {
@@ -361,6 +374,11 @@
                                 };
                             },
                             onClose: function () {
+                                Common.post(uri + "/deleteTempVersionFiles", function (res) {
+                                    if (res === false) {
+                                        Common.toastError("An error occurred while canceling modifications.");
+                                    }
+                                }, function () { }, editedRecord, auth);
                             }
                         });
                         modal.open();

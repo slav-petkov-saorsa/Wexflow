@@ -225,6 +225,25 @@
     float: right;
 }
 
+.record-cancel {
+    font-family: Roboto;
+    font-weight: 500;
+    font-size: 14px;
+    color: #FFF;
+    background-color: #E8942D;
+    border-radius: 5px;
+    width: 143px;
+    height: 38px;
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    line-height: 38px;
+    margin-right: 20px;
+    transition: all .2s cubic-bezier(.05,.03,.35,1);
+    float: right;
+}
+
 .record-delete {
     font-family: Roboto;
     font-weight: 500;
@@ -244,7 +263,7 @@
     float: right;
 }
 
-.record-save:hover, .record-delete:hover {
+.record-save:hover, .record-cancel:hover, .record-delete:hover {
     cursor: pointer;
     opacity: .7;
 }

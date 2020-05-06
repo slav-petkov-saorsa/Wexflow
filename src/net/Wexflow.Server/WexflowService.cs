@@ -104,6 +104,7 @@ namespace Wexflow.Server
             UploadVerion();
             DeleteVersions();
             DeleteTempVersionFile();
+            DeleteTempVersionFiles();
             DownloadFile();
             SaveRecord();
             DeleteRecords();
@@ -4346,6 +4347,87 @@ namespace Wexflow.Server
         }
 
         /// <summary>
+        /// Deletes a temp version file.
+        /// </summary>
+        private void DeleteTempVersionFiles()
+        {
+            Post(Root + "deleteTempVersionFiles", args =>
+            {
+                try
+                {
+                    var res = true;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var o = JObject.Parse(json);
+                        var versions = JsonConvert.DeserializeObject<Contracts.Version[]>(o.Value<JArray>("Versions").ToString());
+
+                        foreach (var version in versions)
+                        {
+                            var path = version.FilePath;
+
+                            try
+                            {
+                                if (path.Contains(WexflowServer.WexflowEngine.RecordsTempFolder))
+                                {
+                                    if (File.Exists(path))
+                                    {
+                                        File.Delete(path);
+
+                                        var parentDir = Path.GetDirectoryName(path);
+                                        if (WexflowServer.WexflowEngine.IsDirectoryEmpty(parentDir))
+                                        {
+                                            Directory.Delete(parentDir);
+                                            var recordTempDir = Directory.GetParent(parentDir).FullName;
+                                            if (WexflowServer.WexflowEngine.IsDirectoryEmpty(recordTempDir))
+                                            {
+                                                Directory.Delete(recordTempDir);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                res = false;
+                            }
+                        }
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
         /// Saves a record.
         /// </summary>
         private void SaveRecord()
@@ -4405,7 +4487,6 @@ namespace Wexflow.Server
                             recordVersions.Add(new Core.Db.Version
                             {
                                 RecordId = version.RecordId,
-                                //CreatedOn = DateTime.Parse(version.CreatedOn),
                                 FilePath = version.FilePath
                             });
                         }

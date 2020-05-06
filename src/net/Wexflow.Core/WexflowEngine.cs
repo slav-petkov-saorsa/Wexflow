@@ -1423,7 +1423,7 @@ namespace Wexflow.Core
                     List<Db.Version> versionsToDeleteObjs = new List<Db.Version>();
                     foreach (var version in recordVersions)
                     {
-                        if (!versions.Any(v => v.GetDbId() == version.GetDbId()))
+                        if (!versions.Any(v => v.FilePath == version.FilePath))
                         {
                             versionsToDelete.Add(version.GetDbId());
                             versionsToDeleteObjs.Add(version);
