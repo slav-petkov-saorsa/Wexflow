@@ -526,6 +526,8 @@
                                             cell4.classList.add("version-delete");
                                             cell4.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
 
+                                            goToBottom(jBoxContent);
+
                                             cell2.querySelector(".lnk-version-file-name").onclick = function () {
                                                 let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
                                                 window.open(url, "_self");
