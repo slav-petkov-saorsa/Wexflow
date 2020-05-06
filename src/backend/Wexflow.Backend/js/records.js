@@ -173,6 +173,7 @@
                         let record = getRecord(recordId);
                         let editedRecord = JSON.parse(JSON.stringify(record));
                         editedRecord.ModifiedBy = username;
+                        let restrictEdit = userProfile === 1 && record.CreatedBy !== username;
 
                         if (modal) {
                             modal.destroy();
@@ -185,7 +186,7 @@
                             content: document.getElementById("edit-record").innerHTML,
                             footer: document.getElementById("edit-record-footer").innerHTML,
                             overlay: true,
-                            isolateScroll: false,
+                            //isolateScroll: false,
                             delayOpen: 0,
                             onOpen: function () {
                                 let jBoxContent = document.getElementsByClassName("jBox-content")[0];
@@ -204,12 +205,20 @@
                                 jBoxContent.querySelector(".record-assigned-to").value = record.AssignedTo;
                                 jBoxContent.querySelector(".record-assigned-on").value = record.AssignedOn;
 
+                                if (restrictEdit === true) {
+                                    jBoxContent.querySelector(".record-name").disabled = true;
+                                    jBoxContent.querySelector(".record-description").disabled = true;
+                                    jBoxContent.querySelector(".record-start-date").disabled = true;
+                                    jBoxContent.querySelector(".record-end-date").disabled = true;
+                                    jBoxContent.querySelector(".record-manager-comments").disabled = true;
+                                }
+
                                 let versions = [];
                                 for (let i = 0; i < record.Versions.length; i++) {
                                     let version = record.Versions[i];
                                     versions.push("<tr>"
                                         + "<td class='version-id'>" + version.Id + "</td>"
-                                        + "<td class='version-file-name'><a class='lnk-version-file-name' href='#'>" + version.FileName + "</a></td>"
+                                        + "<td class='version-file-name'><a class='lnk-version-file-name' href='#'>" + version.FileName + "</a>" + (i === record.Versions.length - 1 ? "&nbsp;&nbsp;<span style='color: #28a745; border: 1px solid #34d058; border-radius: 2px; padding: 3px 4px;'>Latest version</span>" : "") + "</td>"
                                         + "<td class='version-created-on'>" + version.CreatedOn + "</td>"
                                         + "<td class='version-delete'><input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'></td>"
                                         + "</tr>");
@@ -300,6 +309,9 @@
                                                 cell4.classList.add("version-delete");
                                                 cell4.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
 
+                                                goToBottom(jBoxContent);
+
+                                                // Download version
                                                 cell2.querySelector(".lnk-version-file-name").onclick = function () {
                                                     let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
                                                     window.open(url, "_self");
@@ -552,9 +564,7 @@
                             };
 
                             let jBoxFooter = document.getElementsByClassName("jBox-footer")[0];
-                            if (userProfile === 1 && record.CreatedBy !== username) {
-                                jBoxFooter.querySelector(".record-delete").style.display = "none";
-                            }
+                            jBoxFooter.querySelector(".record-delete").style.display = "none";
 
                             jBoxFooter.querySelector(".record-save").onclick = function () {
 
@@ -626,6 +636,10 @@
                 Common.get(uri + "/searchRecordsCreatedByOrAssignedTo?s=" + encodeURIComponent(searchText.value) + "&c=" + encodeURIComponent(username) + "&a=" + encodeURIComponent(username), function (records) {
                     loadRecordsTable(records);
                 }, function () { }, auth);
+            }
+
+            function goToBottom(element) {
+                element.scrollTop = element.scrollHeight - element.clientHeight;
             }
         }
     }

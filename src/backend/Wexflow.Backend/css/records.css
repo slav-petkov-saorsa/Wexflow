@@ -217,7 +217,7 @@
 
 .edit-record-value textarea{
     height: 100px;
-    resize: none;
+    resize: vertical;
 }
 
 .record-versions {
@@ -225,11 +225,11 @@
 }
 
 .version-file-name{
-    width: 100px;
+    width: 200px;
 }
 
 .version-created-on{
-    width: 50px;
+    width: 100px;
 }
 
 .version-delete{
