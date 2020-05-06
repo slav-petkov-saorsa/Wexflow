@@ -1389,11 +1389,21 @@ namespace Wexflow.Core
 
                     foreach (var version in versions)
                     {
-                        var versionId = Database.InsertVersion(version);
+                        var v = new Db.Version
+                        {
+                            RecordId = id,
+                            FilePath = version.FilePath,
+                        };
+                        var versionId = Database.InsertVersion(v);
 
                         // Move version file from temp folder to Records folder.
                         var fileName = Path.GetFileName(version.FilePath);
-                        var destPath = Path.Combine(RecordsFolder, id, versionId, fileName);
+                        var destDir = Path.Combine(RecordsFolder, id, versionId);
+                        if (!Directory.Exists(destDir))
+                        {
+                            Directory.CreateDirectory(destDir);
+                        }
+                        var destPath = Path.Combine(destDir, fileName);
                         File.Move(version.FilePath, destPath);
                         var parentDir = Path.GetDirectoryName(version.FilePath);
                         if (IsDirectoryEmpty(parentDir))
@@ -1407,8 +1417,8 @@ namespace Wexflow.Core
                         }
 
                         // Update version.
-                        version.FilePath = destPath;
-                        Database.UpdateVersion(versionId, version);
+                        v.FilePath = destPath;
+                        Database.UpdateVersion(versionId, v);
                     }
 
                     return id;

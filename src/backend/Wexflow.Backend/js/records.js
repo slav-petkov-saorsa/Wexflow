@@ -307,11 +307,22 @@
 
                                                 cell4.querySelector(".btn-delete-version").onclick = function () {
                                                     // Delete file
-                                                    Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (res) {
-                                                        if (res === true) {
-                                                            Common.toastSuccess("Version file deleted successfully.");
-                                                            // Update versions table
-                                                            row.remove();
+                                                    Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
+                                                        if (deleteRes === true) {
+                                                            let versionIndex = -1;
+                                                            for (let j = 0; j < editedRecord.Versions.length; j++) {
+                                                                if (editedRecord.Versions[j].FilePath === res.FilePath) {
+                                                                    versionIndex = j;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if (versionIndex > -1) {
+                                                                editedRecord.Versions.splice(versionIndex, 1);
+                                                                // Update versions table
+                                                                row.remove();
+                                                                Common.toastSuccess("Version file deleted successfully.");
+                                                            }
+
                                                         } else {
                                                             Common.toastError("An error occured while deleting the version file.");
                                                         }
@@ -436,11 +447,177 @@
                 };
 
                 document.getElementById("btn-new-record").onclick = function () {
+                    if (modal) {
+                        modal.destroy();
+                    }
+
+                    let newRecord = {};
+                    newRecord.Versions = [];
+
+                    modal = new jBox('Modal', {
+                        width: 800,
+                        height: 420,
+                        title: "Record information",
+                        content: document.getElementById("edit-record").innerHTML,
+                        footer: document.getElementById("edit-record-footer").innerHTML,
+                        overlay: true,
+                        isolateScroll: false,
+                        delayOpen: 0,
+                        onOpen: function () {
+                            let jBoxContent = document.getElementsByClassName("jBox-content")[0];
+                            jBoxContent.querySelector(".edit-record-tr-id").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-tr-approved").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-tr-created-by").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-tr-created-on").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-tr-modified-by").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-tr-modified-on").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-tr-assigned-to").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-tr-assigned-on").style.display = "none";
+                            jBoxContent.querySelector(".edit-record-td-start-date").innerHTML += " (Optional)";
+                            jBoxContent.querySelector(".edit-record-td-end-date").innerHTML += " (Optional)";
+
+                            // Upload version
+                            jBoxContent.querySelector(".btn-upload-version").onclick = function () {
+                                let filedialog = document.getElementById("file-dialog");
+                                filedialog.click();
+
+                                filedialog.onchange = function (e) {
+                                    jBoxContent.querySelector(".spn-upload-version").innerHTML = "Uploading...";
+
+                                    let file = e.target.files[0];
+                                    let fd = new FormData();
+                                    fd.append("file", file);
+
+                                    Common.post(uri + "/uploadVersion?r=-1", function (res) {
+                                        if (res.Result === true) {
+                                            newRecord.Versions.push({
+                                                RecordId: "-1",
+                                                FilePath: res.FilePath,
+                                                FileName: res.FileName,
+                                                CreatedOn: ""
+                                            });
+
+                                            // Add row in .record-versions
+                                            let versionsTable = jBoxContent.querySelector(".record-versions");
+                                            let row = versionsTable.insertRow(-1);
+                                            let cell1 = row.insertCell(0);
+                                            let cell2 = row.insertCell(1);
+                                            let cell3 = row.insertCell(2);
+                                            let cell4 = row.insertCell(3);
+
+                                            cell1.classList.add("version-id");
+                                            cell1.innerHTML = "";
+                                            cell2.classList.add("version-file-name");
+                                            cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
+                                            cell3.classList.add("version-created-on");
+                                            cell3.innerHTML = "-";
+                                            cell4.classList.add("version-delete");
+                                            cell4.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
+
+                                            cell2.querySelector(".lnk-version-file-name").onclick = function () {
+                                                let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
+                                                window.open(url, "_self");
+                                            };
+
+                                            cell4.querySelector(".btn-delete-version").onclick = function () {
+                                                // Delete file
+                                                Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
+                                                    if (deleteRes === true) {
+                                                        let versionIndex = -1;
+                                                        for (let j = 0; j < newRecord.Versions.length; j++) {
+                                                            if (newRecord.Versions[j].FilePath === res.FilePath) {
+                                                                versionIndex = j;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (versionIndex > -1) {
+                                                            newRecord.Versions.splice(versionIndex, 1);
+                                                            // Update versions table
+                                                            row.remove();
+                                                            Common.toastSuccess("Version file deleted successfully.");
+                                                        }
+
+                                                    } else {
+                                                        Common.toastError("An error occured while deleting the version file.");
+                                                    }
+
+                                                }, function () { }, "", auth);
+                                            };
+
+                                            jBoxContent.querySelector(".spn-upload-version").innerHTML = "";
+                                        }
+                                        filedialog.value = "";
+                                    }, function () { }, fd, auth, true);
+                                };
+                            };
+
+                            let jBoxFooter = document.getElementsByClassName("jBox-footer")[0];
+                            if (userProfile === 1 && record.CreatedBy !== username) {
+                                jBoxFooter.querySelector(".record-delete").style.display = "none";
+                            }
+
+                            jBoxFooter.querySelector(".record-save").onclick = function () {
+
+                                if (jBoxContent.querySelector(".record-name").value === "") {
+                                    Common.toastInfo("Enter a name for this record.");
+                                    return;
+                                }
+
+                                newRecord.Id = "-1";
+                                newRecord.Name = jBoxContent.querySelector(".record-name").value;
+                                newRecord.Description = jBoxContent.querySelector(".record-description").value;
+                                newRecord.StartDate = jBoxContent.querySelector(".record-start-date").value;
+                                newRecord.EndDate = jBoxContent.querySelector(".record-end-date").value;
+                                newRecord.Comments = jBoxContent.querySelector(".record-comments").innerHTML;
+                                newRecord.Approved = false;
+                                newRecord.ManagerComments = jBoxContent.querySelector(".record-manager-comments").innerHTML;
+                                newRecord.ModifiedBy = "";
+                                newRecord.ModifiedOn = "";
+                                newRecord.CreatedBy = username;
+                                newRecord.CreatedOn = "";
+                                newRecord.AssignedTo = "";
+                                newRecord.AssignedOn = "";
+                                Common.post(uri + "/saveRecord", function (res) {
+                                    if (res === true) {
+                                        modal.close();
+                                        modal.destroy();
+                                        loadRecords();
+                                        Common.toastSuccess("Record saved successfully.");
+                                    } else {
+                                        Common.toastError("An error occured while saing the record.");
+                                    }
+                                }, function () { }, newRecord, auth);
+                            };
+
+                            jBoxFooter.querySelector(".record-cancel").onclick = function () {
+                                Common.post(uri + "/deleteTempVersionFiles", function (res) {
+                                    if (res === true) {
+                                        Common.toastSuccess("Modifications canceled successfully.");
+                                    } else {
+                                        Common.toastError("An error occurred while canceling modifications.");
+                                    }
+                                    modal.close();
+                                    modal.destroy();
+                                }, function () { }, newRecord, auth);
+                            };
+
+                            jBoxFooter.querySelector(".record-delete").style.display = "none";
+                        },
+                        onClose: function () {
+                            Common.post(uri + "/deleteTempVersionFiles", function (res) {
+                                if (res === false) {
+                                    Common.toastError("An error occurred while canceling modifications.");
+                                }
+                            }, function () { }, newRecord, auth);
+                        }
+                    });
+                    modal.open();
 
                 };
 
             };
 
+            // Load records
             if (userProfile === 0) {
                 Common.get(uri + "/searchRecords?s=" + encodeURIComponent(searchText.value), function (records) {
                     loadRecordsTable(records);

@@ -203,11 +203,11 @@
 
 .edit-record-title {
     font-weight: bold;
-    width: 100px;
+    width: 150px;
 }
 
 .edit-record-value{
-    width: calc(100% - 100px);
+    width: calc(100% - 150px);
 }
 
 .edit-record-value input, textarea{

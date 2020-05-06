@@ -4476,7 +4476,7 @@ namespace Wexflow.Server
                             ModifiedBy = !string.IsNullOrEmpty(modifiedBy) ? WexflowServer.WexflowEngine.GetUser(modifiedBy).GetDbId() : null,
                             ModifiedOn = string.IsNullOrEmpty(modifiedOn) ? null : (DateTime?)DateTime.Parse(modifiedOn),
                             CreatedBy = !string.IsNullOrEmpty(createdBy) ? WexflowServer.WexflowEngine.GetUser(createdBy).GetDbId() : null,
-                            CreatedOn = DateTime.Parse(createdOn),
+                            CreatedOn = !string.IsNullOrEmpty(createdOn) ? DateTime.Parse(createdOn) : DateTime.MinValue,
                             AssignedTo = !string.IsNullOrEmpty(assignedTo) ? WexflowServer.WexflowEngine.GetUser(assignedTo).GetDbId() : null,
                             AssignedOn = string.IsNullOrEmpty(assignedOn) ? null : (DateTime?)DateTime.Parse(assignedOn)
                         };
