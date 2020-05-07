@@ -1471,6 +1471,16 @@ namespace Wexflow.Core.Db.LiteDB
             }
         }
 
+        public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<User>(Core.Db.User.DocumentName);
+                var users = col.Find(u => u.UserProfile == UserProfile.SuperAdministrator || u.UserProfile == UserProfile.Administrator);
+                return users;
+            }
+        }
+
         public override string InsertRecord(Core.Db.Record record)
         {
             lock (padlock)
@@ -1531,6 +1541,17 @@ namespace Wexflow.Core.Db.LiteDB
             {
                 var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
                 col.DeleteMany(r => recordIds.Contains(r.Id.ToString()));
+            }
+        }
+
+        public override Core.Db.Record GetRecord(string id)
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var bsonId = int.Parse(id);
+                var record = col.FindById(bsonId);
+                return record;
             }
         }
 

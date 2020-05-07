@@ -55,11 +55,8 @@ namespace Wexflow.Core.Db
         public abstract void DeleteUserWorkflowRelationsByUserId(string userId);
         public abstract IEnumerable<string> GetUserWorkflows(string userId);
         public abstract bool CheckUserWorkflow(string userId, string workflowId);
+        
         public abstract IEnumerable<User> GetAdministrators(string keyword, UserOrderBy uo);
-        public abstract void ClearStatusCount();
-        public abstract void ClearEntries();
-        public abstract StatusCount GetStatusCount();
-        public abstract IEnumerable<Entry> GetEntries();
         public abstract void InsertUser(User user);
         public abstract void UpdateUser(string id, User user);
         public abstract void UpdateUsernameAndEmailAndUserProfile(string userId, string username, string email, UserProfile up);
@@ -70,6 +67,12 @@ namespace Wexflow.Core.Db
         public abstract IEnumerable<User> GetUsers();
         public abstract IEnumerable<User> GetUsers(string keyword, UserOrderBy uo);
         public abstract void UpdatePassword(string username, string password);
+        public abstract IEnumerable<User> GetNonRestricedUsers();
+
+        public abstract void ClearStatusCount();
+        public abstract void ClearEntries();
+        public abstract StatusCount GetStatusCount();
+        public abstract IEnumerable<Entry> GetEntries();
         public abstract IEnumerable<HistoryEntry> GetHistoryEntries();
         public abstract IEnumerable<HistoryEntry> GetHistoryEntries(string keyword);
         public abstract IEnumerable<HistoryEntry> GetHistoryEntries(string keyword, int page, int entriesCount);
@@ -103,6 +106,7 @@ namespace Wexflow.Core.Db
         public abstract string InsertRecord(Record record);
         public abstract void UpdateRecord(string recordId, Record record);
         public abstract void DeleteRecords(string[] recordIds);
+        public abstract Record GetRecord(string id);
         public abstract IEnumerable<Record> GetRecords(string keyword);
         public abstract IEnumerable<Record> GetRecordsCreatedBy(string createdBy);
         public abstract IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword);

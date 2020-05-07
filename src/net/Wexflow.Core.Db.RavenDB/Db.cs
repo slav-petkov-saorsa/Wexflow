@@ -1488,6 +1488,11 @@ namespace Wexflow.Core.Db.RavenDB
             }
         }
 
+        public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string InsertRecord(Record record)
         {
             throw new NotImplementedException();
@@ -1499,6 +1504,11 @@ namespace Wexflow.Core.Db.RavenDB
         }
 
         public override void DeleteRecords(string[] recordIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Record GetRecord(string id)
         {
             throw new NotImplementedException();
         }
