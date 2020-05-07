@@ -120,6 +120,7 @@ namespace Wexflow.Server
             MarkNotificationsAsUnread();
             DeleteNotifications();
             SearchNotifications();
+            Notify();
 
             //
             // History
@@ -5029,6 +5030,68 @@ namespace Wexflow.Server
                     Contents = s => s.Write(notificationsBytes, 0, notificationsBytes.Length)
                 };
 
+            });
+        }
+
+        /// <summary>
+        /// Notifies a user.
+        /// </summary>
+        private void Notify()
+        {
+            Post(Root + "notify", args =>
+            {
+                try
+                {
+                    var res = false;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var assignedToUsername = Request.Query["a"].ToString();
+                        var message = Request.Query["m"].ToString();
+                        var assignedTo = WexflowServer.WexflowEngine.GetUser(assignedToUsername);
+                        if (assignedTo != null && !string.IsNullOrEmpty(message))
+                        {
+                            var notification = new Core.Db.Notification
+                            {
+                                AssignedBy = user.GetDbId(),
+                                AssignedOn = DateTime.Now,
+                                AssignedTo = assignedTo.GetDbId(),
+                                Message = message,
+                                IsRead = false
+                            };
+                            var id = WexflowServer.WexflowEngine.InsertNotification(notification);
+                            res = id != "-1";
+                        }
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
             });
         }
 

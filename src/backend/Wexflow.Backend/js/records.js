@@ -363,6 +363,17 @@
                                     editedRecord.ManagerComments = jBoxContent.querySelector(".record-manager-comments").innerHTML;
                                     Common.post(uri + "/saveRecord", function (res) {
                                         if (res === true) {
+                                            if (username !== record.CreatedBy) {
+                                                // Notify record.CreatedBy
+                                                let message = "The record " + record.Name + " was updated by the user " + username + ".";
+                                                Common.post(uri + "/notify?a=" + encodeURIComponent(record.CreatedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
+                                                    if (notifyRes === true) {
+                                                        Common.toastInfo("The creator of the record was notified by the modification of the record.");
+                                                    } else {
+                                                        Common.toastError("An error occured while notifying the creator of the record.");
+                                                    }
+                                                }, function () { }, "", auth);
+                                            }
                                             modal.close();
                                             modal.destroy();
                                             loadRecords();

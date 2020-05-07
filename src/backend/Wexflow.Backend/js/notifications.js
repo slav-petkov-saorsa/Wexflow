@@ -149,13 +149,32 @@
                             Common.get(uri + "/hasNotifications?a=" + encodeURIComponent(user.Username), function (hasNotifications) {
                                 for (let i = 0; i < notificationIds.length; i++) {
                                     let notificationId = notificationIds[i];
-                                    for (let i = 0; i < rows.length; i++) {
-                                        let row = rows[i];
+                                    for (let j = 0; j < rows.length; j++) {
+                                        let row = rows[j];
                                         let id = row.getElementsByClassName("id")[0].innerHTML;
                                         if (notificationId === id) {
                                             row.getElementsByClassName("assigned-by")[0].classList.remove("bold");
                                             row.getElementsByClassName("assigned-on")[0].classList.remove("bold");
                                             row.getElementsByClassName("message")[0].classList.remove("bold");
+
+                                            // Notify assignedBy
+                                            for (let k = 0; k < notifications.length; k++) {
+                                                let notification = notifications[k];
+                                                if (notificationId === notification.Id) {
+
+                                                    let message = "The user " + username + " has read his notification: " + notification.Message;
+                                                    Common.post(uri + "/notify?a=" + encodeURIComponent(notification.AssignedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
+                                                        if (notifyRes === true) {
+                                                            Common.toastInfo("The assignor was notified that you read the notifictaion assigned on " + notification.AssignedOn + ".");
+                                                        } else {
+                                                            Common.toastError("An error occured while notifying the assignor.");
+                                                        }
+                                                    }, function () { }, "", auth);
+
+
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
 
@@ -176,8 +195,8 @@
                             Common.get(uri + "/hasNotifications?a=" + encodeURIComponent(user.Username), function (hasNotifications) {
                                 for (let i = 0; i < notificationIds.length; i++) {
                                     let notificationId = notificationIds[i];
-                                    for (let i = 0; i < rows.length; i++) {
-                                        let row = rows[i];
+                                    for (let j = 0; j < rows.length; j++) {
+                                        let row = rows[j];
                                         let id = row.getElementsByClassName("id")[0].innerHTML;
                                         if (notificationId === id) {
                                             if (row.getElementsByClassName("assigned-by")[0].classList.contains("bold") === false) {
@@ -213,12 +232,32 @@
                                 if (res === true) {
                                     for (let i = notificationIds.length - 1; i >= 0; i--) {
                                         let notificationId = notificationIds[i];
-                                        for (let i = 0; i < rows.length; i++) {
-                                            let row = rows[i];
+                                        for (let j = 0; j < rows.length; j++) {
+                                            let row = rows[j];
                                             let id = row.getElementsByClassName("id")[0].innerHTML;
                                             if (notificationId === id) {
                                                 notificationIds = Common.removeItemOnce(notificationIds, notificationId);
                                                 row.remove();
+
+                                                // Notify assignedBy
+                                                for (let k = 0; k < notifications.length; k++) {
+                                                    let notification = notifications[k];
+                                                    if (notificationId === notification.Id) {
+
+                                                        let message = "The user " + username + " has read his notification: " + notification.Message;
+                                                        Common.post(uri + "/notify?a=" + encodeURIComponent(notification.AssignedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
+                                                            if (notifyRes === true) {
+                                                                Common.toastInfo("The assignor was notified that you read the notifictaion assigned on " + notification.AssignedOn + ".");
+                                                            } else {
+                                                                Common.toastError("An error occured while notifying the assignor.");
+                                                            }
+                                                        }, function () { }, "", auth);
+
+
+                                                        break;
+                                                    }
+                                                }
+
                                             }
                                         }
                                     }
