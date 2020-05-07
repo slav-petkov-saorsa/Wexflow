@@ -261,24 +261,6 @@
             });
         };
 
-        lnkAbout.onclick = function () {
-            let lnk = "https://wexflow.github.io";
-            saveChanges(function () {
-                window.location.href = lnk;
-            }, function () {
-                window.location.href = lnk;
-            });
-        };
-
-        lnkHelp.onclick = function () {
-            let lnk = "https://github.com/aelassas/Wexflow/wiki";
-            saveChanges(function () {
-                window.location.href = lnk;
-            }, function () {
-                window.location.href = lnk;
-            });
-        };
-
         flowy(canvas, drag, release, snapping, drop);
 
         function loadTasks() {

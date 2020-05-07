@@ -241,6 +241,10 @@
       <Project>{8bff752c-4eb0-49cb-a367-92046d78d010}</Project>
       <Name>Wexflow.Tasks.Approval</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wexflow.Tasks.ApproveRecord\Wexflow.Tasks.ApproveRecord.csproj">
+      <Project>{69f2479a-876c-4f75-ac5e-585761bb5a17}</Project>
+      <Name>Wexflow.Tasks.ApproveRecord</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wexflow.Tasks.CsvToJson\Wexflow.Tasks.CsvToJson.csproj">
       <Project>{dd553a49-a5ad-4f12-91cb-9fba28777ed2}</Project>
       <Name>Wexflow.Tasks.CsvToJson</Name>

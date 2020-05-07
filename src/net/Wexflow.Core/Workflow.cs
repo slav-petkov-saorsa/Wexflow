@@ -50,6 +50,22 @@ namespace Wexflow.Core
         /// </summary>
         public string DbId { get; private set; }
         /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string StartedBy { get; private set; }
+        /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string ApprovedBy { get; private set; }
+        /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string RejectedBy { get; private set; }
+        /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string StoppedBy { get; private set; }
+        /// <summary>
         /// Workflow file path.
         /// </summary>
         public string FilePath { get; set; }
@@ -868,8 +884,9 @@ namespace Wexflow.Core
         /// <summary>
         /// Starts this workflow asynchronously.
         /// </summary>
+        /// <param name="startedBy">Username of the user that started the workflow.</param>
         /// <returns>Instance Id.</returns>
-        public Guid StartAsync()
+        public Guid StartAsync(string startedBy)
         {
             if (IsRunning && !EnableParallelJobs)
             {
@@ -892,13 +909,16 @@ namespace Wexflow.Core
                     , Database
                     , GlobalVariables
                     );
-                return workflow.StartAsync();
+                workflow.StartedBy = startedBy;
+                return workflow.StartAsync(startedBy);
             }
 
             StartedOn = DateTime.Now;
+            StartedBy = startedBy;
             var instanceId = Guid.NewGuid();
             var warning = false;
-            var thread = new Thread(() => StartSync(instanceId, ref warning));
+            var thread = new Thread(() => StartSync(startedBy, instanceId, ref warning));
+            thread.IsBackground = true;
             _thread = thread;
             thread.Start();
 
@@ -908,13 +928,15 @@ namespace Wexflow.Core
         /// <summary>
         /// Starts this workflow synchronously.
         /// </summary>
-        /// <param name="instanceId"></param>
+        /// <param name="startedBy">Username of the user that started the workflow.</param>
+        /// <param name="instanceId">Instance id.</param>
         /// <param name="resultWarning">Indicates whether the final result is warning or not.</param>
-        public bool StartSync(Guid instanceId, ref bool resultWarning)
+        public bool StartSync(string startedBy, Guid instanceId, ref bool resultWarning)
         {
             var resultSuccess = true;
 
             StartedOn = DateTime.Now;
+            StartedBy = startedBy;
             InstanceId = instanceId;
             Jobs.Add(InstanceId, this);
 
@@ -1153,11 +1175,14 @@ namespace Wexflow.Core
                 if (_jobsQueue.Count > 0)
                 {
                     var job = _jobsQueue.Dequeue();
-                    job.Workflow.StartAsync();
+                    job.Workflow.StartAsync(startedBy);
                 }
                 else
                 {
-                    Load(Xml); // Reload the original workflow
+                    if (!_stopCalled)
+                    {
+                        Load(Xml); // Reload the original workflow
+                    }
                     RestVariables.Clear();
                 }
 
@@ -1573,21 +1598,24 @@ namespace Wexflow.Core
         /// <summary>
         /// Stops this workflow.
         /// </summary>
-        public bool Stop()
+        /// <param name="stoppedBy">Username of the user who stopped the workflow.</param>
+        public bool Stop(string stoppedBy)
         {
             if (IsRunning)
             {
                 try
                 {
+                    if (_thread != null)
+                    {
+                        _thread.Abort();
+                        _thread.Join();
+                    }
+                    StoppedBy = stoppedBy;
                     _stopCalled = true;
                     foreach (var task in Tasks)
                     {
                         task.Stop();
                         Logs.AddRange(task.Logs);
-                    }
-                    if (_thread != null)
-                    {
-                        _thread.Abort();
                     }
                     var logs = string.Join("\r\n", Logs);
                     IsWaitingForApproval = false;
@@ -1609,8 +1637,10 @@ namespace Wexflow.Core
                     if (_jobsQueue.Count > 0)
                     {
                         var job = _jobsQueue.Dequeue();
-                        job.Workflow.StartAsync();
+                        job.Workflow.StartAsync(StartedBy);
                     }
+
+                    Load(Xml); // Reload the original workflow
 
                     return true;
                 }
@@ -1693,10 +1723,12 @@ namespace Wexflow.Core
         /// <summary>
         /// Approves the current workflow.
         /// </summary>
-        public void Approve()
+        /// <param name="approvedBy">Username of the user who approved the workflow.</param>
+        public void Approve(string approvedBy)
         {
             if (IsApproval)
             {
+                ApprovedBy = approvedBy;
                 var task = Tasks.Where(t => t.IsWaitingForApproval).First();
                 var dir = Path.Combine(ApprovalFolder, Id.ToString(), InstanceId.ToString(), task.Id.ToString());
                 Directory.CreateDirectory(dir);
@@ -1708,10 +1740,12 @@ namespace Wexflow.Core
         /// <summary>
         /// Rejects the current workflow.
         /// </summary>
-        public void Reject()
+        /// <param name="rejectedBy">Username of the user who rejected the workflow.</param>
+        public void Reject(string rejectedBy)
         {
             if (IsApproval)
             {
+                RejectedBy = rejectedBy;
                 IsRejected = true;
             }
         }

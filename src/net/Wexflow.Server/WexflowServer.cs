@@ -19,7 +19,7 @@ namespace Wexflow.Server
         private static bool enableWorkflowsHotFolder = bool.Parse(Config["EnableWorkflowsHotFolder"]);
 
         public static FileSystemWatcher Watcher;
-        public static WexflowEngine WexflowEngine = new WexflowEngine(settingsFile, enableWorkflowsHotFolder);
+        public static WexflowEngine WexflowEngine = new WexflowEngine(settingsFile, enableWorkflowsHotFolder, superAdminUsername);
 
         private IDisposable _webApp;
 

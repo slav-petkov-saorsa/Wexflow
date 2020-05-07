@@ -71,6 +71,10 @@ namespace Wexflow.Core
         private static string recordsDbFolderName;
 
         /// <summary>
+        /// Super-admin user name.
+        /// </summary>
+        public string SuperAdminUsername { get; private set; }
+        /// <summary>
         /// Settings file path.
         /// </summary>
         public string SettingsFile { get; private set; }
@@ -159,12 +163,14 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="settingsFile">Settings file path.</param>
         /// <param name="enableWorkflowsHotFolder">Indicates whether workflows hot folder is enabled or not.</param>
-        public WexflowEngine(string settingsFile, bool enableWorkflowsHotFolder)
+        /// <param name="superAdminUsername">Super-admin username.</param>
+        public WexflowEngine(string settingsFile, bool enableWorkflowsHotFolder, string superAdminUsername)
         {
             log4net.Config.XmlConfigurator.Configure();
 
             SettingsFile = settingsFile;
             EnableWorkflowsHotFolder = enableWorkflowsHotFolder;
+            SuperAdminUsername = superAdminUsername;
             Workflows = new List<Workflow>();
 
             Logger.Info("");
@@ -439,7 +445,7 @@ namespace Wexflow.Core
 
                         if (changedWorkflow != null)
                         {
-                            changedWorkflow.Stop();
+                            changedWorkflow.Stop(SuperAdminUsername);
 
                             StopCronJobs(changedWorkflow.Id);
                             Workflows.Remove(changedWorkflow);
@@ -510,7 +516,7 @@ namespace Wexflow.Core
                 if (removedWorkflow != null)
                 {
                     Logger.InfoFormat("Workflow {0} is stopped and removed.", removedWorkflow.Name);
-                    removedWorkflow.Stop();
+                    removedWorkflow.Stop(SuperAdminUsername);
 
                     StopCronJobs(removedWorkflow.Id);
                     Workflows.Remove(removedWorkflow);
@@ -548,7 +554,7 @@ namespace Wexflow.Core
                     if (removedWorkflow != null)
                     {
                         Logger.InfoFormat("Workflow {0} is stopped and removed.", removedWorkflow.Name);
-                        removedWorkflow.Stop();
+                        removedWorkflow.Stop(SuperAdminUsername);
 
                         StopCronJobs(removedWorkflow.Id);
                         Workflows.Remove(removedWorkflow);
@@ -704,7 +710,7 @@ namespace Wexflow.Core
                 {
                     if (wf.LaunchType == LaunchType.Startup)
                     {
-                        wf.StartAsync();
+                        wf.StartAsync(SuperAdminUsername);
                     }
                     else if (wf.LaunchType == LaunchType.Periodic)
                     {
@@ -787,7 +793,7 @@ namespace Wexflow.Core
             {
                 if (wf.IsRunning)
                 {
-                    wf.Stop();
+                    wf.Stop(SuperAdminUsername);
                 }
             }
 
@@ -813,8 +819,9 @@ namespace Wexflow.Core
         /// <summary>
         /// Starts a workflow.
         /// </summary>
+        /// <param name="startedBy">Username of the user that started the workflow.</param>
         /// <param name="workflowId">Workflow Id.</param>
-        public Guid StartWorkflow(int workflowId)
+        public Guid StartWorkflow(string startedBy, int workflowId)
         {
             var wf = GetWorkflow(workflowId);
 
@@ -826,7 +833,7 @@ namespace Wexflow.Core
             {
                 if (wf.IsEnabled)
                 {
-                    var instanceId = wf.StartAsync();
+                    var instanceId = wf.StartAsync(startedBy);
                     return instanceId;
                 }
             }
@@ -839,7 +846,8 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
-        public bool StopWorkflow(int workflowId, Guid instanceId)
+        /// <param name="stoppedBy">Username of the user who stopped the workflow.</param>
+        public bool StopWorkflow(int workflowId, Guid instanceId, string stoppedBy)
         {
             var wf = GetWorkflow(workflowId);
 
@@ -859,7 +867,7 @@ namespace Wexflow.Core
                     }
                     else
                     {
-                        return innerWf.Stop();
+                        return innerWf.Stop(stoppedBy);
                     }
                 }
             }
@@ -936,7 +944,8 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
-        public bool ApproveWorkflow(int workflowId, Guid instanceId)
+        /// <param name="approvedBy">Username of the user who approved the workflow.</param>
+        public bool ApproveWorkflow(int workflowId, Guid instanceId, string approvedBy)
         {
             try
             {
@@ -960,7 +969,7 @@ namespace Wexflow.Core
                         }
                         else
                         {
-                            innerWf.Approve();
+                            innerWf.Approve(approvedBy);
                             return true;
                         }
                     }
@@ -980,7 +989,8 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
-        public bool RejectWorkflow(int workflowId, Guid instanceId)
+        /// <param name="rejectedBy">Username of the user who rejected the workflow.</param>
+        public bool RejectWorkflow(int workflowId, Guid instanceId, string rejectedBy)
         {
             try
             {
@@ -1004,7 +1014,7 @@ namespace Wexflow.Core
                         }
                         else
                         {
-                            innerWf.Reject();
+                            innerWf.Reject(rejectedBy);
                             return true;
                         }
                     }
