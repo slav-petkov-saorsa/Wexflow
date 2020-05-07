@@ -10,7 +10,7 @@ namespace Wexflow.Tests
         public static readonly string TempFolder = @"C:\Wexflow\Temp\";
         public static readonly string SourceFilesFolder = @"C:\WexflowTesting\";
 
-        private static readonly WexflowEngine WexflowEngine = new WexflowEngine(@"C:\Wexflow\Wexflow.xml", false);
+        private static readonly WexflowEngine WexflowEngine = new WexflowEngine(@"C:\Wexflow\Wexflow.xml", false, "admin");
 
         public static void Run()
         {
@@ -24,7 +24,7 @@ namespace Wexflow.Tests
 
         public static System.Guid StartWorkflow(int workflowId)
         {
-            var instanceId = WexflowEngine.StartWorkflow(workflowId);
+            var instanceId = WexflowEngine.StartWorkflow(WexflowEngine.SuperAdminUsername, workflowId);
 
             // Wait until the workflow finishes
             Thread.Sleep(1000);
@@ -44,12 +44,12 @@ namespace Wexflow.Tests
 
         public static System.Guid StartWorkflowAsync(int workflowId)
         {
-            return WexflowEngine.StartWorkflow(workflowId);
+            return WexflowEngine.StartWorkflow(WexflowEngine.SuperAdminUsername, workflowId);
         }
 
         public static void StopWorkflow(int workflowId, System.Guid instanceId)
         {
-            WexflowEngine.StopWorkflow(workflowId, instanceId);
+            WexflowEngine.StopWorkflow(workflowId, instanceId, WexflowEngine.SuperAdminUsername);
         }
 
         public static void SuspendWorkflow(int workflowId, System.Guid instanceId)
@@ -64,12 +64,12 @@ namespace Wexflow.Tests
 
         public static void ApproveWorkflow(int workflowId, System.Guid instanceId)
         {
-            WexflowEngine.ApproveWorkflow(workflowId, instanceId);
+            WexflowEngine.ApproveWorkflow(workflowId, instanceId, WexflowEngine.SuperAdminUsername);
         }
 
         public static void RejectWorkflow(int workflowId, System.Guid instanceId)
         {
-            WexflowEngine.RejectWorkflow(workflowId, instanceId);
+            WexflowEngine.RejectWorkflow(workflowId, instanceId, WexflowEngine.SuperAdminUsername);
         }
 
         public static Core.Workflow GetWorkflow(int workflowId)
