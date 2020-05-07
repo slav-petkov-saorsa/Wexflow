@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using Wexflow.Core;
@@ -87,6 +86,12 @@ namespace Wexflow.Tasks.ApproveRecord
                                 };
                                 Workflow.Database.InsertNotification(notification);
                                 Info($"ApproveRecord.OnStart: User {assignedTo.Username} notified for the start of approval process on the record {record.GetDbId()} - {record.Name}.");
+
+                                // assign the record
+                                record.AssignedTo = assignedTo.GetDbId();
+                                record.AssignedOn = DateTime.Now;
+                                Workflow.Database.UpdateRecord(record.GetDbId(), record);
+                                Info($"Record {record.GetDbId()} - {record.Name} assigned to {assignedTo.Username}.");
 
                                 IsWaitingForApproval = true;
                                 Workflow.IsWaitingForApproval = true;
