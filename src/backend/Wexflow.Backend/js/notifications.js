@@ -171,7 +171,6 @@
                                                         }
                                                     }, function () { }, "", auth);
 
-
                                                     break;
                                                 }
                                             }
@@ -252,7 +251,6 @@
                                                                 Common.toastError("An error occured while notifying the assignor.");
                                                             }
                                                         }, function () { }, "", auth);
-
 
                                                         break;
                                                     }
