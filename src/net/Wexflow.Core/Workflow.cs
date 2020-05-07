@@ -1305,7 +1305,11 @@ namespace Wexflow.Core
             {
                 if (!task.IsEnabled) continue;
                 if (task.IsStopped) break;
-                if (IsApproval && IsRejected) break;
+                if (IsApproval && IsRejected)
+                {
+                    Logs.AddRange(task.Logs);
+                    continue;
+                }
                 var status = task.Run();
                 Logs.AddRange(task.Logs);
                 success &= status.Status == Status.Success;

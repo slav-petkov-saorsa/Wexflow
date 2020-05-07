@@ -140,10 +140,15 @@ namespace Wexflow.Tasks.ApproveRecord
                                         {
                                             ClearFiles();
                                             Files.Add(new FileInf(latestVersion.FilePath, Id));
-                                            foreach (var task in tasks)
-                                            {
-                                                task.Run();
-                                            }
+                                        }
+
+                                        foreach (var task in tasks)
+                                        {
+                                            task.Run();
+                                        }
+
+                                        if (latestVersion != null)
+                                        {
                                             Files.RemoveAll(f => f.Path == latestVersion.FilePath);
                                         }
 
@@ -171,10 +176,15 @@ namespace Wexflow.Tasks.ApproveRecord
                                         {
                                             ClearFiles();
                                             Files.Add(new FileInf(latestVersion.FilePath, Id));
-                                            foreach (var task in tasks)
-                                            {
-                                                task.Run();
-                                            }
+                                        }
+
+                                        foreach (var task in tasks)
+                                        {
+                                            task.Run();
+                                        }
+
+                                        if (latestVersion != null)
+                                        {
                                             Files.RemoveAll(f => f.Path == latestVersion.FilePath);
                                         }
 
@@ -202,10 +212,15 @@ namespace Wexflow.Tasks.ApproveRecord
                                         {
                                             ClearFiles();
                                             Files.Add(new FileInf(latestVersion.FilePath, Id));
-                                            foreach (var task in tasks)
-                                            {
-                                                task.Run();
-                                            }
+                                        }
+
+                                        foreach (var task in tasks)
+                                        {
+                                            task.Run();
+                                        }
+
+                                        if (latestVersion != null)
+                                        {
                                             Files.RemoveAll(f => f.Path == latestVersion.FilePath);
                                         }
 
@@ -267,10 +282,15 @@ namespace Wexflow.Tasks.ApproveRecord
                         {
                             ClearFiles();
                             Files.Add(new FileInf(latestVersion.FilePath, Id));
-                            foreach (var task in tasks)
-                            {
-                                task.Run();
-                            }
+                        }
+
+                        foreach (var task in tasks)
+                        {
+                            task.Run();
+                        }
+
+                        if (latestVersion != null)
+                        {
                             Files.RemoveAll(f => f.Path == latestVersion.FilePath);
                         }
                     }
