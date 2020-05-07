@@ -51,6 +51,22 @@ namespace Wexflow.Core
         /// </summary>
         public string DbId { get; private set; }
         /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string StartedBy { get; private set; }
+        /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string ApprovedBy { get; private set; }
+        /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string RejectedBy { get; private set; }
+        /// <summary>
+        /// Username of the user that started the workflow.
+        /// </summary>
+        public string StoppedBy { get; private set; }
+        /// <summary>
         /// Workflow file path.
         /// </summary>
         public string FilePath { get; set; }
@@ -62,10 +78,6 @@ namespace Wexflow.Core
         /// Wexflow temp folder.
         /// </summary>
         public string WexflowTempFolder { get; private set; }
-        /// <summary>
-        /// Workflows temp folder used for global variables parsing.
-        /// </summary>
-        public string WorkflowsTempFolder { get; private set; }
         /// <summary>
         /// Workflow temp folder.
         /// </summary>
@@ -229,7 +241,6 @@ namespace Wexflow.Core
         /// <param name="dbId">Database ID.</param>
         /// <param name="xml">XML of the workflow.</param>
         /// <param name="wexflowTempFolder">Wexflow temp folder.</param>
-        /// <param name="workflowsTempFolder">Workflows temp folder.</param>
         /// <param name="tasksFolder">Tasks folder.</param>
         /// <param name="approvalFolder">Approval folder.</param>
         /// <param name="xsdPath">XSD path.</param>
@@ -242,7 +253,6 @@ namespace Wexflow.Core
             , string dbId
             , string xml
             , string wexflowTempFolder
-            , string workflowsTempFolder
             , string tasksFolder
             , string approvalFolder
             , string xsdPath
@@ -259,7 +269,6 @@ namespace Wexflow.Core
             DbId = dbId;
             Xml = xml;
             WexflowTempFolder = wexflowTempFolder;
-            WorkflowsTempFolder = workflowsTempFolder;
             TasksFolder = tasksFolder;
             ApprovalFolder = approvalFolder;
             XsdPath = xsdPath;
@@ -886,11 +895,13 @@ namespace Wexflow.Core
         /// <summary>
         /// Starts this workflow.
         /// </summary>
+        /// <param name="startedBy">Username of the user that started the workflow.</param>
         /// <returns>Instance Id.</returns>
-        public Guid StartAsync()
+        public Guid StartAsync(string startedBy)
         {
             if (IsRunning && !EnableParallelJobs)
             {
+                StartedBy = startedBy;
                 var job = new Job { Workflow = this, QueuedOn = DateTime.Now };
                 _jobsQueue.Enqueue(job);
                 return Guid.Empty;
@@ -904,20 +915,21 @@ namespace Wexflow.Core
                     , DbId
                     , Xml
                     , WexflowTempFolder
-                    , WorkflowsTempFolder
                     , TasksFolder
                     , ApprovalFolder
                     , XsdPath
                     , Database
                     , GlobalVariables
                     );
-                return workflow.StartAsync();
+                workflow.StartedBy = startedBy;
+                return workflow.StartAsync(startedBy);
             }
 
             StartedOn = DateTime.Now;
+            StartedBy = startedBy;
             var instanceId = Guid.NewGuid();
             var warning = false;
-            var thread = new Thread(() => StartSync(instanceId, ref warning));
+            var thread = new Thread(() => StartSync(startedBy, instanceId, ref warning));
 
             _thread = thread;
             thread.Start();
@@ -925,11 +937,18 @@ namespace Wexflow.Core
             return InstanceId;
         }
 
-        public bool StartSync(Guid instanceId, ref bool resultWarning)
+        /// <summary>
+        /// Starts this workflow synchronously.
+        /// </summary>
+        /// <param name="startedBy">Username of the user that started the workflow.</param>
+        /// <param name="instanceId">Instance id.</param>
+        /// <param name="resultWarning">Indicates whether the final result is warning or not.</param>
+        public bool StartSync(string startedBy, Guid instanceId, ref bool resultWarning)
         {
             var resultSuccess = true;
 
             StartedOn = DateTime.Now;
+            StartedBy = startedBy;
             InstanceId = instanceId;
             Jobs.Add(InstanceId, this);
 
@@ -1152,7 +1171,6 @@ namespace Wexflow.Core
                 Logs.Clear();
                 foreach (List<FileInf> files in FilesPerTask.Values) files.Clear();
                 foreach (List<Entity> entities in EntitiesPerTask.Values) entities.Clear();
-                _thread = null;
                 IsRunning = false;
                 IsRejected = false;
                 GC.Collect();
@@ -1163,11 +1181,14 @@ namespace Wexflow.Core
                 if (_jobsQueue.Count > 0)
                 {
                     var job = _jobsQueue.Dequeue();
-                    job.Workflow.StartAsync();
+                    job.Workflow.StartAsync(startedBy);
                 }
                 else
                 {
-                    Load(Xml); // Reload the original workflow
+                    if (!_stopCalled)
+                    {
+                        Load(Xml); // Reload the original workflow
+                    }
                     RestVariables.Clear();
                 }
             }
@@ -1293,7 +1314,11 @@ namespace Wexflow.Core
             {
                 if (!task.IsEnabled) continue;
                 if (task.IsStopped) break;
-                if (IsApproval && IsRejected) break;
+                if (IsApproval && IsRejected)
+                {
+                    Logs.AddRange(task.Logs);
+                    continue;
+                }
                 var status = task.Run();
                 Logs.AddRange(task.Logs);
                 success &= status.Status == Status.Success;
@@ -1594,18 +1619,24 @@ namespace Wexflow.Core
         /// <summary>
         /// Stops this workflow.
         /// </summary>
-        public bool Stop()
+        /// <param name="stoppedBy">Username of the user who stopped the workflow.</param>
+        public bool Stop(string stoppedBy)
         {
             if (IsRunning)
             {
                 try
                 {
+                    _stopCalled = true;
+                    StoppedBy = stoppedBy;
                     foreach (var task in Tasks)
                     {
                         task.Stop();
+                    }
+                    _thread.Join();
+                    foreach (var task in Tasks)
+                    {
                         Logs.AddRange(task.Logs);
                     }
-                    _stopCalled = true;
                     var logs = string.Join("\r\n", Logs);
                     IsWaitingForApproval = false;
                     Database.DecrementRunningCount();
@@ -1626,8 +1657,10 @@ namespace Wexflow.Core
                     if (_jobsQueue.Count > 0)
                     {
                         var job = _jobsQueue.Dequeue();
-                        job.Workflow.StartAsync();
+                        job.Workflow.StartAsync(StartedBy);
                     }
+
+                    Load(Xml); // Reload the original workflow
 
                     return true;
                 }
@@ -1710,10 +1743,12 @@ namespace Wexflow.Core
         /// <summary>
         /// Approves the current workflow.
         /// </summary>
-        public void Approve()
+        /// <param name="approvedBy">Username of the user who approved the workflow.</param>
+        public void Approve(string approvedBy)
         {
             if (IsApproval)
             {
+                ApprovedBy = approvedBy;
                 var task = Tasks.Where(t => t.IsWaitingForApproval).First();
                 var dir = Path.Combine(ApprovalFolder, Id.ToString(), InstanceId.ToString(), task.Id.ToString());
                 Directory.CreateDirectory(dir);
@@ -1725,10 +1760,11 @@ namespace Wexflow.Core
         /// <summary>
         /// Rejects the current workflow.
         /// </summary>
-        public void Reject()
+        public void Reject(string rejectedBy)
         {
             if (IsApproval)
             {
+                RejectedBy = rejectedBy;
                 IsRejected = true;
             }
         }

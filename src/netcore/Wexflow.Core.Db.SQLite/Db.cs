@@ -7,8 +7,8 @@ namespace Wexflow.Core.Db.SQLite
 {
     public sealed class Db : Core.Db.Db
     {
-        private static readonly string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
         private static readonly object padlock = new object();
+        private static readonly string dateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
         private static string connectionString;
 
@@ -87,7 +87,6 @@ namespace Wexflow.Core.Db.SQLite
                 }
             }
 
-
             // Entries
             ClearEntries();
 
@@ -106,7 +105,6 @@ namespace Wexflow.Core.Db.SQLite
                     }
                 }
             }
-
         }
 
         public override bool CheckUserWorkflow(string userId, string workflowId)
@@ -387,7 +385,7 @@ namespace Wexflow.Core.Db.SQLite
                         + " FROM " + Core.Db.Entry.DocumentName
                         + " WHERE " + "(LOWER(" + Entry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + Entry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(DateTimeFormat) + "' AND '" + to.ToString(DateTimeFormat) + "')"
+                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(dateTimeFormat) + "' AND '" + to.ToString(dateTimeFormat) + "')"
                         + " ORDER BY ");
 
                     switch (eo)
@@ -498,7 +496,7 @@ namespace Wexflow.Core.Db.SQLite
                         + " FROM " + Core.Db.Entry.DocumentName
                         + " WHERE " + "(LOWER(" + Entry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + Entry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(DateTimeFormat) + "' AND '" + to.ToString(DateTimeFormat) + "');", conn))
+                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(dateTimeFormat) + "' AND '" + to.ToString(dateTimeFormat) + "');", conn))
                     {
 
                         var count = (long)command.ExecuteScalar();
@@ -836,7 +834,7 @@ namespace Wexflow.Core.Db.SQLite
                         + " FROM " + Core.Db.HistoryEntry.DocumentName
                         + " WHERE " + "(LOWER(" + HistoryEntry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + HistoryEntry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(DateTimeFormat) + "' AND '" + to.ToString(DateTimeFormat) + "')"
+                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(dateTimeFormat) + "' AND '" + to.ToString(dateTimeFormat) + "')"
                         + " ORDER BY ");
 
                     switch (heo)
@@ -967,7 +965,7 @@ namespace Wexflow.Core.Db.SQLite
                         + " FROM " + Core.Db.HistoryEntry.DocumentName
                         + " WHERE " + "(LOWER(" + HistoryEntry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + HistoryEntry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(DateTimeFormat) + "' AND '" + to.ToString(DateTimeFormat) + "');", conn))
+                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN '" + from.ToString(dateTimeFormat) + "' AND '" + to.ToString(dateTimeFormat) + "');", conn))
                     {
 
                         var count = (long)command.ExecuteScalar();
@@ -1163,7 +1161,7 @@ namespace Wexflow.Core.Db.SQLite
             }
         }
 
-        public override Core.Db.User GetUserByUserId(string userId)
+        public override Core.Db.User GetUserById(string userId)
         {
             lock (padlock)
             {
@@ -1513,7 +1511,7 @@ namespace Wexflow.Core.Db.SQLite
                         + "'" + (entry.Name ?? "").Replace("'", "''") + "'" + ", "
                         + "'" + (entry.Description ?? "").Replace("'", "''") + "'" + ", "
                         + (int)entry.LaunchType + ", "
-                        + "'" + entry.StatusDate.ToString(DateTimeFormat) + "'" + ", "
+                        + "'" + entry.StatusDate.ToString(dateTimeFormat) + "'" + ", "
                         + (int)entry.Status + ", "
                         + entry.WorkflowId + ", "
                         + "'" + (entry.JobId ?? "") + "', "
@@ -1546,7 +1544,7 @@ namespace Wexflow.Core.Db.SQLite
                         + "'" + (entry.Name ?? "").Replace("'", "''") + "'" + ", "
                         + "'" + (entry.Description ?? "").Replace("'", "''") + "'" + ", "
                         + (int)entry.LaunchType + ", "
-                        + "'" + entry.StatusDate.ToString(DateTimeFormat) + "'" + ", "
+                        + "'" + entry.StatusDate.ToString(dateTimeFormat) + "'" + ", "
                         + (int)entry.Status + ", "
                         + entry.WorkflowId + ", "
                         + "'" + (entry.Logs ?? "").Replace("'", "''") + "'" + ");"
@@ -1578,8 +1576,8 @@ namespace Wexflow.Core.Db.SQLite
                         + "'" + (user.Password ?? "").Replace("'", "''") + "'" + ", "
                         + (int)user.UserProfile + ", "
                         + "'" + (user.Email ?? "").Replace("'", "''") + "'" + ", "
-                        + "'" + DateTime.Now.ToString(DateTimeFormat) + "'" + ", "
-                        + (user.ModifiedOn == DateTime.MinValue ? "NULL" : "'" + user.ModifiedOn.ToString(DateTimeFormat) + "'") + ");"
+                        + "'" + DateTime.Now.ToString(dateTimeFormat) + "'" + ", "
+                        + (user.ModifiedOn == DateTime.MinValue ? "NULL" : "'" + user.ModifiedOn.ToString(dateTimeFormat) + "'") + ");"
                         , conn))
                     {
 
@@ -1645,7 +1643,7 @@ namespace Wexflow.Core.Db.SQLite
                         + Entry.ColumnName_Name + " = '" + (entry.Name ?? "").Replace("'", "''") + "', "
                         + Entry.ColumnName_Description + " = '" + (entry.Description ?? "").Replace("'", "''") + "', "
                         + Entry.ColumnName_LaunchType + " = " + (int)entry.LaunchType + ", "
-                        + Entry.ColumnName_StatusDate + " = '" + entry.StatusDate.ToString(DateTimeFormat) + "', "
+                        + Entry.ColumnName_StatusDate + " = '" + entry.StatusDate.ToString(dateTimeFormat) + "', "
                         + Entry.ColumnName_Status + " = " + (int)entry.Status + ", "
                         + Entry.ColumnName_WorkflowId + " = " + entry.WorkflowId + ", "
                         + Entry.ColumnName_JobId + " = '" + (entry.JobId ?? "") + "', "
@@ -1695,8 +1693,8 @@ namespace Wexflow.Core.Db.SQLite
                         + User.ColumnName_Password + " = '" + (user.Password ?? "").Replace("'", "''") + "', "
                         + User.ColumnName_UserProfile + " = " + (int)user.UserProfile + ", "
                         + User.ColumnName_Email + " = '" + (user.Email ?? "").Replace("'", "''") + "', "
-                        + User.ColumnName_CreatedOn + " = '" + user.CreatedOn.ToString(DateTimeFormat) + "', "
-                        + User.ColumnName_ModifiedOn + " = '" + DateTime.Now.ToString(DateTimeFormat) + "'"
+                        + User.ColumnName_CreatedOn + " = '" + user.CreatedOn.ToString(dateTimeFormat) + "', "
+                        + User.ColumnName_ModifiedOn + " = '" + DateTime.Now.ToString(dateTimeFormat) + "'"
                         + " WHERE "
                         + User.ColumnName_Id + " = " + int.Parse(id) + ";"
                         , conn))
@@ -1720,7 +1718,7 @@ namespace Wexflow.Core.Db.SQLite
                         + User.ColumnName_Username + " = '" + (username ?? "").Replace("'", "''") + "', "
                         + User.ColumnName_UserProfile + " = " + (int)up + ", "
                         + User.ColumnName_Email + " = '" + (email ?? "").Replace("'", "''") + "', "
-                        + User.ColumnName_ModifiedOn + " = '" + DateTime.Now.ToString(DateTimeFormat) + "'"
+                        + User.ColumnName_ModifiedOn + " = '" + DateTime.Now.ToString(dateTimeFormat) + "'"
                         + " WHERE "
                         + User.ColumnName_Id + " = " + int.Parse(userId) + ";"
                         , conn))
@@ -1814,9 +1812,103 @@ namespace Wexflow.Core.Db.SQLite
             }
         }
 
+        public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertRecord(Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateRecord(string recordId, Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteRecords(string[] recordIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Record GetRecord(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecords(string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertVersion(Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateVersion(string versionId, Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteVersions(string[] versionIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Version> GetVersions(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Version GetLatestVersion(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertNotification(Notification notification)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsRead(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsUnread(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNotifications(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasNotifications(string assignedTo)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Dispose()
         {
         }
-
     }
 }

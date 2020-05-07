@@ -34,7 +34,7 @@ namespace Wexflow.Server
             var wexflowSettingsFile = Config["WexflowSettingsFile"];
             superAdminUsername = Config["SuperAdminUsername"];
             var enableWorkflowsHotFolder = bool.Parse(Config["EnableWorkflowsHotFolder"]);
-            WexflowEngine = new WexflowEngine(wexflowSettingsFile, enableWorkflowsHotFolder);
+            WexflowEngine = new WexflowEngine(wexflowSettingsFile, enableWorkflowsHotFolder, superAdminUsername);
 
             if (enableWorkflowsHotFolder)
             {
@@ -92,7 +92,7 @@ namespace Wexflow.Server
                         try
                         {
                             var admin = WexflowEngine.GetUser(superAdminUsername);
-                            WexflowEngine.SaveWorkflowFromFile(admin.GetId(), Core.Db.UserProfile.SuperAdministrator, path, true);
+                            WexflowEngine.SaveWorkflowFromFile(admin.GetDbId(), Core.Db.UserProfile.SuperAdministrator, path, true);
                         }
                         catch (Exception ex)
                         {
@@ -104,7 +104,7 @@ namespace Wexflow.Server
                         try
                         {
                             var admin = WexflowEngine.GetUser(superAdminUsername);
-                            WexflowEngine.SaveWorkflowFromFile(admin.GetId(), Core.Db.UserProfile.SuperAdministrator, path, true);
+                            WexflowEngine.SaveWorkflowFromFile(admin.GetDbId(), Core.Db.UserProfile.SuperAdministrator, path, true);
                         }
                         catch (Exception ex)
                         {

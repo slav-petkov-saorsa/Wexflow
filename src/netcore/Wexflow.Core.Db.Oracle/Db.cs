@@ -1129,7 +1129,7 @@ namespace Wexflow.Core.Db.Oracle
             }
         }
 
-        public override Core.Db.User GetUserByUserId(string userId)
+        public override Core.Db.User GetUserById(string userId)
         {
             lock (padlock)
             {
@@ -1810,9 +1810,103 @@ namespace Wexflow.Core.Db.Oracle
             }
         }
 
+        public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertRecord(Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateRecord(string recordId, Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteRecords(string[] recordIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Record GetRecord(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecords(string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertVersion(Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateVersion(string versionId, Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteVersions(string[] versionIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Version> GetVersions(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Version GetLatestVersion(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertNotification(Notification notification)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsRead(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsUnread(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNotifications(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasNotifications(string assignedTo)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Dispose()
         {
         }
-
     }
 }

@@ -14,7 +14,7 @@
 
         public long Id { get; set; }
 
-        public override string GetId()
+        public override string GetDbId()
         {
             return Id.ToString();
         }

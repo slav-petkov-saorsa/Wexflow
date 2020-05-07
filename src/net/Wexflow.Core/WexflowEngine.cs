@@ -847,6 +847,7 @@ namespace Wexflow.Core
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
         /// <param name="stoppedBy">Username of the user who stopped the workflow.</param>
+        /// <returns>Result.</returns>
         public bool StopWorkflow(int workflowId, Guid instanceId, string stoppedBy)
         {
             var wf = GetWorkflow(workflowId);
@@ -945,6 +946,7 @@ namespace Wexflow.Core
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
         /// <param name="approvedBy">Username of the user who approved the workflow.</param>
+        /// <returns>Result.</returns>
         public bool ApproveWorkflow(int workflowId, Guid instanceId, string approvedBy)
         {
             try
@@ -990,6 +992,7 @@ namespace Wexflow.Core
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
         /// <param name="rejectedBy">Username of the user who rejected the workflow.</param>
+        /// <returns>Result.</returns>
         public bool RejectWorkflow(int workflowId, Guid instanceId, string rejectedBy)
         {
             try

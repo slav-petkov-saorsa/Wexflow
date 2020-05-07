@@ -13,7 +13,7 @@ namespace Wexflow.Core.Db.MongoDB
 
         public Db(string connectionString) : base(connectionString)
         {
-            var databaseName = string.Empty;
+            var database = string.Empty;
             var mongoUrl = string.Empty;
             var enabledSslProtocols = false;
             var sslProtocols = SslProtocols.None;
@@ -26,7 +26,7 @@ namespace Wexflow.Core.Db.MongoDB
                     string connPart = part.TrimStart(' ').TrimEnd(' ');
                     if (connPart.StartsWith("Database="))
                     {
-                        databaseName = connPart.Replace("Database=", string.Empty);
+                        database = connPart.Replace("Database=", string.Empty);
                     }
                     else if (connPart.StartsWith("MongoUrl="))
                     {
@@ -51,7 +51,7 @@ namespace Wexflow.Core.Db.MongoDB
             }
 
             var client = new MongoClient(settings);
-            db = client.GetDatabase(databaseName);
+            db = client.GetDatabase(database);
         }
 
         public override void Init()
@@ -59,36 +59,31 @@ namespace Wexflow.Core.Db.MongoDB
             // StatusCount
             ClearStatusCount();
 
-            lock (padlock)
+            var statusCountCol = db.GetCollection<StatusCount>(Core.Db.StatusCount.DocumentName);
+
+            var statusCount = new StatusCount
             {
-                var statusCountCol = db.GetCollection<StatusCount>(Core.Db.StatusCount.DocumentName);
+                PendingCount = 0,
+                RunningCount = 0,
+                DoneCount = 0,
+                FailedCount = 0,
+                WarningCount = 0,
+                DisabledCount = 0,
+                StoppedCount = 0
+            };
 
-                var statusCount = new StatusCount
-                {
-                    PendingCount = 0,
-                    RunningCount = 0,
-                    DoneCount = 0,
-                    FailedCount = 0,
-                    WarningCount = 0,
-                    DisabledCount = 0,
-                    StoppedCount = 0
-                };
-
-                statusCountCol.InsertOne(statusCount);
-            }
+            statusCountCol.InsertOne(statusCount);
 
             // Entries
             ClearEntries();
 
             // Insert default user if necessary
-            lock (padlock)
+            var usersCol = db.GetCollection<User>(Core.Db.User.DocumentName);
+            if (usersCol.CountDocuments(FilterDefinition<User>.Empty) == 0)
             {
-                var usersCol = db.GetCollection<User>(Core.Db.User.DocumentName);
-                if (usersCol.CountDocuments(FilterDefinition<User>.Empty) == 0)
-                {
-                    InsertDefaultUser();
-                }
+                InsertDefaultUser();
             }
+
         }
 
         public override IEnumerable<Core.Db.Workflow> GetWorkflows()
@@ -320,7 +315,7 @@ namespace Wexflow.Core.Db.MongoDB
             }
         }
 
-        public override Core.Db.User GetUserByUserId(string userId)
+        public override Core.Db.User GetUserById(string userId)
         {
             lock (padlock)
             {
@@ -935,6 +930,101 @@ namespace Wexflow.Core.Db.MongoDB
                 var entry = col.Find(e => e.Id == entryId).First();
                 return entry.Logs;
             }
+        }
+
+        public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertRecord(Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateRecord(string recordId, Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteRecords(string[] recordIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Record GetRecord(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecords(string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertVersion(Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateVersion(string versionId, Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteVersions(string[] versionIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Version> GetVersions(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Version GetLatestVersion(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertNotification(Notification notification)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsRead(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsUnread(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNotifications(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasNotifications(string assignedTo)
+        {
+            throw new NotImplementedException();
         }
 
         public override void Dispose()

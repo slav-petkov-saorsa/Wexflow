@@ -1,6 +1,7 @@
 ﻿using Nancy;
 using Nancy.Extensions;
 using Nancy.IO;
+using Nancy.Responses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -98,6 +99,30 @@ namespace Wexflow.Server
             UploadWorkflow();
 
             //
+            // Records
+            //
+            UploadVerion();
+            DeleteVersions();
+            DeleteTempVersionFile();
+            DeleteTempVersionFiles();
+            DownloadFile();
+            SaveRecord();
+            DeleteRecords();
+            SearchRecords();
+            GetRecordsCreatedBy();
+            SearchRecordsCreatedByOrAssignedTo();
+
+            //
+            // Notifications
+            //
+            HasNotifications();
+            MarkNotificationsAsRead();
+            MarkNotificationsAsUnread();
+            DeleteNotifications();
+            SearchNotifications();
+            Notify();
+
+            //
             // History
             //
             GetHistoryEntriesCountByDate();
@@ -161,7 +186,7 @@ namespace Wexflow.Server
                     }
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
-                        workflows = WexflowServer.WexflowEngine.GetUserWorkflows(user.GetId())
+                        workflows = WexflowServer.WexflowEngine.GetUserWorkflows(user.GetDbId())
                                                 .ToList()
                                                 .Where(wf =>
                                                     wf.Name.ToUpper().Contains(keywordToUpper)
@@ -214,8 +239,8 @@ namespace Wexflow.Server
                             .Where(wf =>
                                 wf.IsApproval &&
                                 (wf.Name.ToUpper().Contains(keywordToUpper)
-                                || wf.Description.ToUpper().Contains(keywordToUpper))
-                                || wf.Id.ToString().Contains(keywordToUpper))
+                                || wf.Description.ToUpper().Contains(keywordToUpper)
+                                || wf.Id.ToString().Contains(keywordToUpper)))
                             .Select(wf => new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath,
                                 (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description, wf.IsRunning, wf.IsPaused,
                                 wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
@@ -226,13 +251,13 @@ namespace Wexflow.Server
                     }
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
-                        workflows = WexflowServer.WexflowEngine.GetUserWorkflows(user.GetId())
+                        workflows = WexflowServer.WexflowEngine.GetUserWorkflows(user.GetDbId())
                                                 .ToList()
                                                 .Where(wf =>
                                                     wf.IsApproval &&
                                                     (wf.Name.ToUpper().Contains(keywordToUpper)
-                                                    || wf.Description.ToUpper().Contains(keywordToUpper))
-                                                    || wf.Id.ToString().Contains(keywordToUpper))
+                                                    || wf.Description.ToUpper().Contains(keywordToUpper)
+                                                    || wf.Id.ToString().Contains(keywordToUpper)))
                                                 .Select(wf => new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath,
                                                     (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description, wf.IsRunning, wf.IsPaused,
                                                     wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
@@ -294,7 +319,7 @@ namespace Wexflow.Server
                         }
                         else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                         {
-                            var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), wf.DbId);
+                            var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), wf.DbId);
                             if (check)
                             {
                                 var workflowStr = JsonConvert.SerializeObject(workflow);
@@ -366,7 +391,7 @@ namespace Wexflow.Server
                             }
                             else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                             {
-                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), wf.DbId);
+                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), wf.DbId);
                                 if (check)
                                 {
                                     var workflowStr = JsonConvert.SerializeObject(workflow);
@@ -434,7 +459,7 @@ namespace Wexflow.Server
                             }
                             else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                             {
-                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), wf.DbId);
+                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), wf.DbId);
                                 if (check)
                                 {
                                     var jobsStr = JsonConvert.SerializeObject(jobs);
@@ -481,7 +506,7 @@ namespace Wexflow.Server
                 {
                     if (user.UserProfile == Core.Db.UserProfile.SuperAdministrator)
                     {
-                        var instanceId = WexflowServer.WexflowEngine.StartWorkflow(workflowId);
+                        var instanceId = WexflowServer.WexflowEngine.StartWorkflow(username, workflowId);
 
                         var resStr = JsonConvert.SerializeObject(instanceId.ToString());
                         var resBytes = Encoding.UTF8.GetBytes(resStr);
@@ -495,10 +520,10 @@ namespace Wexflow.Server
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (check)
                         {
-                            var instanceId = WexflowServer.WexflowEngine.StartWorkflow(workflowId);
+                            var instanceId = WexflowServer.WexflowEngine.StartWorkflow(username, workflowId);
 
                             var resStr = JsonConvert.SerializeObject(instanceId.ToString());
                             var resBytes = Encoding.UTF8.GetBytes(resStr);
@@ -551,7 +576,7 @@ namespace Wexflow.Server
                     {
                         workflow.RestVariables.Clear();
                         workflow.RestVariables.AddRange(vars);
-                        var instanceId = WexflowServer.WexflowEngine.StartWorkflow(workflowId);
+                        var instanceId = WexflowServer.WexflowEngine.StartWorkflow(username, workflowId);
 
                         var resStr = JsonConvert.SerializeObject(instanceId.ToString());
                         var resBytes = Encoding.UTF8.GetBytes(resStr);
@@ -565,12 +590,12 @@ namespace Wexflow.Server
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
                         var workflowDbId = workflow.DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (check)
                         {
                             workflow.RestVariables.Clear();
                             workflow.RestVariables.AddRange(vars);
-                            var instanceId = WexflowServer.WexflowEngine.StartWorkflow(workflowId);
+                            var instanceId = WexflowServer.WexflowEngine.StartWorkflow(username, workflowId);
 
                             var resStr = JsonConvert.SerializeObject(instanceId.ToString());
                             var resBytes = Encoding.UTF8.GetBytes(resStr);
@@ -612,15 +637,15 @@ namespace Wexflow.Server
                 {
                     if (user.UserProfile == Core.Db.UserProfile.SuperAdministrator)
                     {
-                        res = WexflowServer.WexflowEngine.StopWorkflow(workflowId, instanceId);
+                        res = WexflowServer.WexflowEngine.StopWorkflow(workflowId, instanceId, username);
                     }
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (check)
                         {
-                            res = WexflowServer.WexflowEngine.StopWorkflow(workflowId, instanceId);
+                            res = WexflowServer.WexflowEngine.StopWorkflow(workflowId, instanceId, username);
                         }
                     }
                 }
@@ -662,7 +687,7 @@ namespace Wexflow.Server
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (check)
                         {
                             res = WexflowServer.WexflowEngine.SuspendWorkflow(workflowId, instanceId);
@@ -705,7 +730,7 @@ namespace Wexflow.Server
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (check)
                         {
                             WexflowServer.WexflowEngine.ResumeWorkflow(workflowId, instanceId);
@@ -741,15 +766,15 @@ namespace Wexflow.Server
                 {
                     if (user.UserProfile == Core.Db.UserProfile.SuperAdministrator)
                     {
-                        res = WexflowServer.WexflowEngine.ApproveWorkflow(workflowId, instanceId);
+                        res = WexflowServer.WexflowEngine.ApproveWorkflow(workflowId, instanceId, username);
                     }
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (check)
                         {
-                            res = WexflowServer.WexflowEngine.ApproveWorkflow(workflowId, instanceId);
+                            res = WexflowServer.WexflowEngine.ApproveWorkflow(workflowId, instanceId, username);
                         }
                     }
                 }
@@ -786,15 +811,15 @@ namespace Wexflow.Server
                 {
                     if (user.UserProfile == Core.Db.UserProfile.SuperAdministrator)
                     {
-                        res = WexflowServer.WexflowEngine.RejectWorkflow(workflowId, instanceId);
+                        res = WexflowServer.WexflowEngine.RejectWorkflow(workflowId, instanceId, username);
                     }
                     else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (check)
                         {
-                            res = WexflowServer.WexflowEngine.RejectWorkflow(workflowId, instanceId);
+                            res = WexflowServer.WexflowEngine.RejectWorkflow(workflowId, instanceId, username);
                         }
                     }
                 }
@@ -1397,7 +1422,6 @@ namespace Wexflow.Server
                               , "-1"
                               , xdoc.ToString()
                               , WexflowServer.WexflowEngine.TempFolder
-                              , WexflowServer.WexflowEngine.WorkflowsTempFolder
                               , WexflowServer.WexflowEngine.TasksFolder
                               , WexflowServer.WexflowEngine.ApprovalFolder
                               , WexflowServer.WexflowEngine.XsdPath
@@ -1459,7 +1483,7 @@ namespace Wexflow.Server
                     {
                         if (user.UserProfile == Core.Db.UserProfile.SuperAdministrator)
                         {
-                            var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, xml, true);
+                            var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, xml, true);
                             if (id == "-1")
                             {
                                 res = false;
@@ -1476,10 +1500,10 @@ namespace Wexflow.Server
                             if (workflow != null)
                             {
                                 var workflowDbId = workflow.DbId;
-                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                                 if (check)
                                 {
-                                    var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, xml, true);
+                                    var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, xml, true);
                                     if (id == "-1")
                                     {
                                         res = false;
@@ -1492,7 +1516,7 @@ namespace Wexflow.Server
                             }
                             else
                             {
-                                var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, xml, true);
+                                var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, xml, true);
                                 if (id == "-1")
                                 {
                                     res = false;
@@ -1962,7 +1986,7 @@ namespace Wexflow.Server
                 }
 
                 xdoc.Add(xwf);
-                var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, xdoc.ToString(), true);
+                var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, xdoc.ToString(), true);
 
                 if (id == "-1")
                 {
@@ -2206,7 +2230,7 @@ namespace Wexflow.Server
                         xdoc.Root.Add(xeg);
                     }
 
-                    var qid = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, xdoc.ToString(), true);
+                    var qid = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, xdoc.ToString(), true);
                     if (qid == "-1")
                     {
                         return new SaveResult { FilePath = path, Result = false };
@@ -2267,7 +2291,7 @@ namespace Wexflow.Server
                     if (user.UserProfile == Core.Db.UserProfile.Administrator && !isNew)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == currentWorkflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (!check)
                         {
                             return GetFalseResponse();
@@ -2332,7 +2356,7 @@ namespace Wexflow.Server
                     if (user.UserProfile == Core.Db.UserProfile.Administrator && wf != null)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (!check)
                         {
                             return GetFalseResponse();
@@ -2345,7 +2369,7 @@ namespace Wexflow.Server
                         var xwfEnabled = xdoc.Root.XPathSelectElement("wf:Settings/wf:Setting[@name='enabled']",
                         wf.XmlNamespaceManager);
                         xwfEnabled.Attribute("value").Value = false.ToString().ToLower();
-                        var qid = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, xdoc.ToString(), true);
+                        var qid = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, xdoc.ToString(), true);
 
                         if (qid != "-1")
                         {
@@ -2409,7 +2433,7 @@ namespace Wexflow.Server
                     if (user.UserProfile == Core.Db.UserProfile.Administrator && wf != null)
                     {
                         var workflowDbId = WexflowServer.WexflowEngine.Workflows.First(w => w.Id == workflowId).DbId;
-                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowDbId);
+                        var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowDbId);
                         if (!check)
                         {
                             return GetFalseResponse();
@@ -2422,7 +2446,7 @@ namespace Wexflow.Server
                         var xwfEnabled = xdoc.Root.XPathSelectElement("wf:Settings/wf:Setting[@name='enabled']",
                         wf.XmlNamespaceManager);
                         xwfEnabled.Attribute("value").Value = true.ToString().ToLower();
-                        var qid = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, xdoc.ToString(), true);
+                        var qid = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, xdoc.ToString(), true);
 
                         if (qid != "-1")
                         {
@@ -2503,7 +2527,7 @@ namespace Wexflow.Server
                         }
                         else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                         {
-                            var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), workflowId.ToString());
+                            var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), workflowId.ToString());
                             if (check)
                             {
                                 isAuthorized = true;
@@ -2516,7 +2540,7 @@ namespace Wexflow.Server
                     {
                         if (isXml)
                         {
-                            var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetId(), user.UserProfile, fileValue, true);
+                            var id = WexflowServer.WexflowEngine.SaveWorkflow(user.GetDbId(), user.UserProfile, fileValue, true);
                             res = id != "-1";
 
                             if (WexflowServer.WexflowEngine.EnableWorkflowsHotFolder)
@@ -2602,7 +2626,7 @@ namespace Wexflow.Server
                             }
                             else if (user.UserProfile == Core.Db.UserProfile.Administrator)
                             {
-                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), wf.DbId);
+                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), wf.DbId);
                                 if (check)
                                 {
                                     WexflowServer.WexflowEngine.DeleteWorkflow(wf.DbId);
@@ -3019,7 +3043,7 @@ namespace Wexflow.Server
                     {
                         var u = new User
                         {
-                            Id = user.GetId(),
+                            Id = user.GetDbId(),
                             Username = user.Username,
                             Password = user.Password,
                             UserProfile = (UserProfile)((int)user.UserProfile),
@@ -3074,7 +3098,7 @@ namespace Wexflow.Server
 
                     q = users.Select(u => new User
                     {
-                        Id = u.GetId(),
+                        Id = u.GetDbId(),
                         Username = u.Username,
                         Password = u.Password,
                         UserProfile = (UserProfile)((int)u.UserProfile),
@@ -3122,7 +3146,7 @@ namespace Wexflow.Server
 
                     q = users.Select(u => new User
                     {
-                        Id = u.GetId(),
+                        Id = u.GetDbId(),
                         Username = u.Username,
                         Password = u.Password,
                         UserProfile = (UserProfile)((int)u.UserProfile),
@@ -3958,7 +3982,7 @@ namespace Wexflow.Server
                             var tres = true;
                             foreach (var id in workflowDbIds)
                             {
-                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetId(), id);
+                                var check = WexflowServer.WexflowEngine.CheckUserWorkflow(user.GetDbId(), id);
                                 if (check)
                                 {
                                     try
@@ -4098,6 +4122,977 @@ namespace Wexflow.Server
                 }
             });
 
+        }
+
+        /// <summary>
+        /// Uploads a version.
+        /// </summary>
+        private void UploadVerion()
+        {
+            Post(Root + "uploadVersion", args =>
+            {
+                try
+                {
+                    var ressr = new SaveResult { FilePath = string.Empty, FileName = string.Empty, Result = false };
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var file = Request.Files.Single();
+                    var fileName = file.Name;
+                    var strWriter = new StringWriter();
+                    var ms = new MemoryStream();
+                    file.Value.CopyTo(ms);
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var recordId = Request.Query["r"].ToString();
+                        var guid = Guid.NewGuid().ToString();
+                        var dir = Path.Combine(WexflowServer.WexflowEngine.RecordsTempFolder, recordId, guid);
+                        if (!Directory.Exists(dir))
+                        {
+                            Directory.CreateDirectory(dir);
+                        }
+                        var filePath = Path.Combine(dir, fileName);
+                        //File.Create(filePath);
+                        File.WriteAllBytes(filePath, ms.ToArray());
+                        ressr.Result = true;
+                        ressr.FilePath = filePath;
+                        ressr.FileName = Path.GetFileName(filePath);
+                        //var version = new Core.Db.Version
+                        //{
+                        //    RecordId = recordId,
+                        //    FilePath = filePath
+                        //};
+                        //var versionId = WexflowServer.WexflowEngine.SaveVersion(version);
+                        //if (versionId != "-1")
+                        //{
+                        //    ressr.Result = true;
+                        //    ressr.FilePath = filePath;
+                        //}
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(ressr);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(new SaveResult { FilePath = string.Empty, Result = false });
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Downloads a file.
+        /// </summary>
+        private void DownloadFile()
+        {
+            Get(Root + "downloadFile", args =>
+            {
+                try
+                {
+                    var path = Request.Query["p"].ToString();
+                    var file = new FileStream(path, FileMode.Open);
+                    string fileName = Path.GetFileName(path);
+
+                    var response = new StreamResponse(() => file, MimeTypes.GetMimeType(fileName));
+                    return response.AsAttachment(fileName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Deletes versions.
+        /// </summary>
+        private void DeleteVersions()
+        {
+            Post(Root + "deleteVersions", args =>
+            {
+                try
+                {
+                    var res = false;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var o = JObject.Parse(json);
+                        var versionIds = JsonConvert.DeserializeObject<string[]>(((JArray)o.SelectToken("versionsToDelete")).ToString());
+                        res = WexflowServer.WexflowEngine.DeleteVersions(versionIds);
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Deletes a temp version file.
+        /// </summary>
+        private void DeleteTempVersionFile()
+        {
+            Post(Root + "deleteTempVersionFile", args =>
+            {
+                try
+                {
+                    var res = false;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        string path = Request.Query["p"].ToString();
+
+                        if (path.Contains(WexflowServer.WexflowEngine.RecordsTempFolder))
+                        {
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                                res = true;
+
+                                var parentDir = Path.GetDirectoryName(path);
+                                if (WexflowServer.WexflowEngine.IsDirectoryEmpty(parentDir))
+                                {
+                                    Directory.Delete(parentDir);
+                                    var recordTempDir = Directory.GetParent(parentDir).FullName;
+                                    if (WexflowServer.WexflowEngine.IsDirectoryEmpty(recordTempDir))
+                                    {
+                                        Directory.Delete(recordTempDir);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Deletes a temp version file.
+        /// </summary>
+        private void DeleteTempVersionFiles()
+        {
+            Post(Root + "deleteTempVersionFiles", args =>
+            {
+                try
+                {
+                    var res = true;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var o = JObject.Parse(json);
+                        var versions = JsonConvert.DeserializeObject<Contracts.Version[]>(o.Value<JArray>("Versions").ToString());
+
+                        foreach (var version in versions)
+                        {
+                            var path = version.FilePath;
+
+                            try
+                            {
+                                if (path.Contains(WexflowServer.WexflowEngine.RecordsTempFolder))
+                                {
+                                    if (File.Exists(path))
+                                    {
+                                        File.Delete(path);
+
+                                        var parentDir = Path.GetDirectoryName(path);
+                                        if (WexflowServer.WexflowEngine.IsDirectoryEmpty(parentDir))
+                                        {
+                                            Directory.Delete(parentDir);
+                                            var recordTempDir = Directory.GetParent(parentDir).FullName;
+                                            if (WexflowServer.WexflowEngine.IsDirectoryEmpty(recordTempDir))
+                                            {
+                                                Directory.Delete(recordTempDir);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                res = false;
+                            }
+                        }
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Saves a record.
+        /// </summary>
+        private void SaveRecord()
+        {
+            Post(Root + "saveRecord", args =>
+            {
+                try
+                {
+                    var res = false;
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var o = JObject.Parse(json);
+
+                        var id = o.Value<string>("Id");
+                        var name = o.Value<string>("Name");
+                        var description = o.Value<string>("Description");
+                        var startDate = o.Value<string>("StartDate");
+                        var endDate = o.Value<string>("EndDate");
+                        var comments = o.Value<string>("Comments");
+                        var approved = o.Value<bool>("Approved");
+                        var managerComments = o.Value<string>("ManagerComments");
+                        var modifiedBy = o.Value<string>("ModifiedBy");
+                        var modifiedOn = o.Value<string>("ModifiedOn");
+                        var createdBy = o.Value<string>("CreatedBy");
+                        var createdOn = o.Value<string>("CreatedOn");
+                        var assignedTo = o.Value<string>("AssignedTo");
+                        var assignedOn = o.Value<string>("AssignedOn");
+                        //var versions = o.Value<Contracts.Version[]>("Versions");
+                        var versions = JsonConvert.DeserializeObject<Contracts.Version[]>(o.Value<JArray>("Versions").ToString());
+
+                        var record = new Core.Db.Record
+                        {
+                            Name = name,
+                            Description = description,
+                            StartDate = string.IsNullOrEmpty(startDate) ? null : (DateTime?)DateTime.Parse(startDate),
+                            EndDate = string.IsNullOrEmpty(endDate) ? null : (DateTime?)DateTime.Parse(endDate),
+                            Comments = comments,
+                            Approved = approved,
+                            ManagerComments = managerComments,
+                            ModifiedBy = !string.IsNullOrEmpty(modifiedBy) ? WexflowServer.WexflowEngine.GetUser(modifiedBy).GetDbId() : null,
+                            ModifiedOn = string.IsNullOrEmpty(modifiedOn) ? null : (DateTime?)DateTime.Parse(modifiedOn),
+                            CreatedBy = !string.IsNullOrEmpty(createdBy) ? WexflowServer.WexflowEngine.GetUser(createdBy).GetDbId() : null,
+                            CreatedOn = !string.IsNullOrEmpty(createdOn) ? DateTime.Parse(createdOn) : DateTime.MinValue,
+                            AssignedTo = !string.IsNullOrEmpty(assignedTo) ? WexflowServer.WexflowEngine.GetUser(assignedTo).GetDbId() : null,
+                            AssignedOn = string.IsNullOrEmpty(assignedOn) ? null : (DateTime?)DateTime.Parse(assignedOn)
+                        };
+
+                        List<Core.Db.Version> recordVersions = new List<Core.Db.Version>();
+                        foreach (var version in versions)
+                        {
+                            recordVersions.Add(new Core.Db.Version
+                            {
+                                RecordId = version.RecordId,
+                                FilePath = version.FilePath
+                            });
+                        }
+
+                        var recordId = WexflowServer.WexflowEngine.SaveRecord(id, record, recordVersions);
+
+                        res = recordId != "-1";
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Deletes records
+        /// </summary>
+        private void DeleteRecords()
+        {
+            Post(Root + "deleteRecords", args =>
+            {
+                try
+                {
+                    var res = false;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var recordIds = JsonConvert.DeserializeObject<string[]>(JArray.Parse(json).ToString());
+                        res = WexflowServer.WexflowEngine.DeleteRecords(recordIds);
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Searches for records by keyword.
+        /// </summary>
+        private void SearchRecords()
+        {
+            Get(Root + "searchRecords", args =>
+            {
+                var auth = GetAuth(Request);
+                var username = auth.Username;
+                var password = auth.Password;
+
+                var keyword = Request.Query["s"].ToString();
+
+                var records = new Contracts.Record[] { };
+
+                var user = WexflowServer.WexflowEngine.GetUser(username);
+                if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                {
+                    var recordsArray = WexflowServer.WexflowEngine.GetRecords(keyword);
+                    List<Contracts.Record> recordsList = new List<Contracts.Record>();
+                    foreach (var record in recordsArray)
+                    {
+                        Core.Db.User createdBy = !string.IsNullOrEmpty(record.CreatedBy) ? WexflowServer.WexflowEngine.GetUserById(record.CreatedBy) : null;
+                        Core.Db.User modifiedBy = !string.IsNullOrEmpty(record.ModifiedBy) ? WexflowServer.WexflowEngine.GetUserById(record.ModifiedBy) : null;
+                        Core.Db.User assignedTo = !string.IsNullOrEmpty(record.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(record.AssignedTo) : null;
+                        var r = new Contracts.Record
+                        {
+                            Id = record.GetDbId(),
+                            Name = record.Name,
+                            Description = record.Description,
+                            StartDate = record.StartDate != null ? record.StartDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            EndDate = record.EndDate != null ? record.EndDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            Comments = record.Comments,
+                            Approved = record.Approved,
+                            ManagerComments = record.ManagerComments,
+                            ModifiedBy = modifiedBy != null ? modifiedBy.Username : string.Empty,
+                            ModifiedOn = record.ModifiedOn != null ? record.ModifiedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            CreatedBy = createdBy != null ? createdBy.Username : string.Empty,
+                            CreatedOn = record.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
+                            AssignedTo = assignedTo != null ? assignedTo.Username : string.Empty,
+                            AssignedOn = record.AssignedOn != null ? record.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
+                        };
+
+                        var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());
+                        List<Contracts.Version> versionsList = new List<Contracts.Version>();
+                        foreach (var version in versions)
+                        {
+                            var v = new Contracts.Version
+                            {
+                                Id = version.GetDbId(),
+                                RecordId = version.RecordId,
+                                FilePath = version.FilePath,
+                                FileName = Path.GetFileName(version.FilePath),
+                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
+                            };
+                            versionsList.Add(v);
+                        }
+                        r.Versions = versionsList.ToArray();
+                        recordsList.Add(r);
+                    }
+                    records = recordsList.ToArray();
+                }
+
+                var recordsStr = JsonConvert.SerializeObject(records);
+                var recordsBytes = Encoding.UTF8.GetBytes(recordsStr);
+
+                return new Response()
+                {
+                    ContentType = "application/json",
+                    Contents = s => s.Write(recordsBytes, 0, recordsBytes.Length)
+                };
+
+            });
+        }
+
+        /// <summary>
+        /// Retrieves records created by a user.
+        /// </summary>
+        private void GetRecordsCreatedBy()
+        {
+            Get(Root + "recordsCreatedBy", args =>
+            {
+                var auth = GetAuth(Request);
+                var username = auth.Username;
+                var password = auth.Password;
+
+                var createdByUsername = Request.Query["c"].ToString();
+                Core.Db.User createdBy = WexflowServer.WexflowEngine.GetUser(createdByUsername);
+
+                var records = new Contracts.Record[] { };
+
+                var user = WexflowServer.WexflowEngine.GetUser(username);
+                if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                {
+                    var recordsArray = WexflowServer.WexflowEngine.GetRecordsCreatedBy(createdBy.GetDbId());
+                    List<Contracts.Record> recordsList = new List<Contracts.Record>();
+                    foreach (var record in recordsArray)
+                    {
+                        Core.Db.User createdByUser = !string.IsNullOrEmpty(record.CreatedBy) ? WexflowServer.WexflowEngine.GetUserById(record.CreatedBy) : null;
+                        Core.Db.User modifiedByUser = !string.IsNullOrEmpty(record.ModifiedBy) ? WexflowServer.WexflowEngine.GetUserById(record.ModifiedBy) : null;
+                        Core.Db.User assignedToUser = !string.IsNullOrEmpty(record.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(record.AssignedTo) : null;
+                        var r = new Contracts.Record
+                        {
+                            Id = record.GetDbId(),
+                            Name = record.Name,
+                            Description = record.Description,
+                            StartDate = record.StartDate.HasValue ? record.StartDate.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            EndDate = record.EndDate.HasValue ? record.EndDate.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            Comments = record.Comments,
+                            Approved = record.Approved,
+                            ManagerComments = record.ManagerComments,
+                            ModifiedBy = modifiedByUser != null ? modifiedByUser.Username : string.Empty,
+                            ModifiedOn = record.ModifiedOn.HasValue ? record.ModifiedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            CreatedBy = createdByUser != null ? createdByUser.Username : string.Empty,
+                            CreatedOn = record.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
+                            AssignedTo = assignedToUser != null ? assignedToUser.Username : string.Empty,
+                            AssignedOn = record.AssignedOn.HasValue ? record.AssignedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
+                        };
+
+                        var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());
+                        List<Contracts.Version> versionsList = new List<Contracts.Version>();
+                        foreach (var version in versions)
+                        {
+                            var v = new Contracts.Version
+                            {
+                                Id = version.GetDbId(),
+                                RecordId = version.RecordId,
+                                FilePath = version.FilePath,
+                                FileName = Path.GetFileName(version.FilePath),
+                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
+                            };
+                            versionsList.Add(v);
+                        }
+                        r.Versions = versionsList.ToArray();
+                        recordsList.Add(r);
+                    }
+                    records = recordsList.ToArray();
+                }
+
+                var recordsStr = JsonConvert.SerializeObject(records);
+                var recordsBytes = Encoding.UTF8.GetBytes(recordsStr);
+
+                return new Response()
+                {
+                    ContentType = "application/json",
+                    Contents = s => s.Write(recordsBytes, 0, recordsBytes.Length)
+                };
+
+            });
+        }
+
+        /// <summary>
+        /// Searches for records assigned to or created by by keyword.
+        /// </summary>
+        private void SearchRecordsCreatedByOrAssignedTo()
+        {
+            Get(Root + "searchRecordsCreatedByOrAssignedTo", args =>
+            {
+                var auth = GetAuth(Request);
+                var username = auth.Username;
+                var password = auth.Password;
+
+                var keyword = Request.Query["s"].ToString();
+                var createdByUsername = Request.Query["c"].ToString();
+                Core.Db.User createdBy = !string.IsNullOrEmpty(createdByUsername) ? WexflowServer.WexflowEngine.GetUser(createdByUsername) : null;
+                var assignedToUsername = Request.Query["a"].ToString();
+                Core.Db.User assignedTo = !string.IsNullOrEmpty(assignedToUsername) ? WexflowServer.WexflowEngine.GetUser(assignedToUsername) : null;
+
+                var records = new Contracts.Record[] { };
+
+                var user = WexflowServer.WexflowEngine.GetUser(username);
+                if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                {
+                    var recordsArray = WexflowServer.WexflowEngine.GetRecordsCreatedByOrAssignedTo(createdBy != null ? createdBy.GetDbId() : string.Empty, assignedTo != null ? assignedTo.GetDbId() : string.Empty, keyword);
+                    List<Contracts.Record> recordsList = new List<Contracts.Record>();
+                    foreach (var record in recordsArray)
+                    {
+                        Core.Db.User createdByUser = !string.IsNullOrEmpty(record.CreatedBy) ? WexflowServer.WexflowEngine.GetUserById(record.CreatedBy) : null;
+                        Core.Db.User modifiedByUser = !string.IsNullOrEmpty(record.ModifiedBy) ? WexflowServer.WexflowEngine.GetUserById(record.ModifiedBy) : null;
+                        Core.Db.User assignedToUser = !string.IsNullOrEmpty(record.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(record.AssignedTo) : null;
+                        var r = new Contracts.Record
+                        {
+                            Id = record.GetDbId(),
+                            Name = record.Name,
+                            Description = record.Description,
+                            StartDate = record.StartDate != null ? record.StartDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            EndDate = record.EndDate != null ? record.EndDate.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            Comments = record.Comments,
+                            Approved = record.Approved,
+                            ManagerComments = record.ManagerComments,
+                            ModifiedBy = modifiedByUser != null ? modifiedByUser.Username : string.Empty,
+                            ModifiedOn = record.ModifiedOn != null ? record.ModifiedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty,
+                            CreatedBy = createdByUser != null ? createdByUser.Username : string.Empty,
+                            CreatedOn = record.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
+                            AssignedTo = assignedToUser != null ? assignedToUser.Username : string.Empty,
+                            AssignedOn = record.AssignedOn != null ? record.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
+                        };
+
+                        var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());
+                        List<Contracts.Version> versionsList = new List<Contracts.Version>();
+                        foreach (var version in versions)
+                        {
+                            var v = new Contracts.Version
+                            {
+                                Id = version.GetDbId(),
+                                RecordId = version.RecordId,
+                                FilePath = version.FilePath,
+                                FileName = Path.GetFileName(version.FilePath),
+                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
+                            };
+                            versionsList.Add(v);
+                        }
+                        r.Versions = versionsList.ToArray();
+                        recordsList.Add(r);
+                    }
+                    records = recordsList.ToArray();
+                }
+
+                var recordsStr = JsonConvert.SerializeObject(records);
+                var recordsBytes = Encoding.UTF8.GetBytes(recordsStr);
+
+                return new Response()
+                {
+                    ContentType = "application/json",
+                    Contents = s => s.Write(recordsBytes, 0, recordsBytes.Length)
+                };
+
+            });
+        }
+
+        /// <summary>
+        /// Indicates whether the user has notifications or not.
+        /// </summary>
+        private void HasNotifications()
+        {
+            Get(Root + "hasNotifications", args =>
+            {
+                var auth = GetAuth(Request);
+                var username = auth.Username;
+                var password = auth.Password;
+
+                var assignedToUsername = Request.Query["a"].ToString();
+                Core.Db.User assignedTo = WexflowServer.WexflowEngine.GetUser(assignedToUsername);
+
+                var res = false;
+
+                var user = WexflowServer.WexflowEngine.GetUser(username);
+                if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                {
+                    res = WexflowServer.WexflowEngine.HasNotifications(assignedTo.GetDbId());
+                }
+
+                var resStr = JsonConvert.SerializeObject(res);
+                var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                return new Response()
+                {
+                    ContentType = "application/json",
+                    Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                };
+
+            });
+        }
+
+        /// <summary>
+        /// marks notifications as read.
+        /// </summary>
+        private void MarkNotificationsAsRead()
+        {
+            Post(Root + "markNotificationsAsRead", args =>
+            {
+                try
+                {
+                    var res = false;
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var notificationIds = JsonConvert.DeserializeObject<string[]>(JArray.Parse(json).ToString());
+                        res = WexflowServer.WexflowEngine.MarkNotificationsAsRead(notificationIds);
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// marks notifications as unread.
+        /// </summary>
+        private void MarkNotificationsAsUnread()
+        {
+            Post(Root + "markNotificationsAsUnread", args =>
+            {
+                try
+                {
+                    var res = false;
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var notificationIds = JsonConvert.DeserializeObject<string[]>(JArray.Parse(json).ToString());
+                        res = WexflowServer.WexflowEngine.MarkNotificationsAsUnread(notificationIds);
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Deletes notifications.
+        /// </summary>
+        private void DeleteNotifications()
+        {
+            Post(Root + "deleteNotifications", args =>
+            {
+                try
+                {
+                    var res = false;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var json = RequestStream.FromStream(Request.Body).AsString();
+                        var notificationIds = JsonConvert.DeserializeObject<string[]>(JArray.Parse(json).ToString());
+                        res = WexflowServer.WexflowEngine.DeleteNotifications(notificationIds);
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Searches for notifications of a user.
+        /// </summary>
+        private void SearchNotifications()
+        {
+            Get(Root + "searchNotifications", args =>
+            {
+                var auth = GetAuth(Request);
+                var username = auth.Username;
+                var password = auth.Password;
+
+                var assignedToUsername = Request.Query["a"].ToString();
+                Core.Db.User assignedTo = WexflowServer.WexflowEngine.GetUser(assignedToUsername);
+                var keyword = Request.Query["s"].ToString();
+
+                var notifications = new Contracts.Notification[] { };
+
+                var user = WexflowServer.WexflowEngine.GetUser(username);
+                if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                {
+                    var notificationsArray = WexflowServer.WexflowEngine.GetNotifications(assignedTo.GetDbId(), keyword);
+                    List<Contracts.Notification> notificationList = new List<Contracts.Notification>();
+                    foreach (var notification in notificationsArray)
+                    {
+                        Core.Db.User assignedByUser = !string.IsNullOrEmpty(notification.AssignedBy) ? WexflowServer.WexflowEngine.GetUserById(notification.AssignedBy) : null;
+                        Core.Db.User assignedToUser = !string.IsNullOrEmpty(notification.AssignedTo) ? WexflowServer.WexflowEngine.GetUserById(notification.AssignedTo) : null;
+                        var n = new Contracts.Notification
+                        {
+                            Id = notification.GetDbId(),
+                            AssignedBy = assignedByUser != null ? assignedByUser.Username : string.Empty,
+                            AssignedOn = notification.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
+                            AssignedTo = assignedToUser != null ? assignedToUser.Username : string.Empty,
+                            Message = notification.Message,
+                            IsRead = notification.IsRead
+                        };
+                        notificationList.Add(n);
+                    }
+                    notifications = notificationList.ToArray();
+                }
+
+                var notificationsStr = JsonConvert.SerializeObject(notifications);
+                var notificationsBytes = Encoding.UTF8.GetBytes(notificationsStr);
+
+                return new Response()
+                {
+                    ContentType = "application/json",
+                    Contents = s => s.Write(notificationsBytes, 0, notificationsBytes.Length)
+                };
+
+            });
+        }
+
+        /// <summary>
+        /// Notifies a user.
+        /// </summary>
+        private void Notify()
+        {
+            Post(Root + "notify", args =>
+            {
+                try
+                {
+                    var res = false;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var assignedToUsername = Request.Query["a"].ToString();
+                        var message = Request.Query["m"].ToString();
+                        var assignedTo = WexflowServer.WexflowEngine.GetUser(assignedToUsername);
+                        if (assignedTo != null && !string.IsNullOrEmpty(message))
+                        {
+                            var notification = new Core.Db.Notification
+                            {
+                                AssignedBy = user.GetDbId(),
+                                AssignedOn = DateTime.Now,
+                                AssignedTo = assignedTo.GetDbId(),
+                                Message = message,
+                                IsRead = false
+                            };
+                            var id = WexflowServer.WexflowEngine.InsertNotification(notification);
+                            res = id != "-1";
+                        }
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
         }
 
     }

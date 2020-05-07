@@ -13,7 +13,7 @@ namespace Wexflow.NetCore.Tests
             ? "/opt/wexflow/Wexflow/Wexflow.xml"
             : (Environment.OSVersion.Platform == PlatformID.MacOSX
                ? "/Applications/wexflow/Wexflow/Wexflow.xml"
-               : @"C:\Wexflow-netcore\Wexflow.xml"), false);
+               : @"C:\Wexflow-netcore\Wexflow.xml"), false, "admin");
 
         public static readonly string TempFolder =
             Environment.OSVersion.Platform == PlatformID.Unix
@@ -41,7 +41,7 @@ namespace Wexflow.NetCore.Tests
 
         public static System.Guid StartWorkflow(int workflowId)
         {
-            var instanceId = WexflowEngine.StartWorkflow(workflowId);
+            var instanceId = WexflowEngine.StartWorkflow("admin", workflowId);
 
             // Wait until the workflow finishes
             Thread.Sleep(1000);
@@ -61,12 +61,12 @@ namespace Wexflow.NetCore.Tests
 
         public static System.Guid StartWorkflowAsync(int workflowId)
         {
-            return WexflowEngine.StartWorkflow(workflowId);
+            return WexflowEngine.StartWorkflow("admin", workflowId);
         }
 
         public static void StopWorkflow(int workflowId, System.Guid instanceId)
         {
-            WexflowEngine.StopWorkflow(workflowId, instanceId);
+            WexflowEngine.StopWorkflow(workflowId, instanceId, "admin");
         }
 
         public static void SuspendWorkflow(int workflowId, System.Guid instanceId)
@@ -81,12 +81,12 @@ namespace Wexflow.NetCore.Tests
 
         public static void ApproveWorkflow(int workflowId, System.Guid instanceId)
         {
-            WexflowEngine.ApproveWorkflow(workflowId, instanceId);
+            WexflowEngine.ApproveWorkflow(workflowId, instanceId, "admin");
         }
 
         public static void RejectWorkflow(int workflowId, System.Guid instanceId)
         {
-            WexflowEngine.RejectWorkflow(workflowId, instanceId);
+            WexflowEngine.RejectWorkflow(workflowId, instanceId, "admin");
         }
 
         public static Core.Workflow GetWorkflow(int workflowId)

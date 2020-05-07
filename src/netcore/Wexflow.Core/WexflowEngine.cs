@@ -65,6 +65,15 @@ namespace Wexflow.Core
     public class WexflowEngine
     {
         /// <summary>
+        /// Records db folder name.
+        /// </summary>
+        private static string recordsDbFolderName;
+
+        /// <summary>
+        /// Super-admin user name.
+        /// </summary>
+        public string SuperAdminUsername { get; private set; }
+        /// <summary>
         /// Settings file path.
         /// </summary>
         public string SettingsFile { get; private set; }
@@ -77,17 +86,21 @@ namespace Wexflow.Core
         /// </summary>
         public string WorkflowsFolder { get; private set; }
         /// <summary>
+        /// Records folder path.
+        /// </summary>
+        public string RecordsFolder { get; private set; }
+        /// <summary>
         /// Temp folder path.
         /// </summary>
         public string TempFolder { get; private set; }
         /// <summary>
+        /// Workflows temp folder used for global variables parsing.
+        /// </summary>
+        public string RecordsTempFolder { get; private set; }
+        /// <summary>
         /// Tasks folder path.
         /// </summary>
         public string TasksFolder { get; private set; }
-        /// <summary>
-        /// Workflows temp folder used for global variables parsing.
-        /// </summary>
-        public string WorkflowsTempFolder { get; private set; }
         /// <summary>
         /// Approval folder path.
         /// </summary>
@@ -146,10 +159,12 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="settingsFile">Settings file path.</param>
         /// <param name="enableWorkflowsHotFolder">Indicates whether workflows hot folder is enabled or not.</param>
-        public WexflowEngine(string settingsFile, bool enableWorkflowsHotFolder)
+        /// <param name="superAdminUsername">Super-admin username.</param>
+        public WexflowEngine(string settingsFile, bool enableWorkflowsHotFolder, string superAdminUsername)
         {
             SettingsFile = settingsFile;
             EnableWorkflowsHotFolder = enableWorkflowsHotFolder;
+            SuperAdminUsername = superAdminUsername;
             Workflows = new List<Workflow>();
 
             Logger.Info("");
@@ -161,33 +176,43 @@ namespace Wexflow.Core
             {
                 case DbType.LiteDB:
                     Database = new Db.LiteDB.Db(ConnectionString);
+                    recordsDbFolderName = "litedb";
                     break;
                 case DbType.MongoDB:
                     Database = new Db.MongoDB.Db(ConnectionString);
+                    recordsDbFolderName = "mongodb";
                     break;
                 case DbType.RavenDB:
                     Database = new Db.RavenDB.Db(ConnectionString);
+                    recordsDbFolderName = "ravendb";
                     break;
                 case DbType.PostgreSQL:
                     Database = new Db.PostgreSQL.Db(ConnectionString);
+                    recordsDbFolderName = "postgresql";
                     break;
                 case DbType.SQLServer:
                     Database = new Db.SQLServer.Db(ConnectionString);
+                    recordsDbFolderName = "sql-server";
                     break;
                 case DbType.MySQL:
                     Database = new Db.MySQL.Db(ConnectionString);
+                    recordsDbFolderName = "mysql";
                     break;
                 case DbType.SQLite:
                     Database = new Db.SQLite.Db(ConnectionString);
+                    recordsDbFolderName = "sqlite";
                     break;
                 case DbType.Firebird:
                     Database = new Db.Firebird.Db(ConnectionString);
+                    recordsDbFolderName = "firebird";
                     break;
                 case DbType.Oracle:
                     Database = new Db.Oracle.Db(ConnectionString);
+                    recordsDbFolderName = "oracle";
                     break;
                 case DbType.MariaDB:
                     Database = new Db.MariaDB.Db(ConnectionString);
+                    recordsDbFolderName = "mariadb";
                     break;
             }
 
@@ -216,12 +241,14 @@ namespace Wexflow.Core
         {
             var xdoc = XDocument.Load(SettingsFile);
             WorkflowsFolder = GetWexflowSetting(xdoc, "workflowsFolder");
+            RecordsFolder = GetWexflowSetting(xdoc, "recordsFolder");
+            if (!Directory.Exists(RecordsFolder)) Directory.CreateDirectory(RecordsFolder);
             TempFolder = GetWexflowSetting(xdoc, "tempFolder");
             TasksFolder = GetWexflowSetting(xdoc, "tasksFolder");
             if (!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
-            WorkflowsTempFolder = Path.Combine(TempFolder, "Workflows");
+            RecordsTempFolder = Path.Combine(TempFolder, "Records");
+            if (!Directory.Exists(RecordsTempFolder)) Directory.CreateDirectory(RecordsTempFolder);
             ApprovalFolder = GetWexflowSetting(xdoc, "approvalFolder");
-            if (!Directory.Exists(WorkflowsTempFolder)) Directory.CreateDirectory(WorkflowsTempFolder);
             XsdPath = GetWexflowSetting(xdoc, "xsd");
             TasksNamesFile = GetWexflowSetting(xdoc, "tasksNamesFile");
             TasksSettingsFile = GetWexflowSetting(xdoc, "tasksSettingsFile");
@@ -297,7 +324,6 @@ namespace Wexflow.Core
                     , workflow.GetDbId()
                     , workflow.Xml
                     , TempFolder
-                    , WorkflowsTempFolder
                     , TasksFolder
                     , ApprovalFolder
                     , XsdPath
@@ -351,7 +377,6 @@ namespace Wexflow.Core
                             , "-1"
                             , xml
                             , TempFolder
-                            , WorkflowsTempFolder
                             , TasksFolder
                             , ApprovalFolder
                             , XsdPath
@@ -394,7 +419,6 @@ namespace Wexflow.Core
                             , "-1"
                             , xml
                             , TempFolder
-                            , WorkflowsTempFolder
                             , TasksFolder
                             , ApprovalFolder
                             , XsdPath
@@ -416,7 +440,7 @@ namespace Wexflow.Core
 
                         if (changedWorkflow != null)
                         {
-                            changedWorkflow.Stop();
+                            changedWorkflow.Stop(SuperAdminUsername);
 
                             StopCronJobs(changedWorkflow.Id);
                             Workflows.Remove(changedWorkflow);
@@ -487,7 +511,7 @@ namespace Wexflow.Core
                 if (removedWorkflow != null)
                 {
                     Logger.InfoFormat("Workflow {0} is stopped and removed.", removedWorkflow.Name);
-                    removedWorkflow.Stop();
+                    removedWorkflow.Stop(SuperAdminUsername);
 
                     StopCronJobs(removedWorkflow.Id);
                     Workflows.Remove(removedWorkflow);
@@ -525,7 +549,7 @@ namespace Wexflow.Core
                     if (removedWorkflow != null)
                     {
                         Logger.InfoFormat("Workflow {0} is stopped and removed.", removedWorkflow.Name);
-                        removedWorkflow.Stop();
+                        removedWorkflow.Stop(SuperAdminUsername);
 
                         StopCronJobs(removedWorkflow.Id);
                         Workflows.Remove(removedWorkflow);
@@ -655,7 +679,7 @@ namespace Wexflow.Core
                 var admin = GetUser("admin");
                 foreach (var worlflowFile in workflowFiles)
                 {
-                    SaveWorkflowFromFile(admin.GetId(), UserProfile.SuperAdministrator, worlflowFile, false);
+                    SaveWorkflowFromFile(admin.GetDbId(), UserProfile.SuperAdministrator, worlflowFile, false);
                 }
                 Logger.InfoFormat("Loading workflows from hot folder {0} finished.", WorkflowsFolder);
             }
@@ -681,7 +705,7 @@ namespace Wexflow.Core
                 {
                     if (wf.LaunchType == LaunchType.Startup)
                     {
-                        wf.StartAsync();
+                        wf.StartAsync(SuperAdminUsername);
                     }
                     else if (wf.LaunchType == LaunchType.Periodic)
                     {
@@ -760,7 +784,7 @@ namespace Wexflow.Core
             {
                 if (wf.IsRunning)
                 {
-                    wf.Stop();
+                    wf.Stop(SuperAdminUsername);
                 }
             }
 
@@ -787,7 +811,9 @@ namespace Wexflow.Core
         /// Starts a workflow.
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>
-        public Guid StartWorkflow(int workflowId)
+        /// <param name="startedBy">Username of the user that started the workflow.</param>
+        /// <returns>Instance id.</returns>
+        public Guid StartWorkflow(string startedBy, int workflowId)
         {
             var wf = GetWorkflow(workflowId);
 
@@ -799,7 +825,7 @@ namespace Wexflow.Core
             {
                 if (wf.IsEnabled)
                 {
-                    var instanceId = wf.StartAsync();
+                    var instanceId = wf.StartAsync(startedBy);
                     return instanceId;
                 }
             }
@@ -812,7 +838,9 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
-        public bool StopWorkflow(int workflowId, Guid instanceId)
+        /// <param name="stoppedBy">Username of the user who stopped the workflow.</param>
+        /// <returns>Result.</returns>
+        public bool StopWorkflow(int workflowId, Guid instanceId, string stoppedBy)
         {
             var wf = GetWorkflow(workflowId);
 
@@ -832,7 +860,7 @@ namespace Wexflow.Core
                     }
                     else
                     {
-                        return innerWf.Stop();
+                        return innerWf.Stop(stoppedBy);
                     }
                 }
             }
@@ -909,7 +937,9 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
-        public bool ApproveWorkflow(int workflowId, Guid instanceId)
+        /// <param name="approvedBy">Username of the user who approved the workflow.</param>
+        /// <returns>Result.</returns>
+        public bool ApproveWorkflow(int workflowId, Guid instanceId, string approvedBy)
         {
             try
             {
@@ -933,7 +963,7 @@ namespace Wexflow.Core
                         }
                         else
                         {
-                            innerWf.Approve();
+                            innerWf.Approve(approvedBy);
                             return true;
                         }
                     }
@@ -953,7 +983,9 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>
         /// <param name="instanceId">Job instance Id.</param>
-        public bool RejectWorkflow(int workflowId, Guid instanceId)
+        /// <param name="rejectedBy">Username of the user who rejected the workflow.</param>
+        /// <returns>Result.</returns>
+        public bool RejectWorkflow(int workflowId, Guid instanceId, string rejectedBy)
         {
             try
             {
@@ -977,7 +1009,7 @@ namespace Wexflow.Core
                         }
                         else
                         {
-                            innerWf.Reject();
+                            innerWf.Reject(rejectedBy);
                             return true;
                         }
                     }
@@ -1038,7 +1070,7 @@ namespace Wexflow.Core
         /// <param name="email">User's email.</param>
         public void UpdateUser(string userId, string username, string password, UserProfile userProfile, string email)
         {
-            var user = Database.GetUserByUserId(userId);
+            var user = Database.GetUserById(userId);
             Database.UpdateUser(userId, new User
             {
                 Username = username,
@@ -1070,7 +1102,7 @@ namespace Wexflow.Core
         {
             var user = Database.GetUser(username);
             Database.DeleteUser(username, password);
-            Database.DeleteUserWorkflowRelationsByUserId(user.GetId());
+            Database.DeleteUserWorkflowRelationsByUserId(user.GetDbId());
         }
 
         /// <summary>
@@ -1081,6 +1113,16 @@ namespace Wexflow.Core
         public User GetUser(string username)
         {
             return Database.GetUser(username);
+        }
+
+        /// <summary>
+        /// Gets a user by Id.
+        /// </summary>
+        /// <param name="userId">User id.</param>
+        /// <returns>User.</returns>
+        public User GetUserById(string userId)
+        {
+            return Database.GetUserById(userId);
         }
 
         /// <summary>
@@ -1300,6 +1342,372 @@ namespace Wexflow.Core
         public string GetHistoryEntryLogs(string entryId)
         {
             return Database.GetHistoryEntryLogs(entryId);
+        }
+
+        /// <summary>
+        /// Inserts a version in the database.
+        /// </summary>
+        /// <param name="version">Version.</param>
+        /// <returns>Version id.</returns>
+        public string SaveVersion(Db.Version version)
+        {
+            try
+            {
+                var versionId = Database.InsertVersion(version);
+                return versionId;
+            }
+            catch (Exception e)
+            {
+                Logger.ErrorFormat("An error occured while saving the version {0}.", e, version.FilePath);
+                return "-1";
+            }
+        }
+
+        /// <summary>
+        ///  Deletes versions.
+        /// </summary>
+        /// <param name="versionIds">Verions ids.</param>
+        /// <returns>Result.</returns>
+        public bool DeleteVersions(string[] versionIds)
+        {
+            try
+            {
+                Database.DeleteVersions(versionIds);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while deleting versions.", e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a directory is empty.
+        /// </summary>
+        /// <param name="path">Directory path.</param>
+        /// <returns>Result.</returns>
+        public bool IsDirectoryEmpty(string path)
+        {
+            return !Directory.EnumerateFileSystemEntries(path).Any();
+        }
+
+        /// <summary>
+        /// Saves a record in the database.
+        /// </summary>
+        /// <param name="recordId">Record id.</param>
+        /// <param name="record">Record.</param>
+        /// <param name="versions">Version.</param>
+        /// <returns></returns>
+        public string SaveRecord(string recordId, Record record, List<Db.Version> versions)
+        {
+            try
+            {
+                if (recordId == "-1") // insert
+                {
+                    var id = Database.InsertRecord(record);
+
+                    foreach (var version in versions)
+                    {
+                        var v = new Db.Version
+                        {
+                            RecordId = id,
+                            FilePath = version.FilePath,
+                        };
+                        var versionId = Database.InsertVersion(v);
+
+                        // Move version file from temp folder to Records folder.
+                        var fileName = Path.GetFileName(version.FilePath);
+                        var destDir = Path.Combine(RecordsFolder, recordsDbFolderName, id, versionId);
+                        if (!Directory.Exists(destDir))
+                        {
+                            Directory.CreateDirectory(destDir);
+                        }
+                        var destPath = Path.Combine(destDir, fileName);
+                        File.Move(version.FilePath, destPath);
+                        var parentDir = Path.GetDirectoryName(version.FilePath);
+                        if (IsDirectoryEmpty(parentDir))
+                        {
+                            Directory.Delete(parentDir);
+                            var recordTempDir = Directory.GetParent(parentDir).FullName;
+                            if (IsDirectoryEmpty(recordTempDir))
+                            {
+                                Directory.Delete(recordTempDir);
+                            }
+                        }
+
+                        // Update version.
+                        v.FilePath = destPath;
+                        Database.UpdateVersion(versionId, v);
+                    }
+
+                    return id;
+                }
+                else // update
+                {
+                    Database.UpdateRecord(recordId, record);
+
+                    var recordVersions = Database.GetVersions(recordId);
+
+                    List<string> versionsToDelete = new List<string>();
+                    List<Db.Version> versionsToDeleteObjs = new List<Db.Version>();
+                    foreach (var version in recordVersions)
+                    {
+                        if (!versions.Any(v => v.FilePath == version.FilePath))
+                        {
+                            versionsToDelete.Add(version.GetDbId());
+                            versionsToDeleteObjs.Add(version);
+                        }
+                    }
+                    Database.DeleteVersions(versionsToDelete.ToArray());
+
+                    foreach (var version in versionsToDeleteObjs)
+                    {
+                        if (File.Exists(version.FilePath))
+                        {
+                            File.Delete(version.FilePath);
+                        }
+
+                        var versionDir = Path.GetDirectoryName(version.FilePath);
+                        if (IsDirectoryEmpty(versionDir))
+                        {
+                            Directory.Delete(versionDir);
+                            var recordDir = Directory.GetParent(versionDir).FullName;
+                            if (IsDirectoryEmpty(recordDir))
+                            {
+                                Directory.Delete(recordDir);
+                            }
+                        }
+                    }
+
+                    foreach (var version in versions)
+                    {
+                        if (version.FilePath.Contains(RecordsTempFolder))
+                        {
+                            var versionId = Database.InsertVersion(version);
+
+                            // Move version file from temp folder to Records folder.
+                            var fileName = Path.GetFileName(version.FilePath);
+                            var destDir = Path.Combine(RecordsFolder, recordsDbFolderName, recordId, versionId);
+                            if (!Directory.Exists(destDir))
+                            {
+                                Directory.CreateDirectory(destDir);
+                            }
+                            var destPath = Path.Combine(destDir, fileName);
+                            File.Move(version.FilePath, destPath);
+                            var parentDir = Path.GetDirectoryName(version.FilePath);
+                            if (IsDirectoryEmpty(parentDir))
+                            {
+                                Directory.Delete(parentDir);
+                                var recordTempDir = Directory.GetParent(parentDir).FullName;
+                                if (IsDirectoryEmpty(recordTempDir))
+                                {
+                                    Directory.Delete(recordTempDir);
+                                }
+                            }
+
+                            // Update version.
+                            version.FilePath = destPath;
+                            Database.UpdateVersion(versionId, version);
+                        }
+                    }
+
+                    return recordId;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.ErrorFormat("An error occured while saving the record {0}.", e, recordId);
+                return "-1";
+            }
+        }
+
+        /// <summary>
+        /// Deletes records.
+        /// </summary>
+        /// <param name="recordIds">Record ids.</param>
+        /// <returns>Result.</returns>
+        public bool DeleteRecords(string[] recordIds)
+        {
+            try
+            {
+                Database.DeleteRecords(recordIds);
+                foreach (var recordId in recordIds)
+                {
+                    var versions = Database.GetVersions(recordId);
+                    foreach (var version in versions)
+                    {
+                        if (File.Exists(version.FilePath))
+                        {
+                            File.Delete(version.FilePath);
+
+                            var versionDir = Path.GetDirectoryName(version.FilePath);
+                            if (IsDirectoryEmpty(versionDir))
+                            {
+                                Directory.Delete(versionDir);
+                                var recordDir = Directory.GetParent(versionDir).FullName;
+                                if (IsDirectoryEmpty(recordDir))
+                                {
+                                    Directory.Delete(recordDir);
+                                }
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while deleting records.", e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns records by keyword.
+        /// </summary>
+        /// <param name="keyword">Keyword.</param>
+        /// <returns>Records by keyword</returns>
+        public Record[] GetRecords(string keyword)
+        {
+            return Database.GetRecords(keyword).ToArray();
+        }
+
+        /// <summary>
+        /// Returns the records assigned to a user by keyword.
+        /// </summary>
+        /// <param name="createdBy">Created by user id.</param>
+        /// <param name="assignedTo">Assigned to user id.</param>
+        /// <param name="keyword">Keyword.</param>
+        /// <returns>Records assigned to a user by keyword.</returns>
+        public Record[] GetRecordsCreatedByOrAssignedTo(string createdBy, string assignedTo, string keyword)
+        {
+            return Database.GetRecordsCreatedByOrAssignedTo(createdBy, assignedTo, keyword).ToArray();
+        }
+
+        /// <summary>
+        /// Returns the records created by a user.
+        /// </summary>
+        /// <param name="createdBy">User id.</param>
+        /// <returns>Records created by a user.</returns>
+        public Record[] GetRecordsCreatedBy(string createdBy)
+        {
+            return Database.GetRecordsCreatedBy(createdBy).ToArray();
+        }
+
+        /// <summary>
+        /// returns record versions.
+        /// </summary>
+        /// <param name="recordId">Record id.</param>
+        /// <returns>record versions.</returns>
+        public Db.Version[] GetVersions(string recordId)
+        {
+            return Database.GetVersions(recordId).ToArray();
+        }
+
+        /// <summary>
+        /// returns the latest version of a record.
+        /// </summary>
+        /// <param name="recordId">Record id.</param>
+        /// <returns>Latest version of a record.</returns>
+        public Db.Version GetLatestVersion(string recordId)
+        {
+            return Database.GetLatestVersion(recordId);
+        }
+
+        /// <summary>
+        /// Inserts a notification in the database.
+        /// </summary>
+        /// <param name="notification">Notification.</param>
+        /// <returns>Notification id.</returns>
+        public string InsertNotification(Notification notification)
+        {
+            try
+            {
+                var id = Database.InsertNotification(notification);
+                return id;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while inserting a notification.", e);
+                return "-1";
+            }
+        }
+
+        /// <summary>
+        /// Marks notifications as read.
+        /// </summary>
+        /// <param name="notificationIds">Notification Ids.</param>
+        public bool MarkNotificationsAsRead(string[] notificationIds)
+        {
+            try
+            {
+                Database.MarkNotificationsAsRead(notificationIds);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while marking notifications as read.", e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Marks notifications as unread.
+        /// </summary>
+        /// <param name="notificationIds">Notification Ids.</param>
+        public bool MarkNotificationsAsUnread(string[] notificationIds)
+        {
+            try
+            {
+                Database.MarkNotificationsAsUnread(notificationIds);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while marking notifications as read.", e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Deletes notifications.
+        /// </summary>
+        /// <param name="notificationIds">Notification ids.</param>
+        /// <returns>Result.</returns>
+        public bool DeleteNotifications(string[] notificationIds)
+        {
+            try
+            {
+                Database.DeleteNotifications(notificationIds);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while deleting notifications.", e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns the notifications assigned to a user.
+        /// </summary>
+        /// <param name="assignedTo">User id.</param>
+        /// <param name="keyword">Keyword.</param>
+        /// <returns>Notifications assigned to a user.</returns>
+        public Notification[] GetNotifications(string assignedTo, string keyword)
+        {
+            return Database.GetNotifications(assignedTo, keyword).ToArray();
+        }
+
+        /// <summary>
+        /// Indicates whether the user has notifications or not.
+        /// </summary>
+        /// <param name="assignedTo">Assigned to user id.</param>
+        /// <returns></returns>
+        public bool HasNotifications(string assignedTo)
+        {
+            return Database.HasNotifications(assignedTo);
         }
     }
 }

@@ -50,17 +50,17 @@ namespace Wexflow.Tasks.SubWorkflow
                             switch (Mode)
                             {
                                 case KickOffMode.Sync:
-                                    success = workflow.StartSync(Guid.NewGuid(), ref warning);
+                                    success = workflow.StartSync(Workflow.StartedBy, Guid.NewGuid(), ref warning);
                                     break;
                                 case KickOffMode.Async:
-                                    workflow.StartAsync();
+                                    workflow.StartAsync(Workflow.StartedBy);
                                     break;
                             }
                             break;
                         case KickOffAction.Stop:
                             if (workflow.IsRunning)
                             {
-                                success = workflow.Stop();
+                                success = workflow.Stop(Workflow.StartedBy);
                                 if (success)
                                 {
                                     InfoFormat("Workflow {0} stopped.", WorkflowId);
@@ -79,7 +79,7 @@ namespace Wexflow.Tasks.SubWorkflow
                         case KickOffAction.Approve:
                             if (workflow.IsApproval && workflow.IsWaitingForApproval)
                             {
-                                workflow.Approve();
+                                workflow.Approve(Workflow.StartedBy);
                             }
                             else
                             {
@@ -90,7 +90,7 @@ namespace Wexflow.Tasks.SubWorkflow
                         case KickOffAction.Reject:
                             if (workflow.IsApproval && workflow.IsWaitingForApproval)
                             {
-                                workflow.Reject();
+                                workflow.Reject(Workflow.StartedBy);
                             }
                             else
                             {

@@ -20,7 +20,7 @@ namespace Wexflow.Core.Db
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
 
-        public virtual string GetId()
+        public virtual string GetDbId()
         {
             return "-1";
         }

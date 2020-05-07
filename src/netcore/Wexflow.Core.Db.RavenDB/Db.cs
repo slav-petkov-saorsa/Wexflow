@@ -20,7 +20,7 @@ namespace Wexflow.Core.Db.RavenDB
         public Db(string connectionString) : base(connectionString)
         {
             var ravenUrl = string.Empty;
-            var databaseName = string.Empty;
+            var database = string.Empty;
 
             var connectionStringParts = ConnectionString.Split(';');
             foreach (var part in connectionStringParts)
@@ -30,7 +30,7 @@ namespace Wexflow.Core.Db.RavenDB
                     string connPart = part.TrimStart(' ').TrimEnd(' ');
                     if (connPart.StartsWith("Database="))
                     {
-                        databaseName = connPart.Replace("Database=", string.Empty);
+                        database = connPart.Replace("Database=", string.Empty);
                     }
                     else if (connPart.StartsWith("RavenUrl="))
                     {
@@ -42,7 +42,7 @@ namespace Wexflow.Core.Db.RavenDB
             store = new DocumentStore
             {
                 Urls = new string[] { ravenUrl },
-                Database = databaseName
+                Database = database
             };
 
             store.Initialize();
@@ -56,7 +56,7 @@ namespace Wexflow.Core.Db.RavenDB
             {
                 try
                 {
-                    store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(databaseName)));
+                    store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(database)));
                 }
                 catch (ConcurrencyException)
                 {
@@ -72,42 +72,36 @@ namespace Wexflow.Core.Db.RavenDB
                 // StatusCount
                 ClearStatusCount();
 
-                lock (padlock)
+                var statusCount = new StatusCount
                 {
-                    var statusCount = new StatusCount
-                    {
-                        PendingCount = 0,
-                        RunningCount = 0,
-                        DoneCount = 0,
-                        FailedCount = 0,
-                        WarningCount = 0,
-                        DisabledCount = 0,
-                        StoppedCount = 0
-                    };
-                    session.Store(statusCount);
-                    session.SaveChanges();
-                }
+                    PendingCount = 0,
+                    RunningCount = 0,
+                    DoneCount = 0,
+                    FailedCount = 0,
+                    WarningCount = 0,
+                    DisabledCount = 0,
+                    StoppedCount = 0
+                };
+                session.Store(statusCount);
+                session.SaveChanges();
+
 
                 // Entries
                 ClearEntries();
 
                 // Insert default user if necessary
-                lock (padlock)
+                var usersCol = session.Query<User>();
+                try
                 {
-                    var usersCol = session.Query<User>();
-                    try
-                    {
-                        if (usersCol.Count() == 0)
-                        {
-                            InsertDefaultUser();
-                        }
-                    }
-                    catch (Exception) // Create document if it does not exist
+                    if (usersCol.Count() == 0)
                     {
                         InsertDefaultUser();
                     }
                 }
-
+                catch (Exception) // Create document if it does not exist
+                {
+                    InsertDefaultUser();
+                }
             }
 
         }
@@ -1002,7 +996,7 @@ namespace Wexflow.Core.Db.RavenDB
             }
         }
 
-        public override Core.Db.User GetUserByUserId(string userId)
+        public override Core.Db.User GetUserById(string userId)
         {
             lock (padlock)
             {
@@ -1494,9 +1488,103 @@ namespace Wexflow.Core.Db.RavenDB
             }
         }
 
+        public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertRecord(Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateRecord(string recordId, Record record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteRecords(string[] recordIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Record GetRecord(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecords(string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertVersion(Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateVersion(string versionId, Version version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteVersions(string[] versionIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Version> GetVersions(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Version GetLatestVersion(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string InsertNotification(Notification notification)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsRead(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MarkNotificationsAsUnread(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNotifications(string[] notificationIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasNotifications(string assignedTo)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Dispose()
         {
         }
-
     }
 }

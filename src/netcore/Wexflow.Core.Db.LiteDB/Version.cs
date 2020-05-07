@@ -2,7 +2,7 @@
 
 namespace Wexflow.Core.Db.LiteDB
 {
-    public class User : Core.Db.User
+    public class Version : Core.Db.Version
     {
         [BsonId]
         public int Id { get; set; }

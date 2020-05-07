@@ -9,7 +9,7 @@ namespace Wexflow.Core.Db.MongoDB
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        public override string GetId()
+        public override string GetDbId()
         {
             return Id;
         }

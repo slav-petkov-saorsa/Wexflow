@@ -890,6 +890,7 @@ namespace Wexflow.Core
         {
             if (IsRunning && !EnableParallelJobs)
             {
+                StartedBy = startedBy;
                 var job = new Job { Workflow = this, QueuedOn = DateTime.Now };
                 _jobsQueue.Enqueue(job);
                 return Guid.Empty;

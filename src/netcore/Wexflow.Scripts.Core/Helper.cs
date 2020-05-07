@@ -76,10 +76,10 @@ namespace Wexflow.Scripts.Core
                     {
                         db.InsertUserWorkflowRelation(new UserWorkflow
                         {
-                            UserId = user.GetId(),
+                            UserId = user.GetDbId(),
                             WorkflowId = workflow.GetDbId()
                         });
-                        Console.WriteLine("UserWorkflowRelation ({0}, {1}) created.", user.GetId(), workflow.GetDbId());
+                        Console.WriteLine("UserWorkflowRelation ({0}, {1}) created.", user.GetDbId(), workflow.GetDbId());
                     }
                     Console.WriteLine("wexflow user created with success.");
                 }

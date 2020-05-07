@@ -117,7 +117,6 @@ namespace Wexflow.Core.Db
         public abstract IEnumerable<Version> GetVersions(string recordId);
         public abstract Version GetLatestVersion(string recordId);
 
-
         public abstract string InsertNotification(Notification notification);
         public abstract void MarkNotificationsAsRead(string[] notificationIds);
         public abstract void MarkNotificationsAsUnread(string[] notificationIds);
