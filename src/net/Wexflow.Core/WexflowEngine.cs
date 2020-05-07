@@ -66,6 +66,11 @@ namespace Wexflow.Core
     public class WexflowEngine
     {
         /// <summary>
+        /// Records db folder name.
+        /// </summary>
+        private static string recordsDbFolderName;
+
+        /// <summary>
         /// Settings file path.
         /// </summary>
         public string SettingsFile { get; private set; }
@@ -171,33 +176,43 @@ namespace Wexflow.Core
             {
                 case DbType.LiteDB:
                     Database = new Db.LiteDB.Db(ConnectionString);
+                    recordsDbFolderName = "litedb";
                     break;
                 case DbType.MongoDB:
                     Database = new Db.MongoDB.Db(ConnectionString);
+                    recordsDbFolderName = "mongodb";
                     break;
                 case DbType.RavenDB:
                     Database = new Db.RavenDB.Db(ConnectionString);
+                    recordsDbFolderName = "ravendb";
                     break;
                 case DbType.PostgreSQL:
                     Database = new Db.PostgreSQL.Db(ConnectionString);
+                    recordsDbFolderName = "postgresql";
                     break;
                 case DbType.SQLServer:
                     Database = new Db.SQLServer.Db(ConnectionString);
+                    recordsDbFolderName = "sql-server";
                     break;
                 case DbType.MySQL:
                     Database = new Db.MySQL.Db(ConnectionString);
+                    recordsDbFolderName = "mysql";
                     break;
                 case DbType.SQLite:
                     Database = new Db.SQLite.Db(ConnectionString);
+                    recordsDbFolderName = "sqlite";
                     break;
                 case DbType.Firebird:
                     Database = new Db.Firebird.Db(ConnectionString);
+                    recordsDbFolderName = "firebird";
                     break;
                 case DbType.Oracle:
                     Database = new Db.Oracle.Db(ConnectionString);
+                    recordsDbFolderName = "oracle";
                     break;
                 case DbType.MariaDB:
                     Database = new Db.MariaDB.Db(ConnectionString);
+                    recordsDbFolderName = "mariadb";
                     break;
             }
 
@@ -1398,7 +1413,7 @@ namespace Wexflow.Core
 
                         // Move version file from temp folder to Records folder.
                         var fileName = Path.GetFileName(version.FilePath);
-                        var destDir = Path.Combine(RecordsFolder, id, versionId);
+                        var destDir = Path.Combine(RecordsFolder, recordsDbFolderName, id, versionId);
                         if (!Directory.Exists(destDir))
                         {
                             Directory.CreateDirectory(destDir);
@@ -1468,7 +1483,7 @@ namespace Wexflow.Core
 
                             // Move version file from temp folder to Records folder.
                             var fileName = Path.GetFileName(version.FilePath);
-                            var destDir = Path.Combine(RecordsFolder, recordId, versionId);
+                            var destDir = Path.Combine(RecordsFolder, recordsDbFolderName, recordId, versionId);
                             if (!Directory.Exists(destDir))
                             {
                                 Directory.CreateDirectory(destDir);
