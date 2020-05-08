@@ -31,6 +31,9 @@ tags:
 #- "https"
 #- "http"
 paths:
+ 
+ # Dashboard
+
   /statusCount:
     get:
      tags:
@@ -158,7 +161,32 @@ paths:
      consumes:
       - "application/json" 
 
-# TODO "Records"
+# Records
+
+  /uploadVersion:
+    post:
+     tags:
+     - "Records"
+     summary: "Uploads a version file"
+     description: ""
+     consumes:
+         - multipart/form-data
+     produces:
+       - "application/json"
+     parameters:
+        - in: formData
+          name: file
+          type: file
+          description: The file version to upload   
+        - in: query
+          name: r
+          type: "string"
+          description: Record id
+     responses:
+        200:
+          description: "successful operation" 
+
+# Manager
 
   /search:
     get:

@@ -13,7 +13,16 @@ namespace Wexflow.NetCore.Tests
             ? "/opt/wexflow/Wexflow/Wexflow.xml"
             : (Environment.OSVersion.Platform == PlatformID.MacOSX
                ? "/Applications/wexflow/Wexflow/Wexflow.xml"
-               : @"C:\Wexflow-netcore\Wexflow.xml"), false, "admin");
+               : @"C:\Wexflow-netcore\Wexflow.xml")
+            , false
+            , "admin"
+            , false
+            , string.Empty
+            , 0
+            , false
+            , string.Empty
+            , string.Empty
+            , string.Empty);
 
         public static readonly string TempFolder =
             Environment.OSVersion.Platform == PlatformID.Unix

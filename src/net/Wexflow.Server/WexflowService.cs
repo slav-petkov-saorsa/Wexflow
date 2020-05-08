@@ -4155,22 +4155,10 @@ namespace Wexflow.Server
                             Directory.CreateDirectory(dir);
                         }
                         var filePath = Path.Combine(dir, fileName);
-                        //File.Create(filePath);
                         File.WriteAllBytes(filePath, ms.ToArray());
                         ressr.Result = true;
                         ressr.FilePath = filePath;
                         ressr.FileName = Path.GetFileName(filePath);
-                        //var version = new Core.Db.Version
-                        //{
-                        //    RecordId = recordId,
-                        //    FilePath = filePath
-                        //};
-                        //var versionId = WexflowServer.WexflowEngine.SaveVersion(version);
-                        //if (versionId != "-1")
-                        //{
-                        //    ressr.Result = true;
-                        //    ressr.FilePath = filePath;
-                        //}
                     }
 
                     var resStr = JsonConvert.SerializeObject(ressr);

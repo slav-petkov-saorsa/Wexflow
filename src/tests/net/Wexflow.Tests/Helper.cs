@@ -10,7 +10,17 @@ namespace Wexflow.Tests
         public static readonly string TempFolder = @"C:\Wexflow\Temp\";
         public static readonly string SourceFilesFolder = @"C:\WexflowTesting\";
 
-        private static readonly WexflowEngine WexflowEngine = new WexflowEngine(@"C:\Wexflow\Wexflow.xml", false, "admin");
+        private static readonly WexflowEngine WexflowEngine = new WexflowEngine(
+            @"C:\Wexflow\Wexflow.xml"
+            , false
+            , "admin"
+            , false
+            , string.Empty
+            , 0
+            , false
+            , string.Empty
+            , string.Empty
+            , string.Empty);
 
         public static void Run()
         {
