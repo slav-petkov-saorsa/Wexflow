@@ -1476,7 +1476,7 @@ namespace Wexflow.Core.Db.LiteDB
             lock (padlock)
             {
                 var col = db.GetCollection<User>(Core.Db.User.DocumentName);
-                var users = col.Find(u => u.UserProfile == UserProfile.SuperAdministrator || u.UserProfile == UserProfile.Administrator);
+                var users = col.Find(u => u.UserProfile == UserProfile.SuperAdministrator || u.UserProfile == UserProfile.Administrator).OrderBy(u => u.Username);
                 return users;
             }
         }
@@ -1571,7 +1571,7 @@ namespace Wexflow.Core.Db.LiteDB
             lock (padlock)
             {
                 var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
-                var records = col.Find(r => r.CreatedBy == createdBy).OrderByDescending(r => r.CreatedOn).ToList();
+                var records = col.Find(r => r.CreatedBy == createdBy).OrderBy(r => r.Name).ToList();
                 return records;
             }
         }

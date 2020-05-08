@@ -937,7 +937,7 @@ namespace Wexflow.Core.Db.MongoDB
             lock (padlock)
             {
                 var col = db.GetCollection<User>(Core.Db.User.DocumentName);
-                return col.Find(u => u.UserProfile == UserProfile.SuperAdministrator || u.UserProfile == UserProfile.Administrator).ToEnumerable();
+                return col.Find(u => u.UserProfile == UserProfile.SuperAdministrator || u.UserProfile == UserProfile.Administrator).Sort(Builders<User>.Sort.Ascending(u => u.Username)).ToList();
             }
         }
 
@@ -1026,7 +1026,7 @@ namespace Wexflow.Core.Db.MongoDB
             lock (padlock)
             {
                 var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
-                var records = col.Find(r => r.CreatedBy == createdBy).Sort(Builders<Record>.Sort.Descending(r => r.CreatedOn)).ToList();
+                var records = col.Find(r => r.CreatedBy == createdBy).Sort(Builders<Record>.Sort.Ascending(r => r.Name)).ToList();
                 return records;
             }
         }

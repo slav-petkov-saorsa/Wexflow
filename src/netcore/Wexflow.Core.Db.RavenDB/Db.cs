@@ -1490,97 +1490,375 @@ namespace Wexflow.Core.Db.RavenDB
 
         public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+
+                    var col = session.Query<User>();
+                    var users = col.Where(u => u.UserProfile == UserProfile.SuperAdministrator || u.UserProfile == UserProfile.Administrator).OrderBy(u => u.Username).ToList();
+                    return users;
+                }
+            }
         }
 
-        public override string InsertRecord(Record record)
+        public override string InsertRecord(Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var r = new Record
+                    {
+                        Approved = record.Approved,
+                        AssignedOn = record.AssignedOn,
+                        AssignedTo = record.AssignedTo,
+                        Comments = record.Comments,
+                        CreatedBy = record.CreatedBy,
+                        CreatedOn = DateTime.Now,
+                        Description = record.Description,
+                        EndDate = record.EndDate,
+                        ManagerComments = record.ManagerComments,
+                        Name = record.Name,
+                        StartDate = record.StartDate
+                    };
+                    session.Store(r);
+                    session.SaveChanges();
+                    Wait();
+                    return r.Id;
+                }
+            }
         }
 
-        public override void UpdateRecord(string recordId, Record record)
+        public override void UpdateRecord(string recordId, Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Record>();
+                    var recordFromDb = col.First(r => r.Id == recordId);
+
+                    recordFromDb.Approved = record.Approved;
+                    recordFromDb.AssignedOn = record.AssignedOn;
+                    recordFromDb.AssignedTo = record.AssignedTo;
+                    recordFromDb.Comments = record.Comments;
+                    recordFromDb.CreatedBy = record.CreatedBy;
+                    recordFromDb.CreatedOn = recordFromDb.CreatedOn;
+                    recordFromDb.Description = record.Description;
+                    recordFromDb.EndDate = record.EndDate;
+                    recordFromDb.ManagerComments = record.ManagerComments;
+                    recordFromDb.Name = record.Name;
+                    recordFromDb.StartDate = record.StartDate;
+                    recordFromDb.ModifiedBy = record.ModifiedBy;
+                    recordFromDb.ModifiedOn = DateTime.Now;
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override void DeleteRecords(string[] recordIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Record>();
+
+                    foreach (var id in recordIds)
+                    {
+                        var record = col.FirstOrDefault(r => r.Id == id);
+                        if (record != null)
+                        {
+                            session.Delete(record);
+                        }
+                    }
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
-        public override Record GetRecord(string id)
+        public override Core.Db.Record GetRecord(string id)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Record>();
+                    var record = col.FirstOrDefault(r => r.Id == id);
+                    return record;
+                }
+            }
         }
 
-        public override IEnumerable<Record> GetRecords(string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecords(string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Record>();
+                    var keywordToLower = string.IsNullOrEmpty(keyword) ? "*" : "*" + keyword.ToLower() + "*";
+                    var records = col
+                        .Search(r => r.Name, keywordToLower, options: SearchOptions.Or)
+                        .Search(r => r.Description, keywordToLower)
+                        .OrderByDescending(r => r.CreatedOn)
+                        .ToList();
+                    return records;
+                }
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedBy(string createdBy)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Record>();
+                    var records = col.Where(r => r.CreatedBy == createdBy).OrderBy(r => r.Name).ToList();
+                    return records;
+                }
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Record>();
+                    var keywordToLower = string.IsNullOrEmpty(keyword) ? "*" : "*" + keyword.ToLower() + "*";
+
+                    var records = col
+                        .Where(r => r.CreatedBy == createdBy || r.AssignedTo == assingedTo)
+                        .Search(r => r.Name, keywordToLower, options: SearchOptions.Or)
+                        .Search(r => r.Description, keywordToLower)
+                        .OrderByDescending(r => r.CreatedOn)
+                        .ToList();
+                    return records;
+                }
+            }
         }
 
-        public override string InsertVersion(Version version)
+        public override string InsertVersion(Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var v = new Version
+                    {
+                        RecordId = version.RecordId,
+                        CreatedOn = DateTime.Now,
+                        FilePath = version.FilePath
+                    };
+                    session.Store(v);
+                    session.SaveChanges();
+                    Wait();
+                    return v.Id;
+                }
+            }
         }
 
-        public override void UpdateVersion(string versionId, Version version)
+        public override void UpdateVersion(string versionId, Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Version>();
+                    var versionFromDb = col.First(v => v.Id == versionId);
+
+                    versionFromDb.RecordId = version.RecordId;
+                    versionFromDb.CreatedOn = versionFromDb.CreatedOn;
+                    versionFromDb.FilePath = version.FilePath;
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override void DeleteVersions(string[] versionIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Version>();
+
+                    foreach (var id in versionIds)
+                    {
+                        var version = col.FirstOrDefault(v => v.Id == id);
+                        if (version != null)
+                        {
+                            session.Delete(version);
+                        }
+                    }
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
-        public override IEnumerable<Version> GetVersions(string recordId)
+        public override IEnumerable<Core.Db.Version> GetVersions(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Version>();
+
+                    var versions = col.Where(v => v.RecordId == recordId).OrderBy(r => r.CreatedOn).ToList();
+                    return versions;
+                }
+            }
         }
 
-        public override Version GetLatestVersion(string recordId)
+        public override Core.Db.Version GetLatestVersion(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Version>();
+
+                    var version = col.Where(v => v.RecordId == recordId).OrderByDescending(r => r.CreatedOn).FirstOrDefault();
+                    return version;
+                }
+            }
         }
 
-        public override string InsertNotification(Notification notification)
+        public override string InsertNotification(Core.Db.Notification notification)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Notification>();
+                    var n = new Notification
+                    {
+                        AssignedBy = notification.AssignedBy,
+                        AssignedOn = notification.AssignedOn,
+                        AssignedTo = notification.AssignedTo,
+                        Message = notification.Message,
+                        IsRead = notification.IsRead
+                    };
+
+                    session.Store(n);
+                    session.SaveChanges();
+                    Wait();
+                    return n.Id;
+                }
+            }
         }
 
         public override void MarkNotificationsAsRead(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Notification>();
+
+                    foreach (var id in notificationIds)
+                    {
+                        var notification = col.FirstOrDefault(n => n.Id == id);
+                        if (notification != null)
+                        {
+                            notification.IsRead = true;
+                        }
+                    }
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override void MarkNotificationsAsUnread(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Notification>();
+
+                    foreach (var id in notificationIds)
+                    {
+                        var notification = col.FirstOrDefault(n => n.Id == id);
+                        if (notification != null)
+                        {
+                            notification.IsRead = false;
+                        }
+                    }
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override void DeleteNotifications(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Notification>();
+
+                    foreach (var id in notificationIds)
+                    {
+                        var notification = col.FirstOrDefault(n => n.Id == id);
+                        if (notification != null)
+                        {
+                            session.Delete(notification);
+                        }
+                    }
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
-        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        public override IEnumerable<Core.Db.Notification> GetNotifications(string assignedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Notification>();
+                    var keywordToLower = string.IsNullOrEmpty(keyword) ? "*" : "*" + keyword.ToLower() + "*";
+                    var notifications = col
+                        .Where(n => n.AssignedTo == assignedTo)
+                        .Search(n => n.Message, keywordToLower)
+                        .OrderByDescending(n => n.AssignedOn)
+                        .ToList();
+                    return notifications;
+                }
+            }
         }
 
         public override bool HasNotifications(string assignedTo)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Notification>();
+                    var notifications = col.Where(n => n.AssignedTo == assignedTo && !n.IsRead);
+                    var hasNotifications = notifications.Any();
+                    return hasNotifications;
+                }
+            }
         }
 
         public override void Dispose()

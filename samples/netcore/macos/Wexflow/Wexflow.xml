@@ -8,7 +8,7 @@
   <Setting name="tasksNamesFile" value="/Applications/wexflow/Wexflow/TasksNames.json" />
   <Setting name="tasksSettingsFile" value="/Applications/wexflow/Wexflow/TasksSettings.json" />
   <Setting name="globalVariablesFile" value="/Applications/wexflow/Wexflow/GlobalVariables.xml" />
-  <!-- LiteDB or MongoDB or RavenDB or CosmosDB or PostgreSQL or SQLServer or MySQL or SQLite or Firebird or Oracle or MariaDB -->
+  <!-- LiteDB or MongoDB or RavenDB or PostgreSQL or SQLServer or MySQL or SQLite or Firebird or Oracle or MariaDB -->
   <Setting name="dbType" value="LiteDB" />
   <!-- LiteDB -->
   <Setting name="connectionString" value="Filename=/Applications/wexflow/Wexflow/Database/Wexflow.db; Connection=direct" />
