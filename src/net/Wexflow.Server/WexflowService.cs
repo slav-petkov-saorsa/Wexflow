@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -4167,6 +4168,34 @@ namespace Wexflow.Server
         }
 
         /// <summary>
+        /// Returns human readable file size.
+        /// </summary>
+        /// <param name="filePath">File path.</param>
+        /// <returns>File size.</returns>
+        private string GetFileSize(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+                double len = new FileInfo(filePath).Length;
+                int order = 0;
+                while (len >= 1024 && order < sizes.Length - 1)
+                {
+                    order++;
+                    len = len / 1024;
+                }
+
+                // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
+                // show a single decimal place, and no space.
+                string result = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:0.##} {1}", len, sizes[order]);
+
+                return result;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Uploads a version.
         /// </summary>
         private void UploadVerion()
@@ -4201,6 +4230,7 @@ namespace Wexflow.Server
                         ressr.Result = true;
                         ressr.FilePath = filePath;
                         ressr.FileName = Path.GetFileName(filePath);
+                        ressr.FileSize = GetFileSize(filePath);
                     }
 
                     var resStr = JsonConvert.SerializeObject(ressr);
@@ -4604,7 +4634,8 @@ namespace Wexflow.Server
                                 RecordId = version.RecordId,
                                 FilePath = version.FilePath,
                                 FileName = Path.GetFileName(version.FilePath),
-                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
+                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
+                                FileSize = GetFileSize(version.FilePath)
                             };
                             versionsList.Add(v);
                         }
@@ -4680,7 +4711,8 @@ namespace Wexflow.Server
                                 RecordId = version.RecordId,
                                 FilePath = version.FilePath,
                                 FileName = Path.GetFileName(version.FilePath),
-                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
+                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
+                                FileSize = GetFileSize(version.FilePath)
                             };
                             versionsList.Add(v);
                         }
@@ -4759,7 +4791,8 @@ namespace Wexflow.Server
                                 RecordId = version.RecordId,
                                 FilePath = version.FilePath,
                                 FileName = Path.GetFileName(version.FilePath),
-                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"])
+                                CreatedOn = version.CreatedOn.ToString(WexflowServer.Config["DateTimeFormat"]),
+                                FileSize = GetFileSize(version.FilePath)
                             };
                             versionsList.Add(v);
                         }

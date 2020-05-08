@@ -221,14 +221,18 @@
 }
 
 .record-versions {
-    width: calc(100% - 100px);
+    width: 100%;
 }
 
 .version-file-name{
-    width: 200px;
+    width: 300px;
 }
 
 .version-created-on{
+    width: 150px;
+}
+
+.version-file-size {
     width: 100px;
 }
 

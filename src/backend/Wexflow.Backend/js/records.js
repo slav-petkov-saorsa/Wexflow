@@ -152,7 +152,7 @@
                 let recordsTable = document.getElementById("records-table");
                 let rows = recordsTable.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
                 let recordIds = [];
-                
+
                 for (let i = 0; i < rows.length; i++) {
                     let row = rows[i];
                     let checkBox = row.getElementsByClassName("check")[0].firstChild;
@@ -221,6 +221,7 @@
                                         + "<td class='version-id'>" + version.Id + "</td>"
                                         + "<td class='version-file-name'><a class='lnk-version-file-name' href='#'>" + version.FileName + "</a>" + (i === record.Versions.length - 1 ? "&nbsp;&nbsp;<span style='color: #28a745; border: 1px solid #34d058; border-radius: 2px; padding: 3px 4px;'>Latest version</span>" : "") + "</td>"
                                         + "<td class='version-created-on'>" + version.CreatedOn + "</td>"
+                                        + "<td class='version-file-size'>" + version.FileSize + "</td>"
                                         + "<td class='version-delete'><input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'></td>"
                                         + "</tr>");
                                 }
@@ -300,6 +301,7 @@
                                                 let cell2 = row.insertCell(1);
                                                 let cell3 = row.insertCell(2);
                                                 let cell4 = row.insertCell(3);
+                                                let cell5 = row.insertCell(4);
 
                                                 cell1.classList.add("version-id");
                                                 cell1.innerHTML = "";
@@ -307,8 +309,10 @@
                                                 cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
                                                 cell3.classList.add("version-created-on");
                                                 cell3.innerHTML = "-";
-                                                cell4.classList.add("version-delete");
-                                                cell4.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
+                                                cell4.classList.add("version-file-size");
+                                                cell4.innerHTML = res.FileSize;
+                                                cell5.classList.add("version-delete");
+                                                cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
 
                                                 goToBottom(jBoxContent);
 
@@ -318,7 +322,7 @@
                                                     window.open(url, "_self");
                                                 };
 
-                                                cell4.querySelector(".btn-delete-version").onclick = function () {
+                                                cell5.querySelector(".btn-delete-version").onclick = function () {
                                                     // Delete file
                                                     Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
                                                         if (deleteRes === true) {
@@ -499,6 +503,12 @@
                             jBoxContent.querySelector(".edit-record-tr-assigned-on").style.display = "none";
                             jBoxContent.querySelector(".edit-record-td-start-date").innerHTML += " (Optional)";
                             jBoxContent.querySelector(".edit-record-td-end-date").innerHTML += " (Optional)";
+
+                            setTimeout(function () {
+                                let recodNameTxt = jBoxContent.querySelector(".record-name");
+                                recodNameTxt.focus();
+                                recodNameTxt.select();
+                            }, 0);
 
                             // Upload version
                             jBoxContent.querySelector(".btn-upload-version").onclick = function () {
