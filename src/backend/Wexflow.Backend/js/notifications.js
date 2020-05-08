@@ -158,22 +158,22 @@
                                             row.getElementsByClassName("message")[0].classList.remove("bold");
 
                                             // Notify assignedBy
-                                            for (let k = 0; k < notifications.length; k++) {
-                                                let notification = notifications[k];
-                                                if (notificationId === notification.Id) {
+                                            //for (let k = 0; k < notifications.length; k++) {
+                                            //    let notification = notifications[k];
+                                            //    if (notificationId === notification.Id) {
 
-                                                    let message = "The user " + username + " has read his notification: " + notification.Message;
-                                                    Common.post(uri + "/notify?a=" + encodeURIComponent(notification.AssignedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
-                                                        if (notifyRes === true) {
-                                                            Common.toastInfo("The assignor was notified that you read the notifictaion assigned on " + notification.AssignedOn + ".");
-                                                        } else {
-                                                            Common.toastError("An error occured while notifying the assignor.");
-                                                        }
-                                                    }, function () { }, "", auth);
+                                            //        let message = "The user " + username + " has read his notification: " + notification.Message;
+                                            //        Common.post(uri + "/notify?a=" + encodeURIComponent(notification.AssignedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
+                                            //            if (notifyRes === true) {
+                                            //                Common.toastInfo("The assignor was notified that you read the notifictaion assigned on " + notification.AssignedOn + ".");
+                                            //            } else {
+                                            //                Common.toastError("An error occured while notifying the assignor.");
+                                            //            }
+                                            //        }, function () { }, "", auth);
 
-                                                    break;
-                                                }
-                                            }
+                                            //        break;
+                                            //    }
+                                            //}
                                         }
                                     }
 
@@ -239,22 +239,22 @@
                                                 row.remove();
 
                                                 // Notify assignedBy
-                                                for (let k = 0; k < notifications.length; k++) {
-                                                    let notification = notifications[k];
-                                                    if (notificationId === notification.Id) {
+                                                //for (let k = 0; k < notifications.length; k++) {
+                                                //    let notification = notifications[k];
+                                                //    if (notificationId === notification.Id) {
 
-                                                        let message = "The user " + username + " has read his notification: " + notification.Message;
-                                                        Common.post(uri + "/notify?a=" + encodeURIComponent(notification.AssignedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
-                                                            if (notifyRes === true) {
-                                                                Common.toastInfo("The assignor was notified that you read the notifictaion assigned on " + notification.AssignedOn + ".");
-                                                            } else {
-                                                                Common.toastError("An error occured while notifying the assignor.");
-                                                            }
-                                                        }, function () { }, "", auth);
+                                                //        let message = "The user " + username + " has read his notification: " + notification.Message;
+                                                //        Common.post(uri + "/notify?a=" + encodeURIComponent(notification.AssignedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
+                                                //            if (notifyRes === true) {
+                                                //                Common.toastInfo("The assignor was notified that you read the notifictaion assigned on " + notification.AssignedOn + ".");
+                                                //            } else {
+                                                //                Common.toastError("An error occured while notifying the assignor.");
+                                                //            }
+                                                //        }, function () { }, "", auth);
 
-                                                        break;
-                                                    }
-                                                }
+                                                //        break;
+                                                //    }
+                                                //}
 
                                             }
                                         }

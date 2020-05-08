@@ -360,8 +360,8 @@
                                     editedRecord.Description = jBoxContent.querySelector(".record-description").value;
                                     editedRecord.StartDate = jBoxContent.querySelector(".record-start-date").value;
                                     editedRecord.EndDate = jBoxContent.querySelector(".record-end-date").value;
-                                    editedRecord.Comments = jBoxContent.querySelector(".record-comments").innerHTML;
-                                    editedRecord.ManagerComments = jBoxContent.querySelector(".record-manager-comments").innerHTML;
+                                    editedRecord.Comments = jBoxContent.querySelector(".record-comments").value;
+                                    editedRecord.ManagerComments = jBoxContent.querySelector(".record-manager-comments").value;
                                     Common.post(uri + "/saveRecord", function (res) {
                                         if (res === true) {
                                             if (username !== record.CreatedBy) {
