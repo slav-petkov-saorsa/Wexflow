@@ -1493,12 +1493,12 @@ namespace Wexflow.Core.Db.RavenDB
             throw new NotImplementedException();
         }
 
-        public override string InsertRecord(Record record)
+        public override string InsertRecord(Core.Db.Record record)
         {
             throw new NotImplementedException();
         }
 
-        public override void UpdateRecord(string recordId, Record record)
+        public override void UpdateRecord(string recordId, Core.Db.Record record)
         {
             throw new NotImplementedException();
         }
@@ -1508,32 +1508,32 @@ namespace Wexflow.Core.Db.RavenDB
             throw new NotImplementedException();
         }
 
-        public override Record GetRecord(string id)
+        public override Core.Db.Record GetRecord(string id)
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<Record> GetRecords(string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecords(string keyword)
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedBy(string createdBy)
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
         {
             throw new NotImplementedException();
         }
 
-        public override string InsertVersion(Version version)
+        public override string InsertVersion(Core.Db.Version version)
         {
             throw new NotImplementedException();
         }
 
-        public override void UpdateVersion(string versionId, Version version)
+        public override void UpdateVersion(string versionId, Core.Db.Version version)
         {
             throw new NotImplementedException();
         }
@@ -1543,17 +1543,17 @@ namespace Wexflow.Core.Db.RavenDB
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<Version> GetVersions(string recordId)
+        public override IEnumerable<Core.Db.Version> GetVersions(string recordId)
         {
             throw new NotImplementedException();
         }
 
-        public override Version GetLatestVersion(string recordId)
+        public override Core.Db.Version GetLatestVersion(string recordId)
         {
             throw new NotImplementedException();
         }
 
-        public override string InsertNotification(Notification notification)
+        public override string InsertNotification(Core.Db.Notification notification)
         {
             throw new NotImplementedException();
         }
@@ -1573,7 +1573,7 @@ namespace Wexflow.Core.Db.RavenDB
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        public override IEnumerable<Core.Db.Notification> GetNotifications(string assignedTo, string keyword)
         {
             throw new NotImplementedException();
         }

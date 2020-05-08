@@ -1571,7 +1571,7 @@ namespace Wexflow.Core.Db.LiteDB
             lock (padlock)
             {
                 var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
-                var records = col.Find(r => r.CreatedBy == createdBy).ToList();
+                var records = col.Find(r => r.CreatedBy == createdBy).OrderByDescending(r => r.CreatedOn).ToList();
                 return records;
             }
         }
@@ -1728,8 +1728,8 @@ namespace Wexflow.Core.Db.LiteDB
             lock (padlock)
             {
                 var col = db.GetCollection<Notification>(Core.Db.Notification.DocumentName);
-                var notifications = col.Find(n => n.AssignedTo == assignedTo).ToList();
-                var hasNotifications = notifications.Any(n => !n.IsRead);
+                var notifications = col.Find(n => n.AssignedTo == assignedTo && !n.IsRead);
+                var hasNotifications = notifications.Any();
                 return hasNotifications;
             }
         }

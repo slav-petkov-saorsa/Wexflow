@@ -934,97 +934,252 @@ namespace Wexflow.Core.Db.MongoDB
 
         public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<User>(Core.Db.User.DocumentName);
+                return col.Find(u => u.UserProfile == UserProfile.SuperAdministrator || u.UserProfile == UserProfile.Administrator).ToEnumerable();
+            }
         }
 
-        public override string InsertRecord(Record record)
+        public override string InsertRecord(Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var r = new Record
+                {
+                    Approved = record.Approved,
+                    AssignedOn = record.AssignedOn,
+                    AssignedTo = record.AssignedTo,
+                    Comments = record.Comments,
+                    CreatedBy = record.CreatedBy,
+                    CreatedOn = DateTime.Now,
+                    Description = record.Description,
+                    EndDate = record.EndDate,
+                    ManagerComments = record.ManagerComments,
+                    Name = record.Name,
+                    StartDate = record.StartDate
+                };
+                col.InsertOne(r);
+                col.Indexes.CreateOne(new CreateIndexModel<Record>(Builders<Record>.IndexKeys.Ascending(rec => rec.Name)));
+                col.Indexes.CreateOne(new CreateIndexModel<Record>(Builders<Record>.IndexKeys.Ascending(rec => rec.Description)));
+                return r.Id;
+            }
         }
 
-        public override void UpdateRecord(string recordId, Record record)
+        public override void UpdateRecord(string recordId, Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var update = Builders<Record>.Update
+                    .Set(r => r.Approved, record.Approved)
+                    .Set(r => r.AssignedOn, record.AssignedOn)
+                    .Set(r => r.AssignedTo, record.AssignedTo)
+                    .Set(r => r.Comments, record.Comments)
+                    .Set(r => r.CreatedBy, record.CreatedBy)
+                    //.Set(r => r.CreatedOn, record.CreatedOn)
+                    .Set(r => r.Description, record.Description)
+                    .Set(r => r.EndDate, record.EndDate)
+                    .Set(r => r.ManagerComments, record.ManagerComments)
+                    .Set(r => r.Name, record.Name)
+                    .Set(r => r.StartDate, record.StartDate)
+                    .Set(r => r.ModifiedBy, record.ModifiedBy)
+                    .Set(r => r.ModifiedOn, DateTime.Now);
+
+                col.UpdateOne(r => r.Id == recordId, update);
+            }
         }
 
         public override void DeleteRecords(string[] recordIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                col.DeleteMany(r => recordIds.Contains(r.Id));
+            }
         }
 
-        public override Record GetRecord(string id)
+        public override Core.Db.Record GetRecord(string id)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var record = col.Find(r => r.Id == id).FirstOrDefault();
+                return record;
+            }
         }
 
-        public override IEnumerable<Record> GetRecords(string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecords(string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var keywordToUpper = keyword.ToUpper();
+                var records = col.Find(r => r.Name.ToUpper().Contains(keywordToUpper) || (!string.IsNullOrEmpty(r.Description) && r.Description.ToUpper().Contains(keywordToUpper))).Sort(Builders<Record>.Sort.Descending(r => r.CreatedOn)).ToList();
+                return records;
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedBy(string createdBy)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var records = col.Find(r => r.CreatedBy == createdBy).Sort(Builders<Record>.Sort.Descending(r => r.CreatedOn)).ToList();
+                return records;
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Record>(Core.Db.Record.DocumentName);
+                var keywordToUpper = keyword.ToUpper();
+                var records = col.Find(r => (r.CreatedBy == createdBy || r.AssignedTo == assingedTo) && (r.Name.ToUpper().Contains(keywordToUpper) || (!string.IsNullOrEmpty(r.Description) && r.Description.ToUpper().Contains(keywordToUpper)))).Sort(Builders<Record>.Sort.Descending(r => r.CreatedOn)).ToList();
+                return records;
+            }
         }
 
-        public override string InsertVersion(Version version)
+        public override string InsertVersion(Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Version>(Core.Db.Version.DocumentName);
+                var v = new Version
+                {
+                    RecordId = version.RecordId,
+                    CreatedOn = DateTime.Now,
+                    FilePath = version.FilePath
+                };
+                col.InsertOne(v);
+                return v.Id;
+            }
         }
 
-        public override void UpdateVersion(string versionId, Version version)
+        public override void UpdateVersion(string versionId, Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Version>(Core.Db.Version.DocumentName);
+                var update = Builders<Version>.Update
+                    .Set(v => v.RecordId, version.RecordId)
+                    //.Set(v => v.CreatedOn, version.CreatedOn)
+                    .Set(v => v.FilePath, version.FilePath);
+
+                col.UpdateOne(v => v.Id == versionId, update);
+            }
         }
 
         public override void DeleteVersions(string[] versionIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Version>(Core.Db.Version.DocumentName);
+                col.DeleteMany(v => versionIds.Contains(v.Id));
+            }
         }
 
-        public override IEnumerable<Version> GetVersions(string recordId)
+        public override IEnumerable<Core.Db.Version> GetVersions(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Version>(Core.Db.Version.DocumentName);
+                var versions = col.Find(v => v.RecordId == recordId).Sort(Builders<Version>.Sort.Ascending(v => v.CreatedOn)).ToList();
+                return versions;
+            }
         }
 
-        public override Version GetLatestVersion(string recordId)
+        public override Core.Db.Version GetLatestVersion(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Version>(Core.Db.Version.DocumentName);
+                var version = col.Find(v => v.RecordId == recordId).Sort(Builders<Version>.Sort.Descending(v => v.CreatedOn)).FirstOrDefault();
+                return version;
+            }
         }
 
-        public override string InsertNotification(Notification notification)
+        public override string InsertNotification(Core.Db.Notification notification)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Notification>(Core.Db.Notification.DocumentName);
+                var n = new Notification
+                {
+                    AssignedBy = notification.AssignedBy,
+                    AssignedOn = notification.AssignedOn,
+                    AssignedTo = notification.AssignedTo,
+                    Message = notification.Message,
+                    IsRead = notification.IsRead
+                };
+                col.InsertOne(n);
+                return n.Id;
+            }
         }
 
         public override void MarkNotificationsAsRead(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Notification>(Core.Db.Notification.DocumentName);
+                var notifications = col.Find(n => notificationIds.Contains(n.Id)).ToList();
+                foreach (var notification in notifications)
+                {
+                    var update = Builders<Notification>.Update
+                    .Set(n => n.IsRead, true);
+
+                    col.UpdateOne(v => v.Id == notification.Id, update);
+                }
+            }
         }
 
         public override void MarkNotificationsAsUnread(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Notification>(Core.Db.Notification.DocumentName);
+                var notifications = col.Find(n => notificationIds.Contains(n.Id)).ToList();
+                foreach (var notification in notifications)
+                {
+                    var update = Builders<Notification>.Update
+                    .Set(n => n.IsRead, false);
+
+                    col.UpdateOne(v => v.Id == notification.Id, update);
+                }
+            }
         }
 
         public override void DeleteNotifications(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Notification>(Core.Db.Notification.DocumentName);
+                col.DeleteMany(n => notificationIds.Contains(n.Id));
+            }
         }
 
-        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        public override IEnumerable<Core.Db.Notification> GetNotifications(string assignedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Notification>(Core.Db.Notification.DocumentName);
+                var keywordToUpper = keyword.ToUpper();
+                var notifications = col.Find(n => n.AssignedTo == assignedTo && n.Message.ToUpper().Contains(keywordToUpper)).Sort(Builders<Notification>.Sort.Descending(n => n.AssignedOn)).ToList();
+                return notifications;
+            }
         }
 
         public override bool HasNotifications(string assignedTo)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Notification>(Core.Db.Notification.DocumentName);
+                var notifications = col.Find(n => n.AssignedTo == assignedTo && !n.IsRead);
+                var hasNotifications = notifications.Any();
+                return hasNotifications;
+            }
         }
 
         public override void Dispose()
