@@ -125,6 +125,7 @@ namespace Wexflow.Server
             //
             GetUser();
             SearchUsers();
+            GetNonRestrictedUsers();
             InsertUser();
             UpdateUser();
             UpdateUsernameAndEmailAndUserProfile();
@@ -3081,8 +3082,6 @@ namespace Wexflow.Server
                 var auth = GetAuth(Request);
                 var qusername = auth.Username;
                 var qpassword = auth.Password;
-                //string qusername = Request.Query["qu"].ToString();
-                //string qpassword = Request.Query["qp"].ToString();
                 string keyword = Request.Query["keyword"].ToString();
                 int uo = int.Parse(Request.Query["uo"].ToString());
 
@@ -3092,6 +3091,50 @@ namespace Wexflow.Server
                 if (user.Password.Equals(qpassword) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
                 {
                     var users = WexflowServer.WexflowEngine.GetUsers(keyword, (UserOrderBy)uo);
+
+                    string dateTimeFormat = WexflowServer.Config["DateTimeFormat"];
+
+                    q = users.Select(u => new User
+                    {
+                        Id = u.GetDbId(),
+                        Username = u.Username,
+                        Password = u.Password,
+                        UserProfile = (UserProfile)((int)u.UserProfile),
+                        Email = u.Email,
+                        CreatedOn = u.CreatedOn.ToString(dateTimeFormat),
+                        ModifiedOn = u.ModifiedOn.ToString(dateTimeFormat)
+                    }).ToArray();
+                }
+
+                var qStr = JsonConvert.SerializeObject(q);
+                var qBytes = Encoding.UTF8.GetBytes(qStr);
+
+                return new Response
+                {
+                    ContentType = "application/json",
+                    Contents = s => s.Write(qBytes, 0, qBytes.Length)
+                };
+
+            });
+        }
+
+        /// <summary>
+        /// Returns non restricted users.
+        /// </summary>
+        private void GetNonRestrictedUsers()
+        {
+            Get(Root + "nonRestrictedUsers", args =>
+            {
+                var auth = GetAuth(Request);
+                var qusername = auth.Username;
+                var qpassword = auth.Password;
+
+                var q = new User[] { };
+                var user = WexflowServer.WexflowEngine.GetUser(qusername);
+
+                if (user.Password.Equals(qpassword) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                {
+                    var users = WexflowServer.WexflowEngine.GetNonRestrictedUsers();
 
                     string dateTimeFormat = WexflowServer.Config["DateTimeFormat"];
 

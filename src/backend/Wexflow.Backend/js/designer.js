@@ -82,6 +82,7 @@
     let suser = getUser();
     let username = "";
     let password = "";
+    let userProfile = -1;
     let auth = "";
 
     if (suser === null || suser === "") {
@@ -109,6 +110,7 @@
                             lnkUsers.style.display = "inline";
                             lnkNotifications.style.display = "inline";
 
+                            userProfile = u.UserProfile;
                             if (u.UserProfile === 0) {
                                 lnkProfiles.style.display = "inline";
                             }
@@ -724,7 +726,6 @@
                             Common.get(uri + "/settings/" + taskname,
                                 function (settings) {
 
-
                                     let settingsTable = document.getElementById("task-settings-table");
 
                                     let row1 = settingsTable.insertRow();
@@ -805,87 +806,142 @@
                                             settingValueElt.remove();
                                         }
 
-                                        let settingValueHtml = "";
-                                        if (settingType === "string" || settingType === "int") {
-                                            let val = "";
-                                            if (required === false) {
-                                                val = defaultValue;
-                                                tasks[index].Settings[sIndex].Value = val;
-                                            }
-                                            settingValueHtml += '<input class="form-control wf-setting-value" type="text" value="' + val + '" />';
-                                        } else if (settingType === "password") {
-                                            settingValueHtml += '<input class="form-control wf-setting-value" type="password" value="" />';
-                                        }
-                                        else if (settingType === "bool") {
-                                            let checked = false;
-                                            if (required === false) {
-                                                if (defaultValue.toLowerCase() === "true") {
-                                                    checked = true;
+                                        let self = this;
+                                        let loadSettingValue = function (records, users) {
+                                            let settingValueHtml = "";
+                                            if (settingType === "string" || settingType === "int") {
+                                                let val = "";
+                                                if (required === false) {
+                                                    val = defaultValue;
+                                                    tasks[index].Settings[sIndex].Value = val;
                                                 }
-                                                tasks[index].Settings[sIndex].Value = checked.toString().toLowerCase();
-                                            }
-                                            settingValueHtml += '<input class="wf-setting-value" value="" type="checkbox" ' + (checked === true ? "checked" : "") + ' />';
-                                        }
-                                        else if (settingType === "list") {
-                                            let val = "";
-                                            if (required === false) {
-                                                val = defaultValue;
-                                                tasks[index].Settings[sIndex].Value = val;
-                                            }
-                                            settingValueHtml += '<select class="form-control wf-setting-value">';
-                                            settingValueHtml += '<option value=""></option>';
-
-                                            for (let j = 0; j < settingList.length; j++) {
-                                                let listItem = settingList[j];
-                                                settingValueHtml += '<option value="' + listItem + '" ' + (val === listItem ? "selected" : "") + '>' + listItem + '</option>';
-                                            }
-
-                                            settingValueHtml += '</select>';
-                                        } else {
-                                            settingValueHtml += '<input class="form-control wf-setting-value" type="text" value="" />';
-                                        }
-                                        this.parentNode.parentNode.nextSibling.firstChild.innerHTML += settingValueHtml;
-                                        this.parentNode.parentNode.nextSibling.querySelector(".wf-setting-type").value = settingType;
-
-                                        // bind events
-                                        let settingValueInput = this.parentNode.parentNode.nextSibling.querySelector(".wf-setting-value");
-                                        if (settingValueInput) {
-                                            if (settingType === "list") {
-                                                settingValueInput.onchange = function () {
-                                                    let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
-                                                    tasks[index].Settings[innerIndex].Value = this.value;
-                                                    return false;
-                                                };
+                                                settingValueHtml += '<input class="form-control wf-setting-value" type="text" value="' + val + '" />';
+                                            } else if (settingType === "password") {
+                                                settingValueHtml += '<input class="form-control wf-setting-value" type="password" value="" />';
                                             }
                                             else if (settingType === "bool") {
-                                                let innerIndex = parseInt(settingValueInput.parentNode.querySelector(".wf-setting-index").value);
-                                                if (required === true) {
-                                                    tasks[index].Settings[innerIndex].Value = "false";
+                                                let checked = false;
+                                                if (required === false) {
+                                                    if (defaultValue.toLowerCase() === "true") {
+                                                        checked = true;
+                                                    }
+                                                    tasks[index].Settings[sIndex].Value = checked.toString().toLowerCase();
+                                                }
+                                                settingValueHtml += '<input class="wf-setting-value" value="" type="checkbox" ' + (checked === true ? "checked" : "") + ' />';
+                                            }
+                                            else if (settingType === "list") {
+                                                let val = "";
+                                                if (required === false) {
+                                                    val = defaultValue;
+                                                    tasks[index].Settings[sIndex].Value = val;
+                                                }
+                                                settingValueHtml += '<select class="form-control wf-setting-value">';
+                                                settingValueHtml += '<option value=""></option>';
+
+                                                for (let j = 0; j < settingList.length; j++) {
+                                                    let listItem = settingList[j];
+                                                    settingValueHtml += '<option value="' + listItem + '" ' + (val === listItem ? "selected" : "") + '>' + listItem + '</option>';
                                                 }
 
-                                                settingValueInput.onchange = function () {
-                                                    let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
-                                                    tasks[index].Settings[innerIndex].Value = this.checked.toString();
-                                                    return false;
-                                                };
-                                            } else if (settingType === "int") {
-                                                settingValueInput.onkeyup = function () {
-                                                    if (isInt(this.value) === false) {
-                                                        this.style.borderColor = "#FF0000";
-                                                    } else {
-                                                        this.style.borderColor = "#CCCCCC";
+                                                settingValueHtml += '</select>';
+                                            } else if (settingType === "record") {
+                                                settingValueHtml += '<select class="form-control wf-setting-value">';
+                                                settingValueHtml += '<option value=""></option>';
+
+                                                for (let j = 0; j < records.length; j++) {
+                                                    let record = records[j];
+                                                    settingValueHtml += '<option value="' + record.Id + '">' + record.Name + '</option>';
+                                                }
+
+                                                settingValueHtml += '</select>';
+                                            } else if (settingType === "user") {
+                                                settingValueHtml += '<select class="form-control wf-setting-value">';
+                                                settingValueHtml += '<option value=""></option>';
+
+                                                for (let j = 0; j < users.length; j++) {
+                                                    let user = users[j];
+                                                    settingValueHtml += '<option value="' + user.Username + '">' + user.Username + '</option>';
+                                                }
+
+                                                settingValueHtml += '</select>';
+                                            } else {
+                                                settingValueHtml += '<input class="form-control wf-setting-value" type="text" value="" />';
+                                            }
+
+                                            self.parentNode.parentNode.nextSibling.firstChild.innerHTML += settingValueHtml;
+                                            self.parentNode.parentNode.nextSibling.querySelector(".wf-setting-type").value = settingType;
+
+
+                                            // bind events
+                                            let settingValueInput = self.parentNode.parentNode.nextSibling.querySelector(".wf-setting-value");
+                                            if (settingValueInput) {
+                                                if (settingType === "list") {
+                                                    settingValueInput.onchange = function () {
                                                         let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
                                                         tasks[index].Settings[innerIndex].Value = this.value;
+                                                        return false;
+                                                    };
+                                                }
+                                                else if (settingType === "bool") {
+                                                    let innerIndex = parseInt(settingValueInput.parentNode.querySelector(".wf-setting-index").value);
+                                                    if (required === true) {
+                                                        tasks[index].Settings[innerIndex].Value = "false";
                                                     }
-                                                    return false;
-                                                };
-                                            } else {
-                                                settingValueInput.onkeyup = function () {
-                                                    let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
-                                                    tasks[index].Settings[innerIndex].Value = this.value;
-                                                    return false;
-                                                };
+
+                                                    settingValueInput.onchange = function () {
+                                                        let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
+                                                        tasks[index].Settings[innerIndex].Value = this.checked.toString();
+                                                        return false;
+                                                    };
+                                                } else if (settingType === "int") {
+                                                    settingValueInput.onkeyup = function () {
+                                                        if (isInt(this.value) === false) {
+                                                            this.style.borderColor = "#FF0000";
+                                                        } else {
+                                                            this.style.borderColor = "#CCCCCC";
+                                                            let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
+                                                            tasks[index].Settings[innerIndex].Value = this.value;
+                                                        }
+                                                        return false;
+                                                    };
+                                                } else if (settingType === "record") {
+                                                    settingValueInput.onchange = function () {
+                                                        let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
+                                                        tasks[index].Settings[innerIndex].Value = this.value;
+                                                        return false;
+                                                    };
+                                                } else if (settingType === "user") {
+                                                    settingValueInput.onchange = function () {
+                                                        let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
+                                                        tasks[index].Settings[innerIndex].Value = this.value;
+                                                        return false;
+                                                    };
+                                                } else {
+                                                    settingValueInput.onkeyup = function () {
+                                                        let innerIndex = parseInt(this.parentNode.querySelector(".wf-setting-index").value);
+                                                        tasks[index].Settings[innerIndex].Value = this.value;
+                                                        return false;
+                                                    };
+                                                }
                                             }
+                                        }
+
+                                        if (settingType === "record") {
+                                            if (userProfile === 0) { // super-admin
+                                                Common.get(uri + "/searchRecords?s=", function (records) {
+                                                    loadSettingValue(records, []);
+                                                }, function () { }, auth);
+                                            } else if (userProfile === 1) { // admin
+                                                Common.get(uri + "/recordsCreatedBy?c=" + username, function (records) {
+                                                    loadSettingValue(records, []);
+                                                }, function () { }, auth);
+                                            }
+                                        } else if (settingType === "user") {
+                                            Common.get(uri + "/nonRestrictedUsers", function (users) {
+                                                loadSettingValue([], users);
+                                            }, function () { }, auth);
+                                        } else {
+                                            loadSettingValue([], []);
                                         }
 
                                         return false;
@@ -919,6 +975,7 @@
                             return false;
                         };
 
+                        // Load settings
                         if (checkId === true) {
                             Common.get(uri + "/settings/" + taskname,
                                 function (defaultSettings) {
@@ -932,45 +989,31 @@
                                         }
 
                                         let settings = tasks[index].Settings;
-                                        let taskSettings = "";
 
-                                        // Add non empty settings
-                                        for (let i = 0; i < settings.length; i++) {
-                                            let settingName = settings[i].Name;
-                                            let settingValue = settings[i].Value;
+                                        let loadSettings = function (records, users) {
+                                            let taskSettings = "";
 
-                                            taskSettings += "<tr>";
-                                            taskSettings += "<td>";
-                                            taskSettings += '<p class="wf-setting-name">' + settingName + "</p>";
-                                            taskSettings += "</td>";
-                                            taskSettings += "<td>";
-                                            taskSettings += '<button type="button" class="wf-remove-setting btn btn-danger">' + language.get("wf-remove-setting") + '</button>';
-                                            taskSettings += "</td>";
-                                            taskSettings += "</tr>";
-                                            taskSettings += "<tr>";
-                                            taskSettings += "<td colspan='2'>";
-                                            taskSettings += '<input class="wf-setting-index" type="hidden" value="' + i + '"><input class="form-control wf-setting-value" value="' + settingValue + '" type="text" />';
-                                            taskSettings += "</td>";
-                                            taskSettings += "</tr>";
-                                        }
+                                            // Add non empty settings
+                                            for (let i = 0; i < settings.length; i++) {
+                                                let settingName = settings[i].Name;
+                                                let settingValue = settings[i].Value;
+                                                let settingType = "";
+                                                let settingList = null;
 
-                                        // Add required settings
-                                        const settingsIndex = settings.length;
-                                        let defaultSettingIndex = 0;
-                                        for (let i = 0; i < defaultSettings.length; i++) {
-                                            let settingName = defaultSettings[i].Name;
-                                            let required = defaultSettings[i].Required;
-                                            let settingType = defaultSettings[i].Type;
-                                            let settingList = defaultSettings[i].List;
-
-                                            let found = false;
-                                            for (let j = 0; j < settings.length; j++) {
-                                                if (settings[j].Name === settingName) {
-                                                    found = true;
-                                                    break;
+                                                for (let j = 0; j < defaultSettings.length; j++) {
+                                                    if (defaultSettings[j].Name === settingName) {
+                                                        settingType = defaultSettings[j].Type;
+                                                        break;
+                                                    }
                                                 }
-                                            }
-                                            if (required === true && found === false) {
+
+                                                for (let j = 0; j < defaultSettings.length; j++) {
+                                                    if (defaultSettings[j].Name === settingName) {
+                                                        settingList = defaultSettings[j].List;
+                                                        break;
+                                                    }
+                                                }
+
                                                 taskSettings += "<tr>";
                                                 taskSettings += "<td>";
                                                 taskSettings += '<p class="wf-setting-name">' + settingName + "</p>";
@@ -981,23 +1024,62 @@
                                                 taskSettings += "</tr>";
                                                 taskSettings += "<tr>";
                                                 taskSettings += "<td colspan='2'>";
+                                                //taskSettings += '<input class="wf-setting-index" type="hidden" value="' + i + '"><input class="form-control wf-setting-value" value="' + settingValue + '" type="text" />';
 
-                                                taskSettings += '<input class="wf-setting-index" type="hidden" value="' + (settingsIndex + defaultSettingIndex) + '">';
+                                                taskSettings += '<input class="wf-setting-index" type="hidden" value="' + i + '">';
                                                 taskSettings += '<input class="wf-setting-type" type="hidden" value="' + settingType + '">';
 
                                                 if (settingType === "string" || settingType === "int") {
-                                                    taskSettings += '<input class="form-control wf-setting-value" value="" type="text" />';
+                                                    taskSettings += '<input class="form-control wf-setting-value" type="text" value="' + settingValue + '" />';
                                                 } else if (settingType === "password") {
-                                                    taskSettings += '<input class="form-control wf-setting-value" value="" type="password" />';
-                                                } else if (settingType === "bool") {
-                                                    taskSettings += '<input class="wf-setting-value" value="" type="checkbox" />';
-                                                } else if (settingType === "list") {
+                                                    taskSettings += '<input class="form-control wf-setting-value" type="password" value="' + settingValue + '" />';
+                                                }
+                                                else if (settingType === "bool") {
+                                                    let checked = false;
+                                                    if (settingValue.toLowerCase() === "true") {
+                                                        checked = true;
+                                                    }
+                                                    taskSettings += '<input class="wf-setting-value" value="" type="checkbox" ' + (checked ? "checked" : "") + ' />';
+                                                }
+                                                else if (settingType === "list") {
                                                     taskSettings += '<select class="form-control wf-setting-value">';
                                                     taskSettings += '<option value=""></option>';
 
                                                     for (let j = 0; j < settingList.length; j++) {
                                                         let listItem = settingList[j];
-                                                        taskSettings += '<option value="' + listItem + '">' + listItem + '</option>';
+                                                        let selected = false;
+                                                        if (settingValue.toLowerCase() === listItem.toLowerCase()) {
+                                                            selected = true;
+                                                        }
+                                                        taskSettings += '<option value="' + listItem + '" ' + (selected ? "selected='selected'" : "") + '>' + listItem + '</option>';
+                                                    }
+
+                                                    taskSettings += '</select>';
+                                                } else if (settingType === "record") {
+                                                    taskSettings += '<select class="form-control wf-setting-value">';
+                                                    taskSettings += '<option value=""></option>';
+
+                                                    for (let j = 0; j < records.length; j++) {
+                                                        let record = records[j];
+                                                        let selected = false;
+                                                        if (settingValue === record.Id) {
+                                                            selected = true;
+                                                        }
+                                                        taskSettings += '<option value="' + record.Id + '" ' + (selected ? "selected='selected'" : "") + '>' + record.Name + '</option>';
+                                                    }
+
+                                                    taskSettings += '</select>';
+                                                } else if (settingType === "user") {
+                                                    taskSettings += '<select class="form-control wf-setting-value">';
+                                                    taskSettings += '<option value=""></option>';
+
+                                                    for (let j = 0; j < users.length; j++) {
+                                                        let user = users[j];
+                                                        let selected = false;
+                                                        if (settingValue === user.Username) {
+                                                            selected = true;
+                                                        }
+                                                        taskSettings += '<option value="' + user.Username + '" ' + (selected ? "selected='selected'" : "") + '>' + user.Username + '</option>';
                                                     }
 
                                                     taskSettings += '</select>';
@@ -1005,44 +1087,245 @@
 
                                                 taskSettings += "</td>";
                                                 taskSettings += "</tr>";
+                                            }
 
-                                                tasks[index].Settings.push({
-                                                    "Name": settingName,
-                                                    "Value": "",
-                                                    "Attributes": []
-                                                });
+                                            // Add required settings
+                                            const settingsIndex = settings.length;
+                                            let defaultSettingIndex = 0;
+                                            for (let i = 0; i < defaultSettings.length; i++) {
+                                                let settingName = defaultSettings[i].Name;
+                                                let required = defaultSettings[i].Required;
+                                                let settingType = defaultSettings[i].Type;
+                                                let settingList = defaultSettings[i].List;
 
-                                                defaultSettingIndex++;
+                                                let found = false;
+                                                for (let j = 0; j < settings.length; j++) {
+                                                    if (settings[j].Name === settingName) {
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (required === true && found === false) {
+                                                    taskSettings += "<tr>";
+                                                    taskSettings += "<td>";
+                                                    taskSettings += '<p class="wf-setting-name">' + settingName + "</p>";
+                                                    taskSettings += "</td>";
+                                                    taskSettings += "<td>";
+                                                    taskSettings += '<button type="button" class="wf-remove-setting btn btn-danger">' + language.get("wf-remove-setting") + '</button>';
+                                                    taskSettings += "</td>";
+                                                    taskSettings += "</tr>";
+                                                    taskSettings += "<tr>";
+                                                    taskSettings += "<td colspan='2'>";
+
+                                                    taskSettings += '<input class="wf-setting-index" type="hidden" value="' + (settingsIndex + defaultSettingIndex) + '">';
+                                                    taskSettings += '<input class="wf-setting-type" type="hidden" value="' + settingType + '">';
+
+                                                    if (settingType === "string" || settingType === "int") {
+                                                        taskSettings += '<input class="form-control wf-setting-value" value="" type="text" />';
+                                                    } else if (settingType === "password") {
+                                                        taskSettings += '<input class="form-control wf-setting-value" value="" type="password" />';
+                                                    } else if (settingType === "bool") {
+                                                        taskSettings += '<input class="wf-setting-value" value="" type="checkbox" />';
+                                                    } else if (settingType === "list") {
+                                                        taskSettings += '<select class="form-control wf-setting-value">';
+                                                        taskSettings += '<option value=""></option>';
+
+                                                        for (let j = 0; j < settingList.length; j++) {
+                                                            let listItem = settingList[j];
+                                                            taskSettings += '<option value="' + listItem + '">' + listItem + '</option>';
+                                                        }
+
+                                                        taskSettings += '</select>';
+                                                    } else if (settingType === "record") {
+                                                        taskSettings += '<select class="form-control wf-setting-value">';
+                                                        taskSettings += '<option value=""></option>';
+
+                                                        for (let j = 0; j < records.length; j++) {
+                                                            let record = records[j];
+                                                            taskSettings += '<option value="' + record.Id + '">' + record.Name + '</option>';
+                                                        }
+
+                                                        taskSettings += '</select>';
+                                                    } else if (settingType === "user") {
+                                                        taskSettings += '<select class="form-control wf-setting-value">';
+                                                        taskSettings += '<option value=""></option>';
+
+                                                        for (let j = 0; j < users.length; j++) {
+                                                            let user = users[j];
+                                                            taskSettings += '<option value="' + user.Username + '">' + user.Username + '</option>';
+                                                        }
+
+                                                        taskSettings += '</select>';
+                                                    }
+
+                                                    taskSettings += "</td>";
+                                                    taskSettings += "</tr>";
+
+                                                    tasks[index].Settings.push({
+                                                        "Name": settingName,
+                                                        "Value": "",
+                                                        "Attributes": []
+                                                    });
+
+                                                    defaultSettingIndex++;
+                                                }
+                                            }
+
+                                            document.getElementById("task-settings-table").innerHTML = taskSettings;
+
+                                            document.getElementById("taskid").value = tasks[index].Id;
+                                            document.getElementById("taskdescription").value = tasks[index].Description;
+                                            document.getElementById("taskenabled").checked = tasks[index].IsEnabled;
+
+                                            // Remove setting
+                                            let deleteButtons = document.getElementsByClassName("wf-remove-setting");
+                                            for (let i = 0; i < deleteButtons.length; i++) {
+                                                let deleteButton = deleteButtons[i];
+                                                deleteButton.onclick = function () {
+                                                    // Calculate index from DOM
+                                                    let res = confirm(language.get("confirm-delete-setting"));
+                                                    if (res === true) {
+                                                        let innerIndex = parseInt(this.parentNode.parentNode.nextSibling.querySelector(".wf-setting-index").value);
+
+                                                        tasks[index].Settings = deleteRow(tasks[index].Settings, innerIndex);
+                                                        // update indexes
+                                                        let indexes = this.parentNode.parentNode.parentNode.querySelectorAll(".wf-setting-index");
+                                                        for (let i = innerIndex; i < indexes.length; i++) {
+                                                            indexes[i].value = parseInt(indexes[i].value) - 1;
+                                                        }
+                                                        this.parentNode.parentNode.nextSibling.remove();
+                                                        this.parentNode.parentNode.remove();
+                                                    }
+                                                    return false;
+                                                };
+                                            }
+
+                                            // Bind events
+                                            let settingValues = document.getElementsByClassName("wf-setting-value");
+                                            for (let i = 0; i < settingValues.length; i++) {
+                                                let settingValue = settingValues[i];
+                                                let settingType = settingValue.previousElementSibling.value;
+
+                                                if (settingType === "list") {
+                                                    settingValue.onchange = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.value;
+                                                        updateTasks();
+                                                    };
+                                                } else if (settingType === "bool") {
+                                                    settingValue.onchange = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.checked.toString();
+                                                        updateTasks();
+                                                    };
+                                                } else if (settingType === "int") {
+                                                    settingValue.onkeyup = function () {
+                                                        if (isInt(this.value) === false) {
+                                                            this.style.borderColor = "#FF0000";
+                                                        } else {
+                                                            this.style.borderColor = "#CCCCCC";
+                                                            let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                            tasks[index].Settings[sindex].Value = this.value;
+                                                            updateTasks();
+                                                        }
+                                                    };
+                                                } else if (settingType === "record") {
+                                                    settingValue.onchange = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.value;
+                                                        updateTasks();
+                                                    };
+                                                } else if (settingType === "user") {
+                                                    settingValue.onchange = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.value;
+                                                        updateTasks();
+                                                    };
+                                                } else {
+                                                    settingValue.onkeyup = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.value;
+                                                        updateTasks();
+                                                    };
+                                                }
+                                            }
+                                        };
+
+                                        let hasRecordSetting = false;
+                                        let hasUserSetting = false;
+                                        for (let i = 0; i < settings.length; i++) {
+                                            let setting = settings[i];
+                                            let settingType = "";
+                                            for (let j = 0; j < defaultSettings.length; j++) {
+                                                if (defaultSettings[j].Name === setting.Name) {
+                                                    settingType = defaultSettings[j].Type;
+                                                    break;
+                                                }
+                                            }
+                                            if (settingType === "record") {
+                                                hasRecordSetting = true;
+                                                break;
+                                            }
+                                        }
+                                        for (let i = 0; i < defaultSettings.length; i++) {
+                                            let setting = defaultSettings[i];
+                                            if (setting.Required === true && setting.Type === "record") {
+                                                hasRecordSetting = true;
+                                                break;
+                                            }
+                                        }
+                                        for (let i = 0; i < settings.length; i++) {
+                                            let setting = settings[i];
+                                            let settingType = "";
+                                            for (let j = 0; j < defaultSettings.length; j++) {
+                                                if (defaultSettings[j].Name === setting.Name) {
+                                                    settingType = defaultSettings[j].Type;
+                                                    break;
+                                                }
+                                            }
+                                            if (settingType === "user") {
+                                                hasUserSetting = true;
+                                                break;
+                                            }
+                                        }
+                                        for (let i = 0; i < defaultSettings.length; i++) {
+                                            let setting = defaultSettings[i];
+                                            if (setting.Required === true && setting.Type === "user") {
+                                                hasUserSetting = true;
+                                                break;
                                             }
                                         }
 
-                                        document.getElementById("task-settings-table").innerHTML = taskSettings;
-
-                                        document.getElementById("taskid").value = tasks[index].Id;
-                                        document.getElementById("taskdescription").value = tasks[index].Description;
-                                        document.getElementById("taskenabled").checked = tasks[index].IsEnabled;
-
-                                        // Remove setting
-                                        let deleteButtons = document.getElementsByClassName("wf-remove-setting");
-                                        for (let i = 0; i < deleteButtons.length; i++) {
-                                            let deleteButton = deleteButtons[i];
-                                            deleteButton.onclick = function () {
-                                                // Calculate index from DOM
-                                                let res = confirm(language.get("confirm-delete-setting"));
-                                                if (res === true) {
-                                                    let innerIndex = parseInt(this.parentNode.parentNode.nextSibling.querySelector(".wf-setting-index").value);
-
-                                                    tasks[index].Settings = deleteRow(tasks[index].Settings, innerIndex);
-                                                    // update indexes
-                                                    let indexes = this.parentNode.parentNode.parentNode.querySelectorAll(".wf-setting-index");
-                                                    for (let i = innerIndex; i < indexes.length; i++) {
-                                                        indexes[i].value = parseInt(indexes[i].value) - 1;
-                                                    }
-                                                    this.parentNode.parentNode.nextSibling.remove();
-                                                    this.parentNode.parentNode.remove();
-                                                }
-                                                return false;
-                                            };
+                                        if (hasRecordSetting === true && hasUserSetting === true) {
+                                            if (userProfile === 0) { // super-admin
+                                                Common.get(uri + "/searchRecords?s=", function (records) {
+                                                    Common.get(uri + "/nonRestrictedUsers", function (users) {
+                                                        loadSettings(records, users);
+                                                    }, function () { }, auth);
+                                                }, function () { }, auth);
+                                            } else if (userProfile === 1) { // admin
+                                                Common.get(uri + "/recordsCreatedBy?c=" + username, function (records) {
+                                                    Common.get(uri + "/nonRestrictedUsers", function (users) {
+                                                        loadSettings(records, users);
+                                                    }, function () { }, auth);
+                                                }, function () { }, auth);
+                                            }
+                                        } else if (hasRecordSetting === true && hasUserSetting === false) {
+                                            if (userProfile === 0) { // super-admin
+                                                Common.get(uri + "/searchRecords?s=", function (records) {
+                                                    loadSettings(records, []);
+                                                }, function () { }, auth);
+                                            } else if (userProfile === 1) { // admin
+                                                Common.get(uri + "/recordsCreatedBy?c=" + username, function (records) {
+                                                    loadSettings(records, []);
+                                                }, function () { }, auth);
+                                            }
+                                        } else if (hasRecordSetting === false && hasUserSetting === true) {
+                                            Common.get(uri + "/nonRestrictedUsers", function (users) {
+                                                loadSettings([], users);
+                                            }, function () { }, auth);
+                                        } else {
+                                            loadSettings([], []);
                                         }
 
                                         document.getElementById("taskid").onkeyup = function () {
@@ -1076,44 +1359,6 @@
 
                                             updateTasks();
                                         };
-
-                                        let settingValues = document.getElementsByClassName("wf-setting-value");
-                                        for (let i = 0; i < settingValues.length; i++) {
-                                            let settingValue = settingValues[i];
-                                            let settingType = settingValue.previousElementSibling.value;
-
-                                            if (settingType === "list") {
-                                                settingValue.onchange = function () {
-                                                    let sindex = this.previousElementSibling.previousElementSibling.value;
-                                                    tasks[index].Settings[sindex].Value = this.value;
-                                                    updateTasks();
-                                                };
-                                            }
-                                            else if (settingType === "bool") {
-                                                settingValue.onchange = function () {
-                                                    let sindex = this.previousElementSibling.previousElementSibling.value;
-                                                    tasks[index].Settings[sindex].Value = this.checked.toString();
-                                                    updateTasks();
-                                                };
-                                            } else if (settingType === "int") {
-                                                settingValue.onkeyup = function () {
-                                                    if (isInt(this.value) === false) {
-                                                        this.style.borderColor = "#FF0000";
-                                                    } else {
-                                                        this.style.borderColor = "#CCCCCC";
-                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
-                                                        tasks[index].Settings[sindex].Value = this.value;
-                                                        updateTasks();
-                                                    }
-                                                };
-                                            } else {
-                                                settingValue.onkeyup = function () {
-                                                    let sindex = this.previousElementSibling.previousElementSibling.value;
-                                                    tasks[index].Settings[sindex].Value = this.value;
-                                                    updateTasks();
-                                                };
-                                            }
-                                        }
                                     }
                                 },
                                 function () {
@@ -1125,7 +1370,6 @@
 
                                     if (tasks[index]) {
                                         let settings = tasks[index].Settings;
-                                        let taskSettings = "";
 
                                         if (defaultSettings.length > 0) {
                                             newSettingButton.style.display = "inline-block";
@@ -1133,91 +1377,30 @@
                                             newSettingButton.style.display = "none";
                                         }
 
-                                        // Add task settings
-                                        for (let i = 0; i < settings.length; i++) {
-                                            let settingName = settings[i].Name;
-                                            let settingValue = settings[i].Value;
-                                            let settingType = "";
-                                            let settingList = null;
+                                        let loadSettings = function (records, users) {
+                                            let taskSettings = "";
 
-                                            for (let j = 0; j < defaultSettings.length; j++) {
-                                                if (defaultSettings[j].Name === settingName) {
-                                                    settingType = defaultSettings[j].Type;
-                                                    break;
-                                                }
-                                            }
+                                            // Add task settings
+                                            for (let i = 0; i < settings.length; i++) {
+                                                let settingName = settings[i].Name;
+                                                let settingValue = settings[i].Value;
+                                                let settingType = "";
+                                                let settingList = null;
 
-                                            for (let j = 0; j < defaultSettings.length; j++) {
-                                                if (defaultSettings[j].Name === settingName) {
-                                                    settingList = defaultSettings[j].List;
-                                                    break;
-                                                }
-                                            }
-
-                                            taskSettings += "<tr>";
-                                            taskSettings += "<td>";
-                                            taskSettings += '<p class="wf-setting-name">' + settingName + "</p>";
-                                            taskSettings += "</td>";
-                                            taskSettings += "<td>";
-                                            taskSettings += '<button type="button" class="wf-remove-setting btn btn-danger">' + language.get("wf-remove-setting") + '</button>';
-                                            taskSettings += "</td>";
-                                            taskSettings += "</tr>";
-                                            taskSettings += "<tr>";
-                                            taskSettings += "<td colspan='2'>";
-                                            //taskSettings += '<input class="wf-setting-index" type="hidden" value="' + i + '"><input class="form-control wf-setting-value" value="' + settingValue + '" type="text" />';
-
-                                            taskSettings += '<input class="wf-setting-index" type="hidden" value="' + i + '">';
-                                            taskSettings += '<input class="wf-setting-type" type="hidden" value="' + settingType + '">';
-
-                                            if (settingType === "string" || settingType === "int") {
-                                                taskSettings += '<input class="form-control wf-setting-value" type="text" value="' + settingValue + '" />';
-                                            } else if (settingType === "password") {
-                                                taskSettings += '<input class="form-control wf-setting-value" type="password" value="' + settingValue + '" />';
-                                            }
-                                            else if (settingType === "bool") {
-                                                let checked = false;
-                                                if (settingValue.toLowerCase() === "true") {
-                                                    checked = true;
-                                                }
-                                                taskSettings += '<input class="wf-setting-value" value="" type="checkbox" ' + (checked ? "checked" : "") + ' />';
-                                            }
-                                            else if (settingType === "list") {
-                                                taskSettings += '<select class="form-control wf-setting-value">';
-                                                taskSettings += '<option value=""></option>';
-
-                                                for (let j = 0; j < settingList.length; j++) {
-                                                    let listItem = settingList[j];
-                                                    let selected = false;
-                                                    if (settingValue.toLowerCase() === listItem.toLowerCase()) {
-                                                        selected = true;
+                                                for (let j = 0; j < defaultSettings.length; j++) {
+                                                    if (defaultSettings[j].Name === settingName) {
+                                                        settingType = defaultSettings[j].Type;
+                                                        break;
                                                     }
-                                                    taskSettings += '<option value="' + listItem + '" ' + (selected ? "selected='selected'" : "") + '>' + listItem + '</option>';
                                                 }
 
-                                                taskSettings += '</select>';
-                                            }
-
-                                            taskSettings += "</td>";
-                                            taskSettings += "</tr>";
-                                        }
-
-                                        // Add required settings
-                                        const settingsIndex = settings.length;
-                                        let defaultSettingIndex = 0;
-                                        for (let i = 0; i < defaultSettings.length; i++) {
-                                            let settingName = defaultSettings[i].Name;
-                                            let required = defaultSettings[i].Required;
-                                            let settingType = defaultSettings[i].Type;
-                                            let settingList = defaultSettings[i].List;
-
-                                            let found = false;
-                                            for (let j = 0; j < settings.length; j++) {
-                                                if (settings[j].Name === settingName) {
-                                                    found = true;
-                                                    break;
+                                                for (let j = 0; j < defaultSettings.length; j++) {
+                                                    if (defaultSettings[j].Name === settingName) {
+                                                        settingList = defaultSettings[j].List;
+                                                        break;
+                                                    }
                                                 }
-                                            }
-                                            if (required === true && found === false) {
+
                                                 taskSettings += "<tr>";
                                                 taskSettings += "<td>";
                                                 taskSettings += '<p class="wf-setting-name">' + settingName + "</p>";
@@ -1228,19 +1411,22 @@
                                                 taskSettings += "</tr>";
                                                 taskSettings += "<tr>";
                                                 taskSettings += "<td colspan='2'>";
-                                                3
-                                                //taskSettings += '<input class="wf-setting-index" type="hidden" value="' + (settingsIndex + defaultSettingIndex) + '"><input class="form-control wf-setting-value" value="" type="text" />';
+                                                //taskSettings += '<input class="wf-setting-index" type="hidden" value="' + i + '"><input class="form-control wf-setting-value" value="' + settingValue + '" type="text" />';
 
-                                                taskSettings += '<input class="wf-setting-index" type="hidden" value="' + (settingsIndex + defaultSettingIndex) + '">';
+                                                taskSettings += '<input class="wf-setting-index" type="hidden" value="' + i + '">';
                                                 taskSettings += '<input class="wf-setting-type" type="hidden" value="' + settingType + '">';
 
                                                 if (settingType === "string" || settingType === "int") {
-                                                    taskSettings += '<input class="form-control wf-setting-value" value="" type="text" />';
+                                                    taskSettings += '<input class="form-control wf-setting-value" type="text" value="' + settingValue + '" />';
                                                 } else if (settingType === "password") {
-                                                    taskSettings += '<input class="form-control wf-setting-value" value="" type="password" />';
+                                                    taskSettings += '<input class="form-control wf-setting-value" type="password" value="' + settingValue + '" />';
                                                 }
                                                 else if (settingType === "bool") {
-                                                    taskSettings += '<input class="wf-setting-value" value="" type="checkbox" />';
+                                                    let checked = false;
+                                                    if (settingValue.toLowerCase() === "true") {
+                                                        checked = true;
+                                                    }
+                                                    taskSettings += '<input class="wf-setting-value" value="" type="checkbox" ' + (checked ? "checked" : "") + ' />';
                                                 }
                                                 else if (settingType === "list") {
                                                     taskSettings += '<select class="form-control wf-setting-value">';
@@ -1248,7 +1434,39 @@
 
                                                     for (let j = 0; j < settingList.length; j++) {
                                                         let listItem = settingList[j];
-                                                        taskSettings += '<option value="' + listItem + '">' + listItem + '</option>';
+                                                        let selected = false;
+                                                        if (settingValue.toLowerCase() === listItem.toLowerCase()) {
+                                                            selected = true;
+                                                        }
+                                                        taskSettings += '<option value="' + listItem + '" ' + (selected ? "selected='selected'" : "") + '>' + listItem + '</option>';
+                                                    }
+
+                                                    taskSettings += '</select>';
+                                                } else if (settingType === "record") {
+                                                    taskSettings += '<select class="form-control wf-setting-value">';
+                                                    taskSettings += '<option value=""></option>';
+
+                                                    for (let j = 0; j < records.length; j++) {
+                                                        let record = records[j];
+                                                        let selected = false;
+                                                        if (settingValue === record.Id) {
+                                                            selected = true;
+                                                        }
+                                                        taskSettings += '<option value="' + record.Id + '" ' + (selected ? "selected='selected'" : "") + '>' + record.Name + '</option>';
+                                                    }
+
+                                                    taskSettings += '</select>';
+                                                } else if (settingType === "user") {
+                                                    taskSettings += '<select class="form-control wf-setting-value">';
+                                                    taskSettings += '<option value=""></option>';
+
+                                                    for (let j = 0; j < users.length; j++) {
+                                                        let user = users[j];
+                                                        let selected = false;
+                                                        if (settingValue === user.Username) {
+                                                            selected = true;
+                                                        }
+                                                        taskSettings += '<option value="' + user.Username + '" ' + (selected ? "selected='selected'" : "") + '>' + user.Username + '</option>';
                                                     }
 
                                                     taskSettings += '</select>';
@@ -1256,78 +1474,245 @@
 
                                                 taskSettings += "</td>";
                                                 taskSettings += "</tr>";
-
-                                                tasks[index].Settings.push({
-                                                    "Name": settingName,
-                                                    "Value": "",
-                                                    "Attributes": []
-                                                });
-
-                                                defaultSettingIndex++;
                                             }
-                                        }
 
-                                        document.getElementById("task-settings-table").innerHTML = taskSettings;
+                                            // Add required settings
+                                            const settingsIndex = settings.length;
+                                            let defaultSettingIndex = 0;
+                                            for (let i = 0; i < defaultSettings.length; i++) {
+                                                let settingName = defaultSettings[i].Name;
+                                                let required = defaultSettings[i].Required;
+                                                let settingType = defaultSettings[i].Type;
+                                                let settingList = defaultSettings[i].List;
 
-                                        // Bind onkeyup
-                                        let settingValues = document.getElementsByClassName("wf-setting-value");
-                                        for (let i = 0; i < settingValues.length; i++) {
-                                            let settingValue = settingValues[i];
-                                            let settingType = settingValue.previousElementSibling.value;
+                                                let found = false;
+                                                for (let j = 0; j < settings.length; j++) {
+                                                    if (settings[j].Name === settingName) {
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (required === true && found === false) {
+                                                    taskSettings += "<tr>";
+                                                    taskSettings += "<td>";
+                                                    taskSettings += '<p class="wf-setting-name">' + settingName + "</p>";
+                                                    taskSettings += "</td>";
+                                                    taskSettings += "<td>";
+                                                    taskSettings += '<button type="button" class="wf-remove-setting btn btn-danger">' + language.get("wf-remove-setting") + '</button>';
+                                                    taskSettings += "</td>";
+                                                    taskSettings += "</tr>";
+                                                    taskSettings += "<tr>";
+                                                    taskSettings += "<td colspan='2'>";
+                                                    3
+                                                    //taskSettings += '<input class="wf-setting-index" type="hidden" value="' + (settingsIndex + defaultSettingIndex) + '"><input class="form-control wf-setting-value" value="" type="text" />';
 
-                                            if (settingType === "list") {
-                                                settingValue.onchange = function () {
-                                                    let sindex = this.previousElementSibling.previousElementSibling.value;
-                                                    tasks[index].Settings[sindex].Value = this.value;
-                                                    updateTasks();
-                                                };
+                                                    taskSettings += '<input class="wf-setting-index" type="hidden" value="' + (settingsIndex + defaultSettingIndex) + '">';
+                                                    taskSettings += '<input class="wf-setting-type" type="hidden" value="' + settingType + '">';
+
+                                                    if (settingType === "string" || settingType === "int") {
+                                                        taskSettings += '<input class="form-control wf-setting-value" value="" type="text" />';
+                                                    } else if (settingType === "password") {
+                                                        taskSettings += '<input class="form-control wf-setting-value" value="" type="password" />';
+                                                    }
+                                                    else if (settingType === "bool") {
+                                                        taskSettings += '<input class="wf-setting-value" value="" type="checkbox" />';
+                                                    }
+                                                    else if (settingType === "list") {
+                                                        taskSettings += '<select class="form-control wf-setting-value">';
+                                                        taskSettings += '<option value=""></option>';
+
+                                                        for (let j = 0; j < settingList.length; j++) {
+                                                            let listItem = settingList[j];
+                                                            taskSettings += '<option value="' + listItem + '">' + listItem + '</option>';
+                                                        }
+
+                                                        taskSettings += '</select>';
+                                                    } else if (settingType === "record") {
+                                                        taskSettings += '<select class="form-control wf-setting-value">';
+                                                        taskSettings += '<option value=""></option>';
+
+                                                        for (let j = 0; j < records.length; j++) {
+                                                            let record = records[j];
+                                                            taskSettings += '<option value="' + record.Id + '">' + record.Name + '</option>';
+                                                        }
+
+                                                        taskSettings += '</select>';
+                                                    } else if (settingType === "user") {
+                                                        taskSettings += '<select class="form-control wf-setting-value">';
+                                                        taskSettings += '<option value=""></option>';
+
+                                                        for (let j = 0; j < users.length; j++) {
+                                                            let user = users[j];
+                                                            taskSettings += '<option value="' + user.Username + '">' + user.Username + '</option>';
+                                                        }
+
+                                                        taskSettings += '</select>';
+                                                    }
+
+                                                    taskSettings += "</td>";
+                                                    taskSettings += "</tr>";
+
+                                                    tasks[index].Settings.push({
+                                                        "Name": settingName,
+                                                        "Value": "",
+                                                        "Attributes": []
+                                                    });
+
+                                                    defaultSettingIndex++;
+                                                }
                                             }
-                                            else if (settingType === "bool") {
-                                                settingValue.onchange = function () {
-                                                    let sindex = this.previousElementSibling.previousElementSibling.value;
-                                                    tasks[index].Settings[sindex].Value = this.checked.toString();
-                                                    updateTasks();
-                                                };
-                                            } else if (settingType === "int") {
-                                                settingValue.onkeyup = function () {
-                                                    if (isInt(this.value) === false) {
-                                                        this.style.borderColor = "#FF0000";
-                                                    } else {
-                                                        this.style.borderColor = "#CCCCCC";
+
+                                            document.getElementById("task-settings-table").innerHTML = taskSettings;
+
+                                            // Bind events
+                                            let settingValues = document.getElementsByClassName("wf-setting-value");
+                                            for (let i = 0; i < settingValues.length; i++) {
+                                                let settingValue = settingValues[i];
+                                                let settingType = settingValue.previousElementSibling.value;
+
+                                                if (settingType === "list") {
+                                                    settingValue.onchange = function () {
                                                         let sindex = this.previousElementSibling.previousElementSibling.value;
                                                         tasks[index].Settings[sindex].Value = this.value;
                                                         updateTasks();
+                                                    };
+                                                }
+                                                else if (settingType === "bool") {
+                                                    settingValue.onchange = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.checked.toString();
+                                                        updateTasks();
+                                                    };
+                                                } else if (settingType === "int") {
+                                                    settingValue.onkeyup = function () {
+                                                        if (isInt(this.value) === false) {
+                                                            this.style.borderColor = "#FF0000";
+                                                        } else {
+                                                            this.style.borderColor = "#CCCCCC";
+                                                            let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                            tasks[index].Settings[sindex].Value = this.value;
+                                                            updateTasks();
+                                                        }
+                                                    };
+                                                } else if (settingType === "record") {
+                                                    settingValue.onchange = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.value;
+                                                        updateTasks();
+                                                    };
+                                                } else if (settingType === "user") {
+                                                    settingValue.onchange = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.value;
+                                                        updateTasks();
+                                                    };
+                                                } else {
+                                                    settingValue.onkeyup = function () {
+                                                        let sindex = this.previousElementSibling.previousElementSibling.value;
+                                                        tasks[index].Settings[sindex].Value = this.value;
+                                                        updateTasks();
+                                                    };
+                                                }
+                                            }
+
+                                            // Bind onremove
+                                            let deleteButtons = document.getElementsByClassName("wf-remove-setting");
+                                            for (let i = 0; i < deleteButtons.length; i++) {
+                                                let deleteButton = deleteButtons[i];
+                                                deleteButton.onclick = function () {
+                                                    let res = confirm(language.get("confirm-delete-setting"));
+                                                    if (res === true) {
+                                                        // Calculate index from DOM
+                                                        let innerIndex = parseInt(this.parentNode.parentNode.nextSibling.querySelector(".wf-setting-index").value);
+                                                        tasks[index].Settings = deleteRow(tasks[index].Settings, innerIndex);
+                                                        // update indexes
+                                                        let indexes = this.parentNode.parentNode.parentNode.querySelectorAll(".wf-setting-index");
+                                                        for (let i = innerIndex; i < indexes.length; i++) {
+                                                            indexes[i].value = parseInt(indexes[i].value) - 1;
+                                                        }
+                                                        this.parentNode.parentNode.nextSibling.remove();
+                                                        this.parentNode.parentNode.remove();
                                                     }
+                                                    return false;
                                                 };
-                                            } else {
-                                                settingValue.onkeyup = function () {
-                                                    let sindex = this.previousElementSibling.previousElementSibling.value;
-                                                    tasks[index].Settings[sindex].Value = this.value;
-                                                    updateTasks();
-                                                };
+                                            }
+                                        };
+
+                                        let hasRecordSetting = false;
+                                        let hasUserSetting = false;
+                                        for (let i = 0; i < settings.length; i++) {
+                                            let setting = settings[i];
+                                            let settingType = "";
+                                            for (let j = 0; j < defaultSettings.length; j++) {
+                                                if (defaultSettings[j].Name === setting.Name) {
+                                                    settingType = defaultSettings[j].Type;
+                                                    break;
+                                                }
+                                            }
+                                            if (settingType === "record") {
+                                                hasRecordSetting = true;
+                                                break;
+                                            }
+                                        }
+                                        for (let i = 0; i < defaultSettings.length; i++) {
+                                            let setting = defaultSettings[i];
+                                            if (setting.Required === true && setting.Type === "record") {
+                                                hasRecordSetting = true;
+                                                break;
+                                            }
+                                        }
+                                        for (let i = 0; i < settings.length; i++) {
+                                            let setting = settings[i];
+                                            let settingType = "";
+                                            for (let j = 0; j < defaultSettings.length; j++) {
+                                                if (defaultSettings[j].Name === setting.Name) {
+                                                    settingType = defaultSettings[j].Type;
+                                                    break;
+                                                }
+                                            }
+                                            if (settingType === "user") {
+                                                hasUserSetting = true;
+                                                break;
+                                            }
+                                        }
+                                        for (let i = 0; i < defaultSettings.length; i++) {
+                                            let setting = defaultSettings[i];
+                                            if (setting.Required === true && setting.Type === "user") {
+                                                hasUserSetting = true;
+                                                break;
                                             }
                                         }
 
-                                        // Bind onremove
-                                        let deleteButtons = document.getElementsByClassName("wf-remove-setting");
-                                        for (let i = 0; i < deleteButtons.length; i++) {
-                                            let deleteButton = deleteButtons[i];
-                                            deleteButton.onclick = function () {
-                                                let res = confirm(language.get("confirm-delete-setting"));
-                                                if (res === true) {
-                                                    // Calculate index from DOM
-                                                    let innerIndex = parseInt(this.parentNode.parentNode.nextSibling.querySelector(".wf-setting-index").value);
-                                                    tasks[index].Settings = deleteRow(tasks[index].Settings, innerIndex);
-                                                    // update indexes
-                                                    let indexes = this.parentNode.parentNode.parentNode.querySelectorAll(".wf-setting-index");
-                                                    for (let i = innerIndex; i < indexes.length; i++) {
-                                                        indexes[i].value = parseInt(indexes[i].value) - 1;
-                                                    }
-                                                    this.parentNode.parentNode.nextSibling.remove();
-                                                    this.parentNode.parentNode.remove();
-                                                }
-                                                return false;
-                                            };
+                                        if (hasRecordSetting === true && hasUserSetting === true) {
+                                            if (userProfile === 0) { // super-admin
+                                                Common.get(uri + "/searchRecords?s=", function (records) {
+                                                    Common.get(uri + "/nonRestrictedUsers", function (users) {
+                                                        loadSettings(records, users);
+                                                    }, function () { }, auth);
+                                                }, function () { }, auth);
+                                            } else if (userProfile === 1) { // admin
+                                                Common.get(uri + "/recordsCreatedBy?c=" + username, function (records) {
+                                                    Common.get(uri + "/nonRestrictedUsers", function (users) {
+                                                        loadSettings(records, users);
+                                                    }, function () { }, auth);
+                                                }, function () { }, auth);
+                                            }
+                                        } else if (hasRecordSetting === true && hasUserSetting === false) {
+                                            if (userProfile === 0) { // super-admin
+                                                Common.get(uri + "/searchRecords?s=", function (records) {
+                                                    loadSettings(records, []);
+                                                }, function () { }, auth);
+                                            } else if (userProfile === 1) { // admin
+                                                Common.get(uri + "/recordsCreatedBy?c=" + username, function (records) {
+                                                    loadSettings(records, []);
+                                                }, function () { }, auth);
+                                            }
+                                        } else if (hasRecordSetting === false && hasUserSetting === true) {
+                                            Common.get(uri + "/nonRestrictedUsers", function (users) {
+                                                loadSettings([], users);
+                                            }, function () { }, auth);
+                                        } else {
+                                            loadSettings([], []);
                                         }
 
                                         document.getElementById("taskid").onkeyup = function () {

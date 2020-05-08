@@ -1209,6 +1209,20 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json"    
+
+  /nonRestrictedUsers:
+    get:
+     tags:
+     - "Users"
+     summary: "Returns non restricted users"
+     description: ""
+     produces:
+       - "application/json"  
+     responses:
+        200:
+          description: "successful operation"
+     consumes:
+      - "application/json"
   
   /insertUser:
     post:

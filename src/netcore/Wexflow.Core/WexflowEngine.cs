@@ -719,6 +719,24 @@ namespace Wexflow.Core
         }
 
         /// <summary>
+        /// Returns non restricted users.
+        /// </summary>
+        /// <returns>Non restricted users.</returns>
+        public User[] GetNonRestrictedUsers()
+        {
+            try
+            {
+                var users = Database.GetNonRestricedUsers();
+                return users.ToArray();
+            }
+            catch (Exception e)
+            {
+                Logger.ErrorFormat("Error while retrieving administrators: {0}", e.Message);
+                return new User[] { };
+            }
+        }
+
+        /// <summary>
         /// Starts Wexflow engine.
         /// </summary>
         public void Run()
