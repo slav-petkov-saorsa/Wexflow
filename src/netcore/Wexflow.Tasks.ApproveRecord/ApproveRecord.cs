@@ -88,6 +88,7 @@ namespace Wexflow.Tasks.ApproveRecord
                                 Info($"ApproveRecord.OnStart: User {assignedTo.Username} notified for the start of approval process on the record {record.GetDbId()} - {record.Name}.");
 
                                 // assign the record
+                                record.ModifiedBy = assignedBy.GetDbId();
                                 record.AssignedTo = assignedTo.GetDbId();
                                 record.AssignedOn = DateTime.Now;
                                 Workflow.Database.UpdateRecord(record.GetDbId(), record);
@@ -139,6 +140,12 @@ namespace Wexflow.Tasks.ApproveRecord
                                         Workflow.Database.InsertNotification(notification);
                                         Info($"ApproveRecord.OnApproved: User {assignedTo.Username} notified for the approval of the record {record.GetDbId()} - {record.Name}.");
 
+                                        // update the record
+                                        record.Approved = true;
+                                        Workflow.Database.UpdateRecord(record.GetDbId(), record);
+                                        Info($"Record {record.GetDbId()} - {record.Name} updated.");
+
+
                                         var tasks = GetTasks(OnApproved);
                                         var latestVersion = Workflow.Database.GetLatestVersion(RecordId);
                                         if (latestVersion != null)
@@ -174,6 +181,11 @@ namespace Wexflow.Tasks.ApproveRecord
                                         };
                                         Workflow.Database.InsertNotification(notification);
                                         Info($"ApproveRecord.OnRejected: User {assignedTo.Username} notified for the rejection of the record {record.GetDbId()} - {record.Name}.");
+
+                                        // update the record
+                                        record.Approved = false;
+                                        Workflow.Database.UpdateRecord(record.GetDbId(), record);
+                                        Info($"Record {record.GetDbId()} - {record.Name} updated.");
 
                                         var tasks = GetTasks(OnRejected);
                                         var latestVersion = Workflow.Database.GetLatestVersion(RecordId);

@@ -28,6 +28,7 @@
     let password = "";
     let userProfile = -1;
     let auth = "";
+    let modal = null;
 
     let suser = getUser();
 
@@ -151,7 +152,7 @@
                 let recordsTable = document.getElementById("records-table");
                 let rows = recordsTable.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
                 let recordIds = [];
-                let modal = null;
+                
                 for (let i = 0; i < rows.length; i++) {
                     let row = rows[i];
                     let checkBox = row.getElementsByClassName("check")[0].firstChild;

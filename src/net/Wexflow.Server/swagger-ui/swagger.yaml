@@ -13,6 +13,8 @@ basePath: "/wexflow"
 tags:
 - name: "Dashboard"
   description: "Operations about dashboard"
+- name: "Records"
+  description: "Operations about records"
 - name: "Manager"
   description: "Operations about manager"
 - name: "Designer"
@@ -23,6 +25,8 @@ tags:
   description: "Operations about users"
 - name: "Profiles"
   description: "Operations about profiles"
+- name: "Notifications"
+  description: "Operations about notifications"
 #schemes:
 #- "https"
 #- "http"
@@ -153,6 +157,8 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json" 
+
+# TODO "Records"
 
   /search:
     get:
