@@ -70,12 +70,19 @@ namespace Wexflow.Scripts.Core
                     var workflows = db.GetWorkflows().ToList();
                     foreach (var workflow in workflows)
                     {
-                        db.InsertUserWorkflowRelation(new UserWorkflow
+                        XNamespace xn = "urn:wexflow-schema";
+                        var xdoc = XDocument.Parse(workflow.Xml);
+                        var workflowId = int.Parse(xdoc.Element(xn + "Workflow").Attribute("id").Value);
+
+                        if (workflowId != 146 && workflowId != 147 && workflowId != 148 && workflowId != 149)
                         {
-                            UserId = user.GetDbId(),
-                            WorkflowId = workflow.GetDbId()
-                        });
-                        Console.WriteLine("UserWorkflowRelation ({0}, {1}) created.", user.GetDbId(), workflow.GetDbId());
+                            db.InsertUserWorkflowRelation(new UserWorkflow
+                            {
+                                UserId = user.GetDbId(),
+                                WorkflowId = workflow.GetDbId()
+                            });
+                            Console.WriteLine("UserWorkflowRelation ({0}, {1}) created.", user.GetDbId(), workflow.GetDbId());
+                        }
                     }
                     Console.WriteLine("wexflow user created with success.");
                 }
@@ -88,6 +95,63 @@ namespace Wexflow.Scripts.Core
             catch (Exception e)
             {
                 Console.WriteLine("An error occured: {0}", e);
+            }
+        }
+
+        public static void InsertRecord(Db db, string name, string desc, string comments, string managerComments, bool hasFile, string configId, string dbFolderName)
+        {
+            try
+            {
+                var recordsFolder = ConfigurationManager.AppSettings["recordsFolder"];
+                var admin = db.GetUser("admin");
+                var wexflow = db.GetUser("wexflow");
+
+                var record = new Record
+                {
+                    Name = name,
+                    Description = desc,
+                    Approved = false,
+                    AssignedOn = DateTime.Now,
+                    AssignedTo = wexflow.GetDbId(),
+                    Comments = comments,
+                    ManagerComments = managerComments,
+                    CreatedBy = admin.GetDbId(),
+                    StartDate = DateTime.Now.AddDays(10),
+                    EndDate = DateTime.Now.AddDays(30)
+                };
+
+                var recordId = db.InsertRecord(record);
+
+                if (hasFile)
+                {
+                    var recordVersion = new Wexflow.Core.Db.Version
+                    {
+                        RecordId = recordId
+                    };
+                    var recordVersionId = db.InsertVersion(recordVersion);
+
+                    var recordSrc = ConfigurationManager.AppSettings[configId];
+                    var recordFileName = Path.GetFileName(recordSrc);
+                    var recordFolder = Path.Combine(recordsFolder, dbFolderName, recordId, recordVersionId);
+                    var recordFilePath = Path.Combine(recordFolder, recordFileName);
+                    if (!Directory.Exists(recordFolder))
+                    {
+                        Directory.CreateDirectory(recordFolder);
+                    }
+                    if (File.Exists(recordFilePath))
+                    {
+                        File.Delete(recordFilePath);
+                    }
+                    File.Copy(recordSrc, recordFilePath);
+                    recordVersion.FilePath = recordFilePath;
+                    db.UpdateVersion(recordVersionId, recordVersion);
+                }
+
+                Console.WriteLine($"Record {name} inserted: {recordId}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occured while creating the record {0}: {1}", name, e);
             }
         }
     }

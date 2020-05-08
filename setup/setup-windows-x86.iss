@@ -230,6 +230,7 @@ Source: "..\LICENSE.txt"; DestDir: "{app}\"; Flags: ignoreversion
 ; Wexflow's configuration
 Source: "..\samples\net\Wexflow\Database\*"; DestDir: "C:\Wexflow\Database"; Components: samples; Flags: ignoreversion recursesubdirs uninsneveruninstall
 Source: "..\samples\net\Wexflow\Workflows\*"; DestDir: "C:\Wexflow\Workflows"; Components: samples; Flags: ignoreversion recursesubdirs uninsneveruninstall
+Source: "..\samples\net\Wexflow\Records\*"; DestDir: "C:\Wexflow\Records"; Components: samples; Flags: ignoreversion recursesubdirs uninsneveruninstall
 Source: "..\samples\net\Wexflow\Xslt\*"; DestDir: "C:\Wexflow\Xslt"; Components: samples; Flags: ignoreversion recursesubdirs uninsneveruninstall
 
 Source: "..\samples\net\Wexflow\Approval\*"; DestDir: "C:\Wexflow\Approval"; Flags: ignoreversion recursesubdirs uninsneveruninstall
