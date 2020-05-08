@@ -31,10 +31,27 @@ namespace Wexflow.Server
             var repo = LogManager.CreateRepository(Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy));
             XmlConfigurator.Configure(repo, log4NetConfig["log4net"]);
 
-            var wexflowSettingsFile = Config["WexflowSettingsFile"];
+            var settingsFile = Config["WexflowSettingsFile"];
             superAdminUsername = Config["SuperAdminUsername"];
             var enableWorkflowsHotFolder = bool.Parse(Config["EnableWorkflowsHotFolder"]);
-            WexflowEngine = new WexflowEngine(wexflowSettingsFile, enableWorkflowsHotFolder, superAdminUsername);
+            var enableEmailNotifications = bool.Parse(Config["EnableEmailNotifications"]);
+            var smtpHost = Config["Smtp.Host"];
+            var smtpPort = int.Parse(Config["Smtp.Port"]);
+            var smtpEnableSsl = bool.Parse(Config["Smtp.EnableSsl"]);
+            var smtpUser = Config["Smtp.User"];
+            var smtpPassword = Config["Smtp.Password"];
+            var smtpFrom = Config["Smtp.From"];
+            WexflowEngine = new WexflowEngine(settingsFile
+                , enableWorkflowsHotFolder
+                , superAdminUsername
+                , enableEmailNotifications
+                , smtpHost
+                , smtpPort
+                , smtpEnableSsl
+                , smtpUser
+                , smtpPassword
+                , smtpFrom
+                );
 
             if (enableWorkflowsHotFolder)
             {

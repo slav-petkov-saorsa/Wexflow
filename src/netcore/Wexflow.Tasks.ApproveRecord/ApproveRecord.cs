@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading;
 using System.Xml.Linq;
 using Wexflow.Core;
@@ -85,6 +87,22 @@ namespace Wexflow.Tasks.ApproveRecord
                                     IsRead = false
                                 };
                                 Workflow.Database.InsertNotification(notification);
+
+                                if (Workflow.WexflowEngine.EnableEmailNotifications)
+                                {
+                                    string subject = "Wexflow notification from " + assignedBy.Username;
+                                    string body = notificationMessage;
+
+                                    string host = Workflow.WexflowEngine.SmptHost;
+                                    int port = Workflow.WexflowEngine.SmtpPort;
+                                    bool enableSsl = Workflow.WexflowEngine.SmtpEnableSsl;
+                                    string smtpUser = Workflow.WexflowEngine.SmtpUser;
+                                    string smtpPassword = Workflow.WexflowEngine.SmtpPassword;
+                                    string from = Workflow.WexflowEngine.SmtpFrom;
+
+                                    Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
+                                }
+
                                 Info($"ApproveRecord.OnStart: User {assignedTo.Username} notified for the start of approval process on the record {record.GetDbId()} - {record.Name}.");
 
                                 // assign the record
@@ -113,6 +131,22 @@ namespace Wexflow.Tasks.ApproveRecord
                                             IsRead = false
                                         };
                                         Workflow.Database.InsertNotification(notification);
+
+                                        if (Workflow.WexflowEngine.EnableEmailNotifications)
+                                        {
+                                            string subject = "Wexflow notification from " + assignedBy.Username;
+                                            string body = notificationMessage;
+
+                                            string host = Workflow.WexflowEngine.SmptHost;
+                                            int port = Workflow.WexflowEngine.SmtpPort;
+                                            bool enableSsl = Workflow.WexflowEngine.SmtpEnableSsl;
+                                            string smtpUser = Workflow.WexflowEngine.SmtpUser;
+                                            string smtpPassword = Workflow.WexflowEngine.SmtpPassword;
+                                            string from = Workflow.WexflowEngine.SmtpFrom;
+
+                                            Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
+                                        }
+
                                         Info($"ApproveRecord.OnRecordDeleted: User {assignedTo.Username} notified for the removal of the record {RecordId}.");
 
                                         var tasks = GetTasks(OnDeleted);
@@ -138,6 +172,22 @@ namespace Wexflow.Tasks.ApproveRecord
                                             IsRead = false
                                         };
                                         Workflow.Database.InsertNotification(notification);
+
+                                        if (Workflow.WexflowEngine.EnableEmailNotifications)
+                                        {
+                                            string subject = "Wexflow notification from " + assignedBy.Username;
+                                            string body = notificationMessage;
+
+                                            string host = Workflow.WexflowEngine.SmptHost;
+                                            int port = Workflow.WexflowEngine.SmtpPort;
+                                            bool enableSsl = Workflow.WexflowEngine.SmtpEnableSsl;
+                                            string smtpUser = Workflow.WexflowEngine.SmtpUser;
+                                            string smtpPassword = Workflow.WexflowEngine.SmtpPassword;
+                                            string from = Workflow.WexflowEngine.SmtpFrom;
+
+                                            Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
+                                        }
+
                                         Info($"ApproveRecord.OnApproved: User {assignedTo.Username} notified for the approval of the record {record.GetDbId()} - {record.Name}.");
 
                                         // update the record
@@ -180,6 +230,22 @@ namespace Wexflow.Tasks.ApproveRecord
                                             IsRead = false
                                         };
                                         Workflow.Database.InsertNotification(notification);
+
+                                        if (Workflow.WexflowEngine.EnableEmailNotifications)
+                                        {
+                                            string subject = "Wexflow notification from " + assignedBy.Username;
+                                            string body = notificationMessage;
+
+                                            string host = Workflow.WexflowEngine.SmptHost;
+                                            int port = Workflow.WexflowEngine.SmtpPort;
+                                            bool enableSsl = Workflow.WexflowEngine.SmtpEnableSsl;
+                                            string smtpUser = Workflow.WexflowEngine.SmtpUser;
+                                            string smtpPassword = Workflow.WexflowEngine.SmtpPassword;
+                                            string from = Workflow.WexflowEngine.SmtpFrom;
+
+                                            Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
+                                        }
+
                                         Info($"ApproveRecord.OnRejected: User {assignedTo.Username} notified for the rejection of the record {record.GetDbId()} - {record.Name}.");
 
                                         // update the record
@@ -291,6 +357,22 @@ namespace Wexflow.Tasks.ApproveRecord
                             IsRead = false
                         };
                         Workflow.Database.InsertNotification(notification);
+
+                        if (Workflow.WexflowEngine.EnableEmailNotifications)
+                        {
+                            string subject = "Wexflow notification from " + assignedBy.Username;
+                            string body = notificationMessage;
+
+                            string host = Workflow.WexflowEngine.SmptHost;
+                            int port = Workflow.WexflowEngine.SmtpPort;
+                            bool enableSsl = Workflow.WexflowEngine.SmtpEnableSsl;
+                            string smtpUser = Workflow.WexflowEngine.SmtpUser;
+                            string smtpPassword = Workflow.WexflowEngine.SmtpPassword;
+                            string from = Workflow.WexflowEngine.SmtpFrom;
+
+                            Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
+                        }
+
                         Info($"ApproveRecord.OnStopped: User {assignedTo.Username} notified for the stop of the approval process of the record {record.GetDbId()} - {record.Name}.");
 
                         var tasks = GetTasks(OnStopped);
@@ -349,6 +431,29 @@ namespace Wexflow.Tasks.ApproveRecord
             }
 
             return tasks.ToArray();
+        }
+
+        private void Send(string host, int port, bool enableSsl, string user, string password, string to, string from, string subject, string body)
+        {
+            var smtp = new SmtpClient
+            {
+                Host = host,
+                Port = port,
+                EnableSsl = enableSsl,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(user, password)
+            };
+
+            using (var msg = new MailMessage())
+            {
+                msg.From = new MailAddress(from);
+                msg.To.Add(new MailAddress(to));
+                msg.Subject = subject;
+                msg.Body = body;
+
+                smtp.Send(msg);
+            }
         }
     }
 }

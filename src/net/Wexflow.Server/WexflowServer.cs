@@ -17,9 +17,26 @@ namespace Wexflow.Server
         private static string settingsFile = Config["WexflowSettingsFile"];
         private static string superAdminUsername = Config["SuperAdminUsername"];
         private static bool enableWorkflowsHotFolder = bool.Parse(Config["EnableWorkflowsHotFolder"]);
+        private static bool enableEmailNotifications = bool.Parse(Config["EnableEmailNotifications"]);
+        private static string smtpHost = Config["Smtp.Host"];
+        private static int smtpPort = int.Parse(Config["Smtp.Port"]);
+        private static bool smtpEnableSsl = bool.Parse(Config["Smtp.EnableSsl"]);
+        private static string smtpUser = Config["Smtp.User"];
+        private static string smtpPassword = Config["Smtp.Password"];
+        private static string smtpFrom = Config["Smtp.From"];
 
         public static FileSystemWatcher Watcher;
-        public static WexflowEngine WexflowEngine = new WexflowEngine(settingsFile, enableWorkflowsHotFolder, superAdminUsername);
+        public static WexflowEngine WexflowEngine = new WexflowEngine(settingsFile
+            , enableWorkflowsHotFolder
+            , superAdminUsername
+            , enableEmailNotifications
+            , smtpHost
+            , smtpPort
+            , smtpEnableSsl
+            , smtpUser
+            , smtpPassword
+            , smtpFrom
+            );
 
         private IDisposable _webApp;
 

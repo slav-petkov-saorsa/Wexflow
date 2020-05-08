@@ -82,6 +82,34 @@ namespace Wexflow.Core
         /// </summary>
         public bool EnableWorkflowsHotFolder { get; private set; }
         /// <summary>
+        /// Indicates whether email notifications are enabled or not.
+        /// </summary>
+        public bool EnableEmailNotifications { get; private set; }
+        /// <summary>
+        /// SMTP host.
+        /// </summary>
+        public string SmptHost { get; private set; }
+        /// <summary>
+        /// SMTP port.
+        /// </summary>
+        public int SmtpPort { get; private set; }
+        /// <summary>
+        ///  Indicates whether to enable SMTP SSL or not.
+        /// </summary>
+        public bool SmtpEnableSsl { get; private set; }
+        /// <summary>
+        /// SMTP user.
+        /// </summary>
+        public string SmtpUser { get; private set; }
+        /// <summary>
+        /// SMTP password.
+        /// </summary>
+        public string SmtpPassword { get; private set; }
+        /// <summary>
+        /// SMTP from.
+        /// </summary>
+        public string SmtpFrom { get; private set; }
+        /// <summary>
         /// Workflows hot folder path.
         /// </summary>
         public string WorkflowsFolder { get; private set; }
@@ -160,11 +188,35 @@ namespace Wexflow.Core
         /// <param name="settingsFile">Settings file path.</param>
         /// <param name="enableWorkflowsHotFolder">Indicates whether workflows hot folder is enabled or not.</param>
         /// <param name="superAdminUsername">Super-admin username.</param>
-        public WexflowEngine(string settingsFile, bool enableWorkflowsHotFolder, string superAdminUsername)
+        /// <param name="enableEmailNotifications"></param>
+        /// <param name="smtpHost">SMTP host.</param>
+        /// <param name="smtpPort">SMTP port.</param>
+        /// <param name="smtpEnableSsl">SMTP enable ssl.</param>
+        /// <param name="smtpUser">SMTP user.</param>
+        /// <param name="smtpPassword">SMTP password.</param>
+        /// <param name="smtpFrom">SMTP from.</param>
+        public WexflowEngine(string settingsFile
+            , bool enableWorkflowsHotFolder
+            , string superAdminUsername
+            , bool enableEmailNotifications
+            , string smtpHost
+            , int smtpPort
+            , bool smtpEnableSsl
+            , string smtpUser
+            , string smtpPassword
+            , string smtpFrom
+            )
         {
             SettingsFile = settingsFile;
             EnableWorkflowsHotFolder = enableWorkflowsHotFolder;
             SuperAdminUsername = superAdminUsername;
+            EnableEmailNotifications = enableEmailNotifications;
+            SmptHost = smtpHost;
+            SmtpPort = smtpPort;
+            SmtpEnableSsl = smtpEnableSsl;
+            SmtpUser = smtpUser;
+            SmtpPassword = smtpPassword;
+            SmtpFrom = smtpFrom;
             Workflows = new List<Workflow>();
 
             Logger.Info("");

@@ -5066,6 +5066,22 @@ namespace Wexflow.Server
                             };
                             var id = WexflowServer.WexflowEngine.InsertNotification(notification);
                             res = id != "-1";
+
+                            bool enableEmailNotifications = bool.Parse(WexflowServer.Config["EnableEmailNotifications"]);
+                            if (enableEmailNotifications)
+                            {
+                                string subject = "Wexflow notification from " + user.Username;
+                                string body = message;
+
+                                string host = WexflowServer.Config["Smtp.Host"];
+                                int port = int.Parse(WexflowServer.Config["Smtp.Port"]);
+                                bool enableSsl = bool.Parse(WexflowServer.Config["Smtp.EnableSsl"]);
+                                string smtpUser = WexflowServer.Config["Smtp.User"];
+                                string smtpPassword = WexflowServer.Config["Smtp.Password"];
+                                string from = WexflowServer.Config["Smtp.From"];
+
+                                Send(host, port, enableSsl, smtpUser, smtpPassword, user.Email, from, subject, body);
+                            }
                         }
                     }
 
