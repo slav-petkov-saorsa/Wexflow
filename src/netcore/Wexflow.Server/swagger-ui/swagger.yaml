@@ -13,6 +13,8 @@ basePath: "/wexflow"
 tags:
 - name: "Dashboard"
   description: "Operations about dashboard"
+- name: "Records"
+  description: "Operations about records"
 - name: "Manager"
   description: "Operations about manager"
 - name: "Designer"
@@ -23,10 +25,17 @@ tags:
   description: "Operations about users"
 - name: "Profiles"
   description: "Operations about profiles"
+- name: "Notifications"
+  description: "Operations about notifications"
 #schemes:
 #- "https"
 #- "http"
 paths:
+ 
+ #
+ # Dashboard
+ #
+
   /statusCount:
     get:
      tags:
@@ -153,6 +162,197 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json" 
+
+#
+# Records
+#
+
+  /uploadVersion:
+    post:
+     tags:
+     - "Records"
+     summary: "Uploads a version file"
+     description: ""
+     consumes:
+         - multipart/form-data
+     produces:
+       - "application/json"
+     parameters:
+        - in: formData
+          name: file
+          type: file
+          description: The file version to upload   
+        - in: query
+          name: r
+          type: "string"
+          description: Record id
+     responses:
+        200:
+          description: "successful operation" 
+
+  /downloadFile:
+    get:
+     tags:
+     - "Records"
+     summary: "Downloads a file"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: p
+          type: "string"
+          description: File path
+     responses:
+        200:
+          description: "successful operation"
+     consumes:
+      - "application/json"
+
+  /deleteTempVersionFile:
+    post:
+     tags:
+     - "Records"
+     summary: "Deletes a temp version file"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: p
+          type: "string"
+          description: File path
+     responses:
+        200:
+          description: "successful operation" 
+
+  /deleteTempVersionFiles:
+    post:
+     tags:
+     - "Records"
+     summary: "Deletes temp version files"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "Payload"
+          required: true
+          schema:
+           $ref: "#/definitions/record"
+     responses:
+        200:
+          description: "successful operation"
+
+  /saveRecord:
+    post:
+     tags:
+     - "Records"
+     summary: "Saves a record"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "Payload"
+          required: true
+          schema:
+           $ref: "#/definitions/record"
+     responses:
+        200:
+          description: "successful operation"
+
+  /deleteRecords:
+    post:
+     tags:
+     - "Records"
+     summary: "Deletes records"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "Record Ids"
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+     responses:
+        200:
+          description: "successful operation"
+
+  /searchRecords:
+    get:
+     tags:
+     - "Records"
+     summary: "Searches for records by keyword"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: s
+          type: "string"
+          description: Keyword
+     responses:
+        200:
+          description: "successful operation"
+     consumes:
+      - "application/json"
+
+  /recordsCreatedBy:
+    get:
+     tags:
+     - "Records"
+     summary: "Retrieves records created by a user"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: c
+          type: "string"
+          description: Username of the creator of the records
+     responses:
+        200:
+          description: "successful operation"
+     consumes:
+      - "application/json"
+
+  /searchRecordsCreatedByOrAssignedTo:
+    get:
+     tags:
+     - "Records"
+     summary: "Searches for records assigned to or created by a user by keyword"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: s
+          type: "string"
+          description: Keyword
+        - in: query
+          name: c
+          type: "string"
+          description: Username of the creator of the records
+        - in: query
+          name: a
+          type: "string"
+          description: username of the user assigned to a record
+     responses:
+        200:
+          description: "successful operation"
+     consumes:
+      - "application/json"
+
+#
+# Manager
+#
 
   /search:
     get:
@@ -407,7 +607,11 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json" 
-      
+  
+#
+# Designer
+#
+
   /tasks/{id}:
     get:
      tags:
@@ -584,7 +788,6 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json"
-  
   
   /isPeriodValid/{period}:
     get:
@@ -844,6 +1047,10 @@ paths:
      consumes:
       - "application/json"
 
+#
+# History
+#
+
   /historyEntriesCountByDate:
     get:
      tags:
@@ -956,6 +1163,10 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json"
+
+#
+# Users
+#
 
   /user:
     get:
@@ -1141,6 +1352,10 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json"    
+
+#
+# Profiles
+#
   
   /searchAdmins:
     get:
@@ -1204,6 +1419,140 @@ paths:
           description: "successful operation"
      consumes:
       - "application/json"     
+
+#
+# Notifications
+#
+
+  /hasNotifications:
+    get:
+     tags:
+     - "Notifications"
+     summary: "Indicates whether the user has notifications or not"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: a
+          type: "string"
+          description: Username of the user assigned to the notifications
+     responses:
+        200:
+          description: "successful operation"
+     consumes:
+      - "application/json"
+
+  /markNotificationsAsRead:
+    post:
+     tags:
+     - "Notifications"
+     summary: "Marks notifications as read"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "Notification Ids"
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+     responses:
+        200:
+          description: "successful operation"
+
+  /markNotificationsAsUnread:
+    post:
+     tags:
+     - "Notifications"
+     summary: "Marks notifications as unread"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "Notification Ids"
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+     responses:
+        200:
+          description: "successful operation"
+
+  /deleteNotifications:
+    post:
+     tags:
+     - "Notifications"
+     summary: "Deletes notifications"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "Notification Ids"
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+     responses:
+        200:
+          description: "successful operation"
+
+  /searchNotifications:
+    get:
+     tags:
+     - "Notifications"
+     summary: "Searches for notifications of a user"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: a
+          type: "string"
+          description: Username of the user assigned to the notifications
+        - in: query
+          name: s
+          type: "string"
+          description: Keyword
+     responses:
+        200:
+          description: "successful operation"
+     consumes:
+      - "application/json"
+
+  /notify:
+    post:
+     tags:
+     - "Notifications"
+     summary: "Notifies a user"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: a
+          type: "string"
+          description: Username of the user assigned to the notification
+        - in: query
+          name: m
+          type: "string"
+          description: Notification message
+     responses:
+        200:
+          description: "successful operation"
+
+#
+# Definitions
+#
 
 definitions:
   variable:
@@ -1352,6 +1701,56 @@ definitions:
     properties:
        xml:
          type: "string"
+
+  version:
+    type: "object"
+    properties:
+       Id:
+         type: "string"
+       FilePath:
+         type: "string"
+       FileName:
+         type: "string"
+       RecordId:
+         type: "string"
+       CreatedOn:
+         type: "string"
+
+  record:
+    type: "object"
+    properties:
+       Id:
+         type: "string"
+       Name:
+         type: "string"
+       Description:
+         type: "string"
+       StartDate:
+         type: "string"
+       EndDate:
+         type: "string"
+       Comments:
+         type: "string"
+       Approved:
+         type: "boolean"
+       ManagerComments:
+         type: "string"
+       ModifiedBy:
+         type: "string"
+       ModifiedOn:
+         type: "string"
+       CreatedBy:
+         type: "string"
+       CreatedOn:
+         type: "string"
+       AssignedTo:
+         type: "string"
+       AssignedOn:
+         type: "string"
+       Versions:
+         type: "array"
+         items:
+          $ref: "#/definitions/version"
 
 externalDocs:
   description: "Find out more about Wexflow"
