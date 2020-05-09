@@ -1,4 +1,4 @@
-﻿namespace Wexflow.Core.Db.MySQL
+﻿namespace Wexflow.Core.Db.MariaDB
 {
     public class Record : Core.Db.Record
     {

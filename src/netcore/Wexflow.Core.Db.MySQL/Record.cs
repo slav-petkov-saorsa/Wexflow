@@ -22,16 +22,16 @@
                                                         + ColumnName_Name + " VARCHAR(512), "
                                                         + ColumnName_Description + " LONGTEXT, "
                                                         + ColumnName_Approved + " BIT, "
-                                                        + ColumnName_StartDate + " TIMESTAMP, "
-                                                        + ColumnName_EndDate + " TIMESTAMP, "
+                                                        + ColumnName_StartDate + " TIMESTAMP NULL DEFAULT NULL, "
+                                                        + ColumnName_EndDate + " TIMESTAMP NULL DEFAULT NULL, "
                                                         + ColumnName_Comments + " LONGTEXT, "
                                                         + ColumnName_ManagerComments + " LONGTEXT, "
                                                         + ColumnName_CreatedBy + " INT, "
                                                         + ColumnName_CreatedOn + " TIMESTAMP, "
                                                         + ColumnName_ModifiedBy + " INT, "
-                                                        + ColumnName_ModifiedOn + " TIMESTAMP, "
+                                                        + ColumnName_ModifiedOn + " TIMESTAMP NULL DEFAULT NULL, "
                                                         + ColumnName_AssignedTo + " INT, "
-                                                        + ColumnName_AssignedOn + " TIMESTAMP, CONSTRAINT " + DocumentName + "_pk PRIMARY KEY (" + ColumnName_Id + "))";
+                                                        + ColumnName_AssignedOn + " TIMESTAMP NULL DEFAULT NULL, CONSTRAINT " + DocumentName + "_pk PRIMARY KEY (" + ColumnName_Id + "))";
 
         public int Id { get; set; }
 
