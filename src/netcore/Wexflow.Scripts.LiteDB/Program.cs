@@ -65,7 +65,7 @@ namespace Wexflow.Scripts.LiteDB
                     Helper.InsertRecord(db
                         , config["recordsFolder"]
                         , string.Empty
-                        , "Vacations request"
+                        , "Vacations"
                         , "Vacations request"
                         , string.Empty
                         , string.Empty
@@ -150,7 +150,7 @@ namespace Wexflow.Scripts.LiteDB
                 Helper.InsertRecord(db
                     , config["recordsFolder"]
                     , string.Empty
-                    , "Vacations request"
+                    , "Vacations"
                     , "Vacations request"
                     , string.Empty
                     , string.Empty

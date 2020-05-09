@@ -51,7 +51,7 @@ namespace Wexflow.Scripts.LiteDB
 
                     // Insert vacation request
                     Helper.InsertRecord(db
-                        , "Vacations request"
+                        , "Vacations"
                         , "Vacations request"
                         , string.Empty
                         , string.Empty
