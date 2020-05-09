@@ -1851,7 +1851,8 @@ namespace Wexflow.Core.Db.PostgreSQL
                 {
                     conn.Open();
 
-                    using (var command = new NpgsqlCommand("SELECT " + User.ColumnName_Id + ", "
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + User.ColumnName_Id + ", "
                         + User.ColumnName_Username + ", "
                         + User.ColumnName_Password + ", "
                         + User.ColumnName_Email + ", "
@@ -1859,8 +1860,8 @@ namespace Wexflow.Core.Db.PostgreSQL
                         + User.ColumnName_CreatedOn + ", "
                         + User.ColumnName_ModifiedOn
                         + " FROM " + Core.Db.User.DocumentName
-                        + " WHERE " + User.ColumnName_UserProfile + " = " + (int)UserProfile.SuperAdministrator
-                        + " OR " + User.ColumnName_UserProfile + " = " + (int)UserProfile.Administrator
+                        + " WHERE (" + User.ColumnName_UserProfile + " = " + (int)UserProfile.SuperAdministrator
+                        + " OR " + User.ColumnName_UserProfile + " = " + (int)UserProfile.Administrator + ")"
                         + " ORDER BY " + User.ColumnName_Username
                         + ";", conn))
                     {
