@@ -54,6 +54,9 @@ namespace Wexflow.Core.Db.PostgreSQL
             helper.CreateTableIfNotExists(Core.Db.User.DocumentName, User.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.UserWorkflow.DocumentName, UserWorkflow.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.Workflow.DocumentName, Workflow.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Version.DocumentName, Version.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Record.DocumentName, Record.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Notification.DocumentName, Notification.TableStruct);
         }
 
         public override void Init()
@@ -1840,97 +1843,778 @@ namespace Wexflow.Core.Db.PostgreSQL
 
         public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<User> users = new List<User>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT " + User.ColumnName_Id + ", "
+                        + User.ColumnName_Username + ", "
+                        + User.ColumnName_Password + ", "
+                        + User.ColumnName_Email + ", "
+                        + User.ColumnName_UserProfile + ", "
+                        + User.ColumnName_CreatedOn + ", "
+                        + User.ColumnName_ModifiedOn
+                        + " FROM " + Core.Db.User.DocumentName
+                        + " WHERE " + User.ColumnName_UserProfile + " = " + (int)UserProfile.SuperAdministrator
+                        + " OR " + User.ColumnName_UserProfile + " = " + (int)UserProfile.Administrator
+                        + " ORDER BY " + User.ColumnName_Username
+                        + ";", conn))
+                    {
+
+                        using (var reader = command.ExecuteReader())
+                        {
+
+                            while (reader.Read())
+                            {
+                                var admin = new User
+                                {
+                                    Id = (int)reader[User.ColumnName_Id],
+                                    Username = (string)reader[User.ColumnName_Username],
+                                    Password = (string)reader[User.ColumnName_Password],
+                                    Email = (string)reader[User.ColumnName_Email],
+                                    UserProfile = (UserProfile)((int)reader[User.ColumnName_UserProfile]),
+                                    CreatedOn = (DateTime)reader[User.ColumnName_CreatedOn],
+                                    ModifiedOn = reader[User.ColumnName_ModifiedOn] == DBNull.Value ? DateTime.MinValue : (DateTime)reader[User.ColumnName_ModifiedOn]
+                                };
+
+                                users.Add(admin);
+                            }
+                        }
+                    }
+                }
+
+                return users;
+            }
         }
 
-        public override string InsertRecord(Record record)
+        public override string InsertRecord(Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("INSERT INTO " + Core.Db.Record.DocumentName + "("
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn + ") VALUES("
+                        + "'" + (record.Name ?? "").Replace("'", "''") + "'" + ", "
+                        + "'" + (record.Description ?? "").Replace("'", "''") + "'" + ", "
+                        + (record.Approved ? "TRUE" : "FALSE") + ", "
+                        + (record.StartDate == null ? "NULL" : "'" + record.StartDate.Value.ToString(dateTimeFormat) + "'") + ", "
+                        + (record.EndDate == null ? "NULL" : "'" + record.EndDate.Value.ToString(dateTimeFormat) + "'") + ", "
+                        + "'" + (record.Comments ?? "").Replace("'", "''") + "'" + ", "
+                        + "'" + (record.ManagerComments ?? "").Replace("'", "''") + "'" + ", "
+                        + int.Parse(record.CreatedBy) + ", "
+                        + "'" + DateTime.Now.ToString(dateTimeFormat) + "'" + ", "
+                        + (string.IsNullOrEmpty(record.ModifiedBy) ? "NULL" : int.Parse(record.ModifiedBy).ToString()) + ", "
+                        + (record.ModifiedOn == null ? "NULL" : "'" + record.ModifiedOn.Value.ToString(dateTimeFormat) + "'") + ", "
+                         + (string.IsNullOrEmpty(record.AssignedTo) ? "NULL" : int.Parse(record.AssignedTo).ToString()) + ", "
+                        + (record.AssignedOn == null ? "NULL" : "'" + record.AssignedOn.Value.ToString(dateTimeFormat) + "'") + ") "
+                        + "RETURNING " + Record.ColumnName_Id + ";"
+                        , conn))
+                    {
+                        var id = (int)command.ExecuteScalar();
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
-        public override void UpdateRecord(string recordId, Record record)
+        public override void UpdateRecord(string recordId, Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("UPDATE " + Core.Db.Record.DocumentName + " SET "
+                        + Record.ColumnName_Name + " = '" + (record.Name ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_Description + " = '" + (record.Description ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_Approved + " = " + (record.Approved ? "TRUE" : "FALSE") + ", "
+                        + Record.ColumnName_StartDate + " = " + (record.StartDate == null ? "NULL" : "'" + record.StartDate.Value.ToString(dateTimeFormat) + "'") + ", "
+                        + Record.ColumnName_EndDate + " = " + (record.EndDate == null ? "NULL" : "'" + record.EndDate.Value.ToString(dateTimeFormat) + "'") + ", "
+                        + Record.ColumnName_Comments + " = '" + (record.Comments ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_ManagerComments + " = '" + (record.ManagerComments ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_CreatedBy + " = " + int.Parse(record.CreatedBy) + ", "
+                        + Record.ColumnName_ModifiedBy + " = " + (string.IsNullOrEmpty(record.ModifiedBy) ? "NULL" : int.Parse(record.ModifiedBy).ToString()) + ", "
+                        + Record.ColumnName_ModifiedOn + " = '" + DateTime.Now.ToString(dateTimeFormat) + "', "
+                        + Record.ColumnName_AssignedTo + " = " + (string.IsNullOrEmpty(record.AssignedTo) ? "NULL" : int.Parse(record.AssignedTo).ToString()) + ", "
+                        + Record.ColumnName_AssignedOn + " = " + (record.AssignedOn == null ? "NULL" : "'" + record.AssignedOn.Value.ToString(dateTimeFormat) + "'")
+                        + " WHERE "
+                        + Record.ColumnName_Id + " = " + int.Parse(recordId) + ";"
+                        , conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteRecords(string[] recordIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                if (recordIds.Length > 0)
+                {
+                    using (var conn = new NpgsqlConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        var builder = new StringBuilder("(");
+
+                        for (int i = 0; i < recordIds.Length; i++)
+                        {
+                            var id = recordIds[i];
+                            builder.Append(id);
+                            if (i < recordIds.Length - 1)
+                            {
+                                builder.Append(", ");
+                            }
+                            else
+                            {
+                                builder.Append(")");
+                            }
+                        }
+
+                        using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Record.DocumentName
+                            + " WHERE " + Record.ColumnName_Id + " IN " + builder.ToString() + ";", conn))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
-        public override Record GetRecord(string id)
+        public override Core.Db.Record GetRecord(string id)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + Record.ColumnName_Id + " = " + int.Parse(id)
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = (int)reader[Record.ColumnName_Id],
+                                    Name = (string)reader[Record.ColumnName_Name],
+                                    Description = (string)reader[Record.ColumnName_Description],
+                                    Approved = (bool)reader[Record.ColumnName_Approved],
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = ((int)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                return record;
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
         }
 
-        public override IEnumerable<Record> GetRecords(string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecords(string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Record> records = new List<Record>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + "LOWER(" + Record.ColumnName_Name + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " OR " + "LOWER(" + Record.ColumnName_Description + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " ORDER BY " + Record.ColumnName_CreatedOn + " DESC"
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = (int)reader[Record.ColumnName_Id],
+                                    Name = (string)reader[Record.ColumnName_Name],
+                                    Description = (string)reader[Record.ColumnName_Description],
+                                    Approved = (bool)reader[Record.ColumnName_Approved],
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = ((int)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                records.Add(record);
+                            }
+                        }
+                    }
+                }
+
+                return records;
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedBy(string createdBy)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Record> records = new List<Record>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + Record.ColumnName_CreatedBy + " = " + int.Parse(createdBy)
+                        + " ORDER BY " + Record.ColumnName_Name + " ASC"
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = (int)reader[Record.ColumnName_Id],
+                                    Name = (string)reader[Record.ColumnName_Name],
+                                    Description = (string)reader[Record.ColumnName_Description],
+                                    Approved = (bool)reader[Record.ColumnName_Approved],
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = ((int)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                records.Add(record);
+                            }
+                        }
+                    }
+                }
+
+                return records;
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Record> records = new List<Record>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + "(LOWER(" + Record.ColumnName_Name + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " OR " + "LOWER(" + Record.ColumnName_Description + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
+                        + " AND (" + Record.ColumnName_CreatedBy + " = " + int.Parse(createdBy) + " OR " + Record.ColumnName_AssignedTo + " = " + int.Parse(assingedTo) + ")"
+                        + " ORDER BY " + Record.ColumnName_CreatedOn + " DESC"
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = (int)reader[Record.ColumnName_Id],
+                                    Name = (string)reader[Record.ColumnName_Name],
+                                    Description = (string)reader[Record.ColumnName_Description],
+                                    Approved = (bool)reader[Record.ColumnName_Approved],
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = ((int)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : ((int)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                records.Add(record);
+                            }
+                        }
+                    }
+                }
+
+                return records;
+            }
         }
 
-        public override string InsertVersion(Version version)
+        public override string InsertVersion(Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("INSERT INTO " + Core.Db.Version.DocumentName + "("
+                        + Version.ColumnName_RecordId + ", "
+                        + Version.ColumnName_FilePath + ", "
+                        + Version.ColumnName_CreatedOn + ") VALUES("
+                        + int.Parse(version.RecordId) + ", "
+                        + "'" + (version.FilePath ?? "").Replace("'", "''") + "'" + ", "
+                        + "'" + DateTime.Now.ToString(dateTimeFormat) + "'" + ") "
+                        + "RETURNING " + Version.ColumnName_Id + ";"
+                        , conn))
+                    {
+                        var id = (int)command.ExecuteScalar();
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
-        public override void UpdateVersion(string versionId, Version version)
+        public override void UpdateVersion(string versionId, Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("UPDATE " + Core.Db.Version.DocumentName + " SET "
+                        + Version.ColumnName_RecordId + " = " + int.Parse(version.RecordId) + ", "
+                        + Version.ColumnName_FilePath + " = '" + (version.FilePath ?? "").Replace("'", "''") + "'"
+                        + " WHERE "
+                        + Version.ColumnName_Id + " = " + int.Parse(versionId) + ";"
+                        , conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteVersions(string[] versionIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                if (versionIds.Length > 0)
+                {
+                    using (var conn = new NpgsqlConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        var builder = new StringBuilder("(");
+
+                        for (int i = 0; i < versionIds.Length; i++)
+                        {
+                            var id = versionIds[i];
+                            builder.Append(id);
+                            if (i < versionIds.Length - 1)
+                            {
+                                builder.Append(", ");
+                            }
+                            else
+                            {
+                                builder.Append(")");
+                            }
+                        }
+
+                        using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Version.DocumentName
+                            + " WHERE " + Version.ColumnName_Id + " IN " + builder.ToString() + ";", conn))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
-        public override IEnumerable<Version> GetVersions(string recordId)
+        public override IEnumerable<Core.Db.Version> GetVersions(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Version> versions = new List<Version>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Version.ColumnName_Id + ", "
+                        + Version.ColumnName_RecordId + ", "
+                        + Version.ColumnName_FilePath + ", "
+                        + Version.ColumnName_CreatedOn
+                        + " FROM " + Core.Db.Version.DocumentName
+                        + " WHERE " + Version.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var version = new Version
+                                {
+                                    Id = (int)reader[Version.ColumnName_Id],
+                                    RecordId = ((int)reader[Version.ColumnName_RecordId]).ToString(),
+                                    FilePath = (string)reader[Version.ColumnName_FilePath],
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                };
+
+                                versions.Add(version);
+                            }
+                        }
+                    }
+                }
+
+                return versions;
+            }
         }
 
-        public override Version GetLatestVersion(string recordId)
+        public override Core.Db.Version GetLatestVersion(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Version.ColumnName_Id + ", "
+                        + Version.ColumnName_RecordId + ", "
+                        + Version.ColumnName_FilePath + ", "
+                        + Version.ColumnName_CreatedOn
+                        + " FROM " + Core.Db.Version.DocumentName
+                        + " WHERE " + Version.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        + " ORDER BY " + Version.ColumnName_CreatedOn + " DESC"
+                        + " LIMIT 1"
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                var version = new Version
+                                {
+                                    Id = (int)reader[Version.ColumnName_Id],
+                                    RecordId = ((int)reader[Version.ColumnName_RecordId]).ToString(),
+                                    FilePath = (string)reader[Version.ColumnName_FilePath],
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                };
+
+                                return version;
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
         }
 
-        public override string InsertNotification(Notification notification)
+        public override string InsertNotification(Core.Db.Notification notification)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("INSERT INTO " + Core.Db.Notification.DocumentName + "("
+                        + Notification.ColumnName_AssignedBy + ", "
+                        + Notification.ColumnName_AssignedOn + ", "
+                        + Notification.ColumnName_AssignedTo + ", "
+                        + Notification.ColumnName_Message + ", "
+                        + Notification.ColumnName_IsRead + ") VALUES("
+                        + (!string.IsNullOrEmpty(notification.AssignedBy) ? int.Parse(notification.AssignedBy).ToString() : "NULL") + ", "
+                        + "'" + notification.AssignedOn.ToString(dateTimeFormat) + "'" + ", "
+                        + (!string.IsNullOrEmpty(notification.AssignedTo) ? int.Parse(notification.AssignedTo).ToString() : "NULL") + ", "
+                        + "'" + (notification.Message ?? "").Replace("'", "''") + "'" + ", "
+                        + (notification.IsRead ? "TRUE" : "FALSE") + ") "
+                        + "RETURNING " + Notification.ColumnName_Id + ";"
+                        , conn))
+                    {
+                        var id = (int)command.ExecuteScalar();
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
         public override void MarkNotificationsAsRead(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var builder = new StringBuilder("(");
+
+                    for (int i = 0; i < notificationIds.Length; i++)
+                    {
+                        var id = notificationIds[i];
+                        builder.Append(id);
+                        if (i < notificationIds.Length - 1)
+                        {
+                            builder.Append(", ");
+                        }
+                        else
+                        {
+                            builder.Append(")");
+                        }
+                    }
+
+                    using (var command = new NpgsqlCommand("UPDATE " + Core.Db.Notification.DocumentName
+                        + " SET " + Notification.ColumnName_IsRead + " = " + "TRUE"
+                        + " WHERE " + Notification.ColumnName_Id + " IN " + builder.ToString() + ";", conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void MarkNotificationsAsUnread(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var builder = new StringBuilder("(");
+
+                    for (int i = 0; i < notificationIds.Length; i++)
+                    {
+                        var id = notificationIds[i];
+                        builder.Append(id);
+                        if (i < notificationIds.Length - 1)
+                        {
+                            builder.Append(", ");
+                        }
+                        else
+                        {
+                            builder.Append(")");
+                        }
+                    }
+
+                    using (var command = new NpgsqlCommand("UPDATE " + Core.Db.Notification.DocumentName
+                        + " SET " + Notification.ColumnName_IsRead + " = " + "FALSE"
+                        + " WHERE " + Notification.ColumnName_Id + " IN " + builder.ToString() + ";", conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteNotifications(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                if (notificationIds.Length > 0)
+                {
+                    using (var conn = new NpgsqlConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        var builder = new StringBuilder("(");
+
+                        for (int i = 0; i < notificationIds.Length; i++)
+                        {
+                            var id = notificationIds[i];
+                            builder.Append(id);
+                            if (i < notificationIds.Length - 1)
+                            {
+                                builder.Append(", ");
+                            }
+                            else
+                            {
+                                builder.Append(")");
+                            }
+                        }
+
+                        using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Notification.DocumentName
+                            + " WHERE " + Notification.ColumnName_Id + " IN " + builder.ToString() + ";", conn))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
-        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        public override IEnumerable<Core.Db.Notification> GetNotifications(string assignedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Notification> notifications = new List<Notification>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Notification.ColumnName_Id + ", "
+                        + Notification.ColumnName_AssignedBy + ", "
+                        + Notification.ColumnName_AssignedOn + ", "
+                        + Notification.ColumnName_AssignedTo + ", "
+                        + Notification.ColumnName_Message + ", "
+                        + Notification.ColumnName_IsRead
+                        + " FROM " + Core.Db.Notification.DocumentName
+                        + " WHERE " + "(LOWER(" + Notification.ColumnName_Message + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " AND " + Notification.ColumnName_AssignedTo + " = " + int.Parse(assignedTo) + ")"
+                        + " ORDER BY " + Notification.ColumnName_AssignedOn + " DESC"
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var notification = new Notification
+                                {
+                                    Id = (int)reader[Notification.ColumnName_Id],
+                                    AssignedBy = ((int)reader[Notification.ColumnName_AssignedBy]).ToString(),
+                                    AssignedOn = (DateTime)reader[Notification.ColumnName_AssignedOn],
+                                    AssignedTo = ((int)reader[Notification.ColumnName_AssignedTo]).ToString(),
+                                    Message = (string)reader[Notification.ColumnName_Message],
+                                    IsRead = (bool)reader[Notification.ColumnName_IsRead]
+                                };
+
+                                notifications.Add(notification);
+                            }
+                        }
+                    }
+                }
+
+                return notifications;
+            }
         }
 
         public override bool HasNotifications(string assignedTo)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT COUNT(*)"
+                        + " FROM " + Core.Db.Notification.DocumentName
+                        + " WHERE (" + Notification.ColumnName_AssignedTo + " = " + int.Parse(assignedTo)
+                        + " AND " + Notification.ColumnName_IsRead + " = " + "FALSE" + ")"
+                        + ";", conn))
+                    {
+                        var count = (long)command.ExecuteScalar();
+                        var hasNotifications = count > 0;
+                        return hasNotifications;
+                    }
+                }
+            }
         }
 
         public override void Dispose()
