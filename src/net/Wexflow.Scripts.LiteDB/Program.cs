@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using Wexflow.Core.Db.LiteDB;
 using Wexflow.Scripts.Core;
