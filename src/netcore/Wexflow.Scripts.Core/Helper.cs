@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Xml.Linq;
 using Wexflow.Core.Db;
 
@@ -54,10 +53,6 @@ namespace Wexflow.Scripts.Core
                 Console.WriteLine("Workflows created.");
                 Console.WriteLine();
 
-                //var secs = 5;
-                //Console.WriteLine("Waiting {0} seconds.", secs);
-                //Thread.Sleep(secs * 1000);
-
                 Console.WriteLine("Creating wexflow user...");
                 var user = db.GetUser("wexflow");
                 if (user == null)
@@ -106,8 +101,12 @@ namespace Wexflow.Scripts.Core
         {
             Console.WriteLine("Inserting records...");
 
+            var records = db.GetRecords(string.Empty).ToList();
+
             // Insert document
-            InsertRecord(db
+            if (!records.Any(r => r.Name == "Document"))
+            {
+                InsertRecord(db
                 , recordsFolder
                 , documentFile
                 , "Document"
@@ -116,9 +115,12 @@ namespace Wexflow.Scripts.Core
                 , "Please fill the document."
                 , true
                 , "litedb");
+            }
 
             // Insert invoice
-            InsertRecord(db
+            if (!records.Any(r => r.Name == "Invoice"))
+            {
+                InsertRecord(db
                 , recordsFolder
                 , invoiceFile
                 , "Invoice"
@@ -127,9 +129,12 @@ namespace Wexflow.Scripts.Core
                 , "Please complete the document."
                 , true
                 , "litedb");
+            }
 
             // Insert timesheet
-            InsertRecord(db
+            if (!records.Any(r => r.Name == "Timesheet"))
+            {
+                InsertRecord(db
                 , recordsFolder
                 , timesheetFile
                 , "Timesheet"
@@ -138,9 +143,12 @@ namespace Wexflow.Scripts.Core
                 , "Please fill the document."
                 , true
                 , "litedb");
+            }
 
             // Insert vacation request
-            InsertRecord(db
+            if (!records.Any(r => r.Name == "Vacations"))
+            {
+                InsertRecord(db
                 , recordsFolder
                 , string.Empty
                 , "Vacations"
@@ -149,6 +157,7 @@ namespace Wexflow.Scripts.Core
                 , string.Empty
                 , false
                 , "litedb");
+            }
         }
 
         private static void InsertRecord(Db db, string recordsFolder, string recordSrc, string name, string desc, string comments, string managerComments, bool hasFile, string dbFolderName)

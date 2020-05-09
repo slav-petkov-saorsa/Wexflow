@@ -102,18 +102,25 @@ namespace Wexflow.Scripts.Core
         {
             Console.WriteLine("Inserting records...");
 
+            var records = db.GetRecords(string.Empty).ToList();
+
             // Insert document
-            InsertRecord(db
-                , "Document"
-                , "Time card"
-                , "This document needs to be completed."
-                , "Please fill the document."
-                , true
-                , "documentFile"
-                , "litedb");
+            if (!records.Any(r => r.Name == "Document"))
+            {
+                InsertRecord(db
+                    , "Document"
+                    , "Time card"
+                    , "This document needs to be completed."
+                    , "Please fill the document."
+                    , true
+                    , "documentFile"
+                    , "litedb");
+            }
 
             // Insert invoice
-            InsertRecord(db
+            if (!records.Any(r => r.Name == "Invoice"))
+            {
+                InsertRecord(db
                 , "Invoice"
                 , "Invoice Payments Report by Agency - July 2013 to June 2014"
                 , "This document needs to be reviewed."
@@ -121,9 +128,12 @@ namespace Wexflow.Scripts.Core
                 , true
                 , "invoiceFile"
                 , "litedb");
+            }
 
             // Insert timesheet
-            InsertRecord(db
+            if (!records.Any(r => r.Name == "Timesheet"))
+            {
+                InsertRecord(db
                 , "Timesheet"
                 , "Time Sheet"
                 , "This document needs to be completed."
@@ -131,9 +141,12 @@ namespace Wexflow.Scripts.Core
                 , true
                 , "timesheetFile"
                 , "litedb");
+            }
 
             // Insert vacation request
-            InsertRecord(db
+            if (!records.Any(r => r.Name == "Vacations"))
+            {
+                InsertRecord(db
                 , "Vacations"
                 , "Vacations request"
                 , string.Empty
@@ -141,6 +154,7 @@ namespace Wexflow.Scripts.Core
                 , false
                 , string.Empty
                 , "litedb");
+            }
         }
 
         private static void InsertRecord(Db db, string name, string desc, string comments, string managerComments, bool hasFile, string configId, string dbFolderName)
