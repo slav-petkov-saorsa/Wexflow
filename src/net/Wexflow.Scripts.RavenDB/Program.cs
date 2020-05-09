@@ -13,6 +13,8 @@ namespace Wexflow.Scripts.RavenDB
             {
                 Db db = new Db(ConfigurationManager.AppSettings["connectionString"]);
                 Helper.InsertWorkflowsAndUser(db);
+                Helper.InsertRecords(db);
+                db.Dispose();
             }
             catch (Exception e)
             {
