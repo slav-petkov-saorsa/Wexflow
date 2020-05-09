@@ -16,8 +16,9 @@ namespace Wexflow.Scripts.MariaDB
 
                 var workflowsFolder = config["workflowsFolder"];
                 Db db = new Db(config["connectionString"]);
-
                 Core.Helper.InsertWorkflowsAndUser(db, workflowsFolder);
+                Core.Helper.InsertRecords(db, config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
+                db.Dispose();
             }
             catch (Exception e)
             {
