@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Linq;
 using Wexflow.Core.Db.MongoDB;
 using Wexflow.Scripts.Core;
 
