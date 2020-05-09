@@ -104,55 +104,51 @@ namespace Wexflow.Scripts.Core
 
         public static void InsertRecords(Db db, string recordsFolder, string documentFile, string invoiceFile, string timesheetFile)
         {
-            var records = db.GetRecords(string.Empty);
-            if (records.Count() == 0)
-            {
-                Console.WriteLine("Inserting records...");
+            Console.WriteLine("Inserting records...");
 
-                // Insert document
-                InsertRecord(db
-                    , recordsFolder
-                    , documentFile
-                    , "Document"
-                    , "Time card"
-                    , "This document needs to be completed."
-                    , "Please fill the document."
-                    , true
-                    , "litedb");
+            // Insert document
+            InsertRecord(db
+                , recordsFolder
+                , documentFile
+                , "Document"
+                , "Time card"
+                , "This document needs to be completed."
+                , "Please fill the document."
+                , true
+                , "litedb");
 
-                // Insert invoice
-                InsertRecord(db
-                    , recordsFolder
-                    , invoiceFile
-                    , "Invoice"
-                    , "Invoice Payments Report by Agency - July 2013 to June 2014"
-                    , "This document needs to be reviewed."
-                    , "Please complete the document."
-                    , true
-                    , "litedb");
+            // Insert invoice
+            InsertRecord(db
+                , recordsFolder
+                , invoiceFile
+                , "Invoice"
+                , "Invoice Payments Report by Agency - July 2013 to June 2014"
+                , "This document needs to be reviewed."
+                , "Please complete the document."
+                , true
+                , "litedb");
 
-                // Insert timesheet
-                InsertRecord(db
-                    , recordsFolder
-                    , timesheetFile
-                    , "Timesheet"
-                    , "Time Sheet"
-                    , "This document needs to be completed."
-                    , "Please fill the document."
-                    , true
-                    , "litedb");
+            // Insert timesheet
+            InsertRecord(db
+                , recordsFolder
+                , timesheetFile
+                , "Timesheet"
+                , "Time Sheet"
+                , "This document needs to be completed."
+                , "Please fill the document."
+                , true
+                , "litedb");
 
-                // Insert vacation request
-                InsertRecord(db
-                    , recordsFolder
-                    , string.Empty
-                    , "Vacations"
-                    , "Vacations request"
-                    , string.Empty
-                    , string.Empty
-                    , false
-                    , "litedb");
-            }
+            // Insert vacation request
+            InsertRecord(db
+                , recordsFolder
+                , string.Empty
+                , "Vacations"
+                , "Vacations request"
+                , string.Empty
+                , string.Empty
+                , false
+                , "litedb");
         }
 
         private static void InsertRecord(Db db, string recordsFolder, string recordSrc, string name, string desc, string comments, string managerComments, bool hasFile, string dbFolderName)

@@ -12,6 +12,8 @@ namespace Wexflow.Scripts.PostgreSQL
             {
                 Db db = new Db(ConfigurationManager.AppSettings["connectionString"]);
                 Core.Helper.InsertWorkflowsAndUser(db);
+                Helper.InsertRecords(db);
+                db.Dispose();
             }
             catch (Exception e)
             {
