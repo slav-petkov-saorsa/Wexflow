@@ -170,8 +170,35 @@
 
     languages["en"]["lnk-records"] = "Records";
     languages["en"]["lnk-approval"] = "Approval";
+    languages["en"]["search-notifications"] = "Search notifications";
+    languages["en"]["btn-delete-notification"] = "Delete";
+    languages["en"]["btn-mark-as-unread"] = "Mark as unread";
+    languages["en"]["btn-mark-as-read"] = "Mark as read";
+    languages["en"]["th-assigned-by"] = "Assigned by";
+    languages["en"]["th-assigned-on"] = "Assigned on";
+    languages["en"]["th-message"] = "Message";
 
+    languages["en"]["toast-select-notifications"] = "Select notifications to delete.";
+    languages["en"]["confirm-delete-notification"] = "Are you sure you want to delete this notification?";
+    languages["en"]["confirm-delete-notifications"] = "Are you sure you want to delete these notifications?";
+
+    //  
     // fr
+
+    languages["fr"]["lnk-records"] = "Records";
+    languages["fr"]["lnk-approval"] = "Approbation";
+    languages["fr"]["search-notifications"] = "Rechercher les notifications";
+    languages["fr"]["btn-delete-notification"] = "Supprimer";
+    languages["fr"]["btn-mark-as-unread"] = "Marquer comme non lu";
+    languages["fr"]["btn-mark-as-read"] = "Marquer comme lu";
+    languages["fr"]["th-assigned-by"] = "Assignée par";
+    languages["fr"]["th-assigned-on"] = "Assignée le";
+    languages["fr"]["th-message"] = "Message";
+
+    languages["fr"]["toast-select-notifications"] = "Veuillez sélectionner des notifications à supprimer.";
+    languages["fr"]["confirm-delete-notification"] = "Êtes-vous sûr de vouloir supprimer cette notification ?";
+    languages["fr"]["confirm-delete-notifications"] = "Êtes-vous sûr de vouloir supprimer ces notifications ?";
+
     languages["fr"]["language"] = "Langue";
     languages["fr"]["help"] = "Aide";
     languages["fr"]["about"] = "À propos";
@@ -327,8 +354,6 @@
     languages["fr"]["toast-user-update-error"] = "Une erreur s'est produite lors de la mise à jour de l'utilisateur.";
     languages["fr"]["confirm-user-delete"] = "Êtes-vous sûr de vouloir supprimer cet utlisateur ?";
 
-    languages["fr"]["lnk-records"] = "Records";
-    languages["fr"]["lnk-approval"] = "Approbation";
 
     // da
     languages["da"]["language"] = "Sprog";

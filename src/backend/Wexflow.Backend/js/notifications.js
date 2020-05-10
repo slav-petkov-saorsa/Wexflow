@@ -12,6 +12,20 @@
         document.getElementById("lnk-users").innerHTML = language.get("lnk-users");
         document.getElementById("lnk-profiles").innerHTML = language.get("lnk-profiles");
         document.getElementById("spn-logout").innerHTML = language.get("spn-logout");
+
+        document.getElementById("search-notifications").placeholder = language.get("search-notifications");
+        document.getElementById("btn-delete").innerHTML = language.get("btn-delete-notification");
+        document.getElementById("btn-mark-as-unread").innerHTML = language.get("btn-mark-as-unread");
+        document.getElementById("btn-mark-as-read").innerHTML = language.get("btn-mark-as-read");
+        if (document.getElementById("th-assigned-by")) {
+            document.getElementById("th-assigned-by").innerHTML = language.get("th-assigned-by");
+        }
+        if (document.getElementById("th-assigned-on")) {
+            document.getElementById("th-assigned-on").innerHTML = language.get("th-assigned-on");
+        }
+        if (document.getElementById("th-message")) {
+            document.getElementById("th-message").innerHTML = language.get("th-message");
+        }
     };
 
     let language = new Language("lang", updateLanguage);
@@ -226,9 +240,9 @@
 
                 document.getElementById("btn-delete").onclick = function () {
                     if (notificationIds.length === 0) {
-                        Common.toastInfo("Select notifications to delete.");
+                        Common.toastInfo(language.get("toast-select-notifications"));
                     } else {
-                        let cres = confirm("Are you sure you want to delete " + (notificationIds.length == 1 ? "this" : "these") + " notification" + (notificationIds.length == 1 ? "" : "s") + "?");
+                        let cres = confirm(notificationIds.length == 1 ? language.get("confirm-delete-notification") : language.get("confirm-delete-notifications"));
                         if (cres === true) {
                             Common.post(uri + "/deleteNotifications", function (res) {
                                 if (res === true) {
