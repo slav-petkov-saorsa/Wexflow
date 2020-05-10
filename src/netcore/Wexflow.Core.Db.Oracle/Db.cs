@@ -9,7 +9,7 @@ namespace Wexflow.Core.Db.Oracle
     public sealed class Db : Core.Db.Db
     {
         private static readonly object padlock = new object();
-        private static readonly string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
+        private static readonly string dateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
         private static string connectionString;
 
@@ -23,6 +23,9 @@ namespace Wexflow.Core.Db.Oracle
             helper.CreateTableIfNotExists(Core.Db.User.DocumentName, User.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.UserWorkflow.DocumentName, UserWorkflow.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.Workflow.DocumentName, Workflow.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Version.DocumentName, Version.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Record.DocumentName, Record.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Notification.DocumentName, Notification.TableStruct);
         }
 
         public override void Init()
@@ -363,7 +366,7 @@ namespace Wexflow.Core.Db.Oracle
                         + " FROM " + Core.Db.Entry.DocumentName
                         + " WHERE " + "(LOWER(" + Entry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + Entry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))"
+                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))"
                         + " ORDER BY ");
 
                     switch (eo)
@@ -473,7 +476,7 @@ namespace Wexflow.Core.Db.Oracle
                         + " FROM " + Core.Db.Entry.DocumentName
                         + " WHERE " + "(LOWER(" + Entry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + Entry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))", conn))
+                        + " AND (" + Entry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))", conn))
                     {
                         var count = (decimal)command.ExecuteScalar();
 
@@ -807,7 +810,7 @@ namespace Wexflow.Core.Db.Oracle
                         + " FROM " + Core.Db.HistoryEntry.DocumentName
                         + " WHERE " + "(LOWER(" + HistoryEntry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + HistoryEntry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))"
+                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))"
                         + " ORDER BY ");
 
                     switch (heo)
@@ -937,7 +940,7 @@ namespace Wexflow.Core.Db.Oracle
                         + " FROM " + Core.Db.HistoryEntry.DocumentName
                         + " WHERE " + "(LOWER(" + HistoryEntry.ColumnName_Name + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
                         + " OR " + "LOWER(" + HistoryEntry.ColumnName_Description + ") LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
-                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))", conn))
+                        + " AND (" + HistoryEntry.ColumnName_StatusDate + " BETWEEN TO_TIMESTAMP('" + from.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF') AND TO_TIMESTAMP('" + to.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'))", conn))
                     {
                         var count = (decimal)command.ExecuteScalar();
 
@@ -1472,7 +1475,7 @@ namespace Wexflow.Core.Db.Oracle
                         + "'" + (entry.Name ?? "").Replace("'", "''") + "'" + ", "
                         + "'" + (entry.Description ?? "").Replace("'", "''") + "'" + ", "
                         + (int)entry.LaunchType + ", "
-                        + "TO_TIMESTAMP('" + entry.StatusDate.ToString(DateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF'), "
+                        + "TO_TIMESTAMP('" + entry.StatusDate.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF'), "
                         + (int)entry.Status + ", "
                         + entry.WorkflowId + ", "
                         + "'" + (entry.JobId ?? "") + "', "
@@ -1505,7 +1508,7 @@ namespace Wexflow.Core.Db.Oracle
                         + "'" + (entry.Name ?? "").Replace("'", "''") + "'" + ", "
                         + "'" + (entry.Description ?? "").Replace("'", "''") + "'" + ", "
                         + (int)entry.LaunchType + ", "
-                        + "TO_TIMESTAMP('" + entry.StatusDate.ToString(DateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF'), "
+                        + "TO_TIMESTAMP('" + entry.StatusDate.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF'), "
                         + (int)entry.Status + ", "
                         + entry.WorkflowId + ", "
                         + "'" + (entry.Logs ?? "").Replace("'", "''") + "'" + ")"
@@ -1537,8 +1540,8 @@ namespace Wexflow.Core.Db.Oracle
                         + "'" + (user.Password ?? "").Replace("'", "''") + "'" + ", "
                         + (int)user.UserProfile + ", "
                         + "'" + (user.Email ?? "").Replace("'", "''") + "'" + ", "
-                        + "TO_TIMESTAMP(" + "'" + DateTime.Now.ToString(DateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')" + ", "
-                        + (user.ModifiedOn == DateTime.MinValue ? "NULL" : ("TO_TIMESTAMP(" + "'" + user.ModifiedOn.ToString(DateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')")) + ")"
+                        + "TO_TIMESTAMP(" + "'" + DateTime.Now.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')" + ", "
+                        + (user.ModifiedOn == DateTime.MinValue ? "NULL" : ("TO_TIMESTAMP(" + "'" + user.ModifiedOn.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')")) + ")"
                         , conn))
                     {
                         command.ExecuteNonQuery();
@@ -1647,7 +1650,7 @@ namespace Wexflow.Core.Db.Oracle
                         + Entry.ColumnName_Name + " = '" + (entry.Name ?? "").Replace("'", "''") + "', "
                         + Entry.ColumnName_Description + " = '" + (entry.Description ?? "").Replace("'", "''") + "', "
                         + Entry.ColumnName_LaunchType + " = " + (int)entry.LaunchType + ", "
-                        + Entry.ColumnName_StatusDate + " = TO_TIMESTAMP('" + entry.StatusDate.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'), "
+                        + Entry.ColumnName_StatusDate + " = TO_TIMESTAMP('" + entry.StatusDate.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF'), "
                         + Entry.ColumnName_Status + " = " + (int)entry.Status + ", "
                         + Entry.ColumnName_WorkflowId + " = " + entry.WorkflowId + ", "
                         + Entry.ColumnName_JobId + " = '" + (entry.JobId ?? "") + "', "
@@ -1696,8 +1699,8 @@ namespace Wexflow.Core.Db.Oracle
                         + User.ColumnName_Password + " = '" + (user.Password ?? "").Replace("'", "''") + "', "
                         + User.ColumnName_UserProfile + " = " + (int)user.UserProfile + ", "
                         + User.ColumnName_Email + " = '" + (user.Email ?? "").Replace("'", "''") + "', "
-                        + User.ColumnName_CreatedOn + " = TO_TIMESTAMP('" + user.CreatedOn.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF')" + ", "
-                        + User.ColumnName_ModifiedOn + " = TO_TIMESTAMP('" + DateTime.Now.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF')"
+                        + User.ColumnName_CreatedOn + " = TO_TIMESTAMP('" + user.CreatedOn.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF')" + ", "
+                        + User.ColumnName_ModifiedOn + " = TO_TIMESTAMP('" + DateTime.Now.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF')"
                         + " WHERE "
                         + User.ColumnName_Id + " = " + int.Parse(id)
                         , conn))
@@ -1718,7 +1721,7 @@ namespace Wexflow.Core.Db.Oracle
                     + User.ColumnName_Username + " = '" + (username ?? "").Replace("'", "''") + "', "
                     + User.ColumnName_UserProfile + " = " + (int)up + ", "
                     + User.ColumnName_Email + " = '" + (email ?? "").Replace("'", "''") + "', "
-                    + User.ColumnName_ModifiedOn + " = TO_TIMESTAMP('" + DateTime.Now.ToString(DateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF')"
+                    + User.ColumnName_ModifiedOn + " = TO_TIMESTAMP('" + DateTime.Now.ToString(dateTimeFormat) + "', 'YYYY-MM-DD HH24:MI:SS.FF')"
                     + " WHERE "
                     + User.ColumnName_Id + " = " + int.Parse(userId)
                     , conn))
@@ -1812,97 +1815,811 @@ namespace Wexflow.Core.Db.Oracle
 
         public override IEnumerable<Core.Db.User> GetNonRestricedUsers()
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<User> users = new List<User>();
+
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + User.ColumnName_Id + ", "
+                        + User.ColumnName_Username + ", "
+                        + User.ColumnName_Password + ", "
+                        + User.ColumnName_Email + ", "
+                        + User.ColumnName_UserProfile + ", "
+                        + User.ColumnName_CreatedOn + ", "
+                        + User.ColumnName_ModifiedOn
+                        + " FROM " + Core.Db.User.DocumentName
+                        + " WHERE (" + User.ColumnName_UserProfile + " = " + (int)UserProfile.SuperAdministrator
+                        + " OR " + User.ColumnName_UserProfile + " = " + (int)UserProfile.Administrator + ")"
+                        + " ORDER BY " + User.ColumnName_Username
+                        , conn))
+                    {
+
+                        using (var reader = command.ExecuteReader())
+                        {
+
+                            while (reader.Read())
+                            {
+                                var admin = new User
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[User.ColumnName_Id]),
+                                    Username = (string)reader[User.ColumnName_Username],
+                                    Password = (string)reader[User.ColumnName_Password],
+                                    Email = reader[User.ColumnName_Email] == DBNull.Value ? string.Empty : (string)reader[User.ColumnName_Email],
+                                    UserProfile = (UserProfile)(Convert.ToInt32((decimal)reader[User.ColumnName_UserProfile])),
+                                    CreatedOn = (DateTime)reader[User.ColumnName_CreatedOn],
+                                    ModifiedOn = reader[User.ColumnName_ModifiedOn] == DBNull.Value ? DateTime.MinValue : (DateTime)reader[User.ColumnName_ModifiedOn]
+                                };
+
+                                users.Add(admin);
+                            }
+                        }
+                    }
+                }
+
+                return users;
+            }
         }
 
-        public override string InsertRecord(Record record)
+        public override string InsertRecord(Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("INSERT INTO " + Core.Db.Record.DocumentName + "("
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn + ")"
+                        + " VALUES("
+                        + "'" + (record.Name ?? "").Replace("'", "''") + "'" + ", "
+                        + "'" + (record.Description ?? "").Replace("'", "''") + "'" + ", "
+                        + (record.Approved ? "1" : "0") + ", "
+                        + (record.StartDate == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.StartDate.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
+                        + (record.EndDate == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.EndDate.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
+                        + "'" + (record.Comments ?? "").Replace("'", "''") + "'" + ", "
+                        + "'" + (record.ManagerComments ?? "").Replace("'", "''") + "'" + ", "
+                        + int.Parse(record.CreatedBy) + ", "
+                        + "TO_TIMESTAMP(" + "'" + DateTime.Now.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')" + ", "
+                        + (string.IsNullOrEmpty(record.ModifiedBy) ? "NULL" : int.Parse(record.ModifiedBy).ToString()) + ", "
+                        + (record.ModifiedOn == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.ModifiedOn.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
+                         + (string.IsNullOrEmpty(record.AssignedTo) ? "NULL" : int.Parse(record.AssignedTo).ToString()) + ", "
+                        + (record.AssignedOn == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.AssignedOn.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ")"
+                        + " RETURNING " + Record.ColumnName_Id + " INTO :id"
+                        , conn))
+                    {
+                        command.Parameters.Add(new OracleParameter
+                        {
+                            ParameterName = ":id",
+                            DbType = System.Data.DbType.Decimal,
+                            Direction = System.Data.ParameterDirection.Output
+                        });
+
+                        command.ExecuteNonQuery();
+
+                        var id = Convert.ToInt64(command.Parameters[":id"].Value).ToString();
+
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
-        public override void UpdateRecord(string recordId, Record record)
+        public override void UpdateRecord(string recordId, Core.Db.Record record)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("UPDATE " + Core.Db.Record.DocumentName + " SET "
+                        + Record.ColumnName_Name + " = '" + (record.Name ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_Description + " = '" + (record.Description ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_Approved + " = " + (record.Approved ? "1" : "0") + ", "
+                        + Record.ColumnName_StartDate + " = " + (record.StartDate == null ? "NULL" : "'" + "TO_TIMESTAMP(" + record.StartDate.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
+                        + Record.ColumnName_EndDate + " = " + (record.EndDate == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.EndDate.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
+                        + Record.ColumnName_Comments + " = '" + (record.Comments ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_ManagerComments + " = '" + (record.ManagerComments ?? "").Replace("'", "''") + "', "
+                        + Record.ColumnName_CreatedBy + " = " + int.Parse(record.CreatedBy) + ", "
+                        + Record.ColumnName_ModifiedBy + " = " + (string.IsNullOrEmpty(record.ModifiedBy) ? "NULL" : int.Parse(record.ModifiedBy).ToString()) + ", "
+                        + Record.ColumnName_ModifiedOn + " = " + "TO_TIMESTAMP(" + "'" + DateTime.Now.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')" + ", "
+                        + Record.ColumnName_AssignedTo + " = " + (string.IsNullOrEmpty(record.AssignedTo) ? "NULL" : int.Parse(record.AssignedTo).ToString()) + ", "
+                        + Record.ColumnName_AssignedOn + " = " + (record.AssignedOn == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.AssignedOn.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')")
+                        + " WHERE "
+                        + Record.ColumnName_Id + " = " + int.Parse(recordId)
+                        , conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteRecords(string[] recordIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                if (recordIds.Length > 0)
+                {
+                    using (var conn = new OracleConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        var builder = new StringBuilder("(");
+
+                        for (int i = 0; i < recordIds.Length; i++)
+                        {
+                            var id = recordIds[i];
+                            builder.Append(id);
+                            if (i < recordIds.Length - 1)
+                            {
+                                builder.Append(", ");
+                            }
+                            else
+                            {
+                                builder.Append(")");
+                            }
+                        }
+
+                        using (var command = new OracleCommand("DELETE FROM " + Core.Db.Record.DocumentName
+                            + " WHERE " + Record.ColumnName_Id + " IN " + builder.ToString(), conn))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
-        public override Record GetRecord(string id)
+        public override Core.Db.Record GetRecord(string id)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + Record.ColumnName_Id + " = " + int.Parse(id)
+                        , conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Record.ColumnName_Id]),
+                                    Name = reader[Record.ColumnName_Name] == DBNull.Value ? null : (string)reader[Record.ColumnName_Name],
+                                    Description = reader[Record.ColumnName_Description] == DBNull.Value ? null : (string)reader[Record.ColumnName_Description],
+                                    Approved = ((short)reader[Record.ColumnName_Approved]) == 1 ? true : false,
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = reader[Record.ColumnName_Comments] == DBNull.Value ? null : (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = reader[Record.ColumnName_ManagerComments] == DBNull.Value ? null : (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = Convert.ToInt64((decimal)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                return record;
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
         }
 
-        public override IEnumerable<Record> GetRecords(string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecords(string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Record> records = new List<Record>();
+
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + "LOWER(" + Record.ColumnName_Name + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " OR " + "LOWER(" + Record.ColumnName_Description + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " ORDER BY " + Record.ColumnName_CreatedOn + " DESC"
+                        , conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Record.ColumnName_Id]),
+                                    Name = reader[Record.ColumnName_Name] == DBNull.Value ? null : (string)reader[Record.ColumnName_Name],
+                                    Description = reader[Record.ColumnName_Description] == DBNull.Value ? null : (string)reader[Record.ColumnName_Description],
+                                    Approved = ((short)reader[Record.ColumnName_Approved]) == 1 ? true : false,
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = reader[Record.ColumnName_Comments] == DBNull.Value ? null : (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = reader[Record.ColumnName_ManagerComments] == DBNull.Value ? null : (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = Convert.ToInt64((decimal)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                records.Add(record);
+                            }
+                        }
+                    }
+                }
+
+                return records;
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedBy(string createdBy)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedBy(string createdBy)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Record> records = new List<Record>();
+
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + Record.ColumnName_CreatedBy + " = " + int.Parse(createdBy)
+                        + " ORDER BY " + Record.ColumnName_Name + " ASC"
+                        , conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Record.ColumnName_Id]),
+                                    Name = reader[Record.ColumnName_Name] == DBNull.Value ? null : (string)reader[Record.ColumnName_Name],
+                                    Description = reader[Record.ColumnName_Description] == DBNull.Value ? null : (string)reader[Record.ColumnName_Description],
+                                    Approved = ((short)reader[Record.ColumnName_Approved]) == 1 ? true : false,
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = reader[Record.ColumnName_Comments] == DBNull.Value ? null : (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = reader[Record.ColumnName_ManagerComments] == DBNull.Value ? null : (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = Convert.ToInt64((decimal)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                records.Add(record);
+                            }
+                        }
+                    }
+                }
+
+                return records;
+            }
         }
 
-        public override IEnumerable<Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
+        public override IEnumerable<Core.Db.Record> GetRecordsCreatedByOrAssignedTo(string createdBy, string assingedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Record> records = new List<Record>();
+
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Record.ColumnName_Id + ", "
+                        + Record.ColumnName_Name + ", "
+                        + Record.ColumnName_Description + ", "
+                        + Record.ColumnName_Approved + ", "
+                        + Record.ColumnName_StartDate + ", "
+                        + Record.ColumnName_EndDate + ", "
+                        + Record.ColumnName_Comments + ", "
+                        + Record.ColumnName_ManagerComments + ", "
+                        + Record.ColumnName_CreatedBy + ", "
+                        + Record.ColumnName_CreatedOn + ", "
+                        + Record.ColumnName_ModifiedBy + ", "
+                        + Record.ColumnName_ModifiedOn + ", "
+                        + Record.ColumnName_AssignedTo + ", "
+                        + Record.ColumnName_AssignedOn
+                        + " FROM " + Core.Db.Record.DocumentName
+                        + " WHERE " + "(LOWER(" + Record.ColumnName_Name + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " OR " + "LOWER(" + Record.ColumnName_Description + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%')"
+                        + " AND (" + Record.ColumnName_CreatedBy + " = " + int.Parse(createdBy) + " OR " + Record.ColumnName_AssignedTo + " = " + int.Parse(assingedTo) + ")"
+                        + " ORDER BY " + Record.ColumnName_CreatedOn + " DESC"
+                        , conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var record = new Record
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Record.ColumnName_Id]),
+                                    Name = reader[Record.ColumnName_Name] == DBNull.Value ? null : (string)reader[Record.ColumnName_Name],
+                                    Description = reader[Record.ColumnName_Description] == DBNull.Value ? null : (string)reader[Record.ColumnName_Description],
+                                    Approved = ((short)reader[Record.ColumnName_Approved]) == 1 ? true : false,
+                                    StartDate = reader[Record.ColumnName_StartDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_StartDate],
+                                    EndDate = reader[Record.ColumnName_EndDate] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_EndDate],
+                                    Comments = reader[Record.ColumnName_Comments] == DBNull.Value ? null : (string)reader[Record.ColumnName_Comments],
+                                    ManagerComments = reader[Record.ColumnName_ManagerComments] == DBNull.Value ? null : (string)reader[Record.ColumnName_ManagerComments],
+                                    CreatedBy = Convert.ToInt64((decimal)reader[Record.ColumnName_CreatedBy]).ToString(),
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn],
+                                    ModifiedBy = reader[Record.ColumnName_ModifiedBy] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_ModifiedBy]).ToString(),
+                                    ModifiedOn = reader[Record.ColumnName_ModifiedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_ModifiedOn],
+                                    AssignedTo = reader[Record.ColumnName_AssignedTo] == DBNull.Value ? string.Empty : Convert.ToInt64((decimal)reader[Record.ColumnName_AssignedTo]).ToString(),
+                                    AssignedOn = reader[Record.ColumnName_AssignedOn] == DBNull.Value ? null : (DateTime?)reader[Record.ColumnName_AssignedOn]
+                                };
+
+                                records.Add(record);
+                            }
+                        }
+                    }
+                }
+
+                return records;
+            }
         }
 
-        public override string InsertVersion(Version version)
+        public override string InsertVersion(Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("INSERT INTO " + Core.Db.Version.DocumentName + "("
+                        + Version.ColumnName_RecordId + ", "
+                        + Version.ColumnName_FilePath + ", "
+                        + Version.ColumnName_CreatedOn + ")"
+                        + " VALUES("
+                        + int.Parse(version.RecordId) + ", "
+                        + "'" + (version.FilePath ?? "").Replace("'", "''") + "'" + ", "
+                        + "TO_TIMESTAMP(" + "'" + DateTime.Now.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')" + ")"
+                        + " RETURNING " + Version.ColumnName_Id + " INTO :id"
+                        , conn))
+                    {
+                        command.Parameters.Add(new OracleParameter
+                        {
+                            ParameterName = ":id",
+                            DbType = System.Data.DbType.Decimal,
+                            Direction = System.Data.ParameterDirection.Output
+                        });
+
+                        command.ExecuteNonQuery();
+
+                        var id = Convert.ToInt64(command.Parameters[":id"].Value).ToString();
+
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
-        public override void UpdateVersion(string versionId, Version version)
+        public override void UpdateVersion(string versionId, Core.Db.Version version)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("UPDATE " + Core.Db.Version.DocumentName + " SET "
+                        + Version.ColumnName_RecordId + " = " + int.Parse(version.RecordId) + ", "
+                        + Version.ColumnName_FilePath + " = '" + (version.FilePath ?? "").Replace("'", "''") + "'"
+                        + " WHERE "
+                        + Version.ColumnName_Id + " = " + int.Parse(versionId)
+                        , conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteVersions(string[] versionIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                if (versionIds.Length > 0)
+                {
+                    using (var conn = new OracleConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        var builder = new StringBuilder("(");
+
+                        for (int i = 0; i < versionIds.Length; i++)
+                        {
+                            var id = versionIds[i];
+                            builder.Append(id);
+                            if (i < versionIds.Length - 1)
+                            {
+                                builder.Append(", ");
+                            }
+                            else
+                            {
+                                builder.Append(")");
+                            }
+                        }
+
+                        using (var command = new OracleCommand("DELETE FROM " + Core.Db.Version.DocumentName
+                            + " WHERE " + Version.ColumnName_Id + " IN " + builder.ToString(), conn))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
-        public override IEnumerable<Version> GetVersions(string recordId)
+        public override IEnumerable<Core.Db.Version> GetVersions(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Version> versions = new List<Version>();
+
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Version.ColumnName_Id + ", "
+                        + Version.ColumnName_RecordId + ", "
+                        + Version.ColumnName_FilePath + ", "
+                        + Version.ColumnName_CreatedOn
+                        + " FROM " + Core.Db.Version.DocumentName
+                        + " WHERE " + Version.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        , conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var version = new Version
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Version.ColumnName_Id]),
+                                    RecordId = Convert.ToInt64((decimal)reader[Version.ColumnName_RecordId]).ToString(),
+                                    FilePath = reader[Version.ColumnName_FilePath] == DBNull.Value ? null : (string)reader[Version.ColumnName_FilePath],
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                };
+
+                                versions.Add(version);
+                            }
+                        }
+                    }
+                }
+
+                return versions;
+            }
         }
 
-        public override Version GetLatestVersion(string recordId)
+        public override Core.Db.Version GetLatestVersion(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Version.ColumnName_Id + ", "
+                        + Version.ColumnName_RecordId + ", "
+                        + Version.ColumnName_FilePath + ", "
+                        + Version.ColumnName_CreatedOn
+                        + " FROM " + Core.Db.Version.DocumentName
+                        + " WHERE " + Version.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        + " ORDER BY " + Version.ColumnName_CreatedOn + " DESC"
+                        + " FETCH NEXT 1 ROWS ONLY", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                var version = new Version
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Version.ColumnName_Id]),
+                                    RecordId = Convert.ToInt64((decimal)reader[Version.ColumnName_RecordId]).ToString(),
+                                    FilePath = reader[Version.ColumnName_FilePath] == DBNull.Value ? null : (string)reader[Version.ColumnName_FilePath],
+                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                };
+
+                                return version;
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
         }
 
-        public override string InsertNotification(Notification notification)
+        public override string InsertNotification(Core.Db.Notification notification)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("INSERT INTO " + Core.Db.Notification.DocumentName + "("
+                        + Notification.ColumnName_AssignedBy + ", "
+                        + Notification.ColumnName_AssignedOn + ", "
+                        + Notification.ColumnName_AssignedTo + ", "
+                        + Notification.ColumnName_Message + ", "
+                        + Notification.ColumnName_IsRead + ")"
+                        + " VALUES("
+                        + (!string.IsNullOrEmpty(notification.AssignedBy) ? int.Parse(notification.AssignedBy).ToString() : "NULL") + ", "
+                        + "TO_TIMESTAMP(" + "'" + notification.AssignedOn.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')" + ", "
+                        + (!string.IsNullOrEmpty(notification.AssignedTo) ? int.Parse(notification.AssignedTo).ToString() : "NULL") + ", "
+                        + "'" + (notification.Message ?? "").Replace("'", "''") + "'" + ", "
+                        + (notification.IsRead ? "1" : "0") + ")"
+                        + " RETURNING " + Notification.ColumnName_Id + " INTO :id"
+                        , conn))
+                    {
+                        command.Parameters.Add(new OracleParameter
+                        {
+                            ParameterName = ":id",
+                            DbType = System.Data.DbType.Decimal,
+                            Direction = System.Data.ParameterDirection.Output
+                        });
+
+                        command.ExecuteNonQuery();
+
+                        var id = Convert.ToInt64(command.Parameters[":id"].Value).ToString();
+
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
         public override void MarkNotificationsAsRead(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var builder = new StringBuilder("(");
+
+                    for (int i = 0; i < notificationIds.Length; i++)
+                    {
+                        var id = notificationIds[i];
+                        builder.Append(id);
+                        if (i < notificationIds.Length - 1)
+                        {
+                            builder.Append(", ");
+                        }
+                        else
+                        {
+                            builder.Append(")");
+                        }
+                    }
+
+                    using (var command = new OracleCommand("UPDATE " + Core.Db.Notification.DocumentName
+                        + " SET " + Notification.ColumnName_IsRead + " = " + "1"
+                        + " WHERE " + Notification.ColumnName_Id + " IN " + builder.ToString(), conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void MarkNotificationsAsUnread(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var builder = new StringBuilder("(");
+
+                    for (int i = 0; i < notificationIds.Length; i++)
+                    {
+                        var id = notificationIds[i];
+                        builder.Append(id);
+                        if (i < notificationIds.Length - 1)
+                        {
+                            builder.Append(", ");
+                        }
+                        else
+                        {
+                            builder.Append(")");
+                        }
+                    }
+
+                    using (var command = new OracleCommand("UPDATE " + Core.Db.Notification.DocumentName
+                        + " SET " + Notification.ColumnName_IsRead + " = " + "0"
+                        + " WHERE " + Notification.ColumnName_Id + " IN " + builder.ToString(), conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteNotifications(string[] notificationIds)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                if (notificationIds.Length > 0)
+                {
+                    using (var conn = new OracleConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        var builder = new StringBuilder("(");
+
+                        for (int i = 0; i < notificationIds.Length; i++)
+                        {
+                            var id = notificationIds[i];
+                            builder.Append(id);
+                            if (i < notificationIds.Length - 1)
+                            {
+                                builder.Append(", ");
+                            }
+                            else
+                            {
+                                builder.Append(")");
+                            }
+                        }
+
+                        using (var command = new OracleCommand("DELETE FROM " + Core.Db.Notification.DocumentName
+                            + " WHERE " + Notification.ColumnName_Id + " IN " + builder.ToString(), conn))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
-        public override IEnumerable<Notification> GetNotifications(string assignedTo, string keyword)
+        public override IEnumerable<Core.Db.Notification> GetNotifications(string assignedTo, string keyword)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Notification> notifications = new List<Notification>();
+
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Notification.ColumnName_Id + ", "
+                        + Notification.ColumnName_AssignedBy + ", "
+                        + Notification.ColumnName_AssignedOn + ", "
+                        + Notification.ColumnName_AssignedTo + ", "
+                        + Notification.ColumnName_Message + ", "
+                        + Notification.ColumnName_IsRead
+                        + " FROM " + Core.Db.Notification.DocumentName
+                        + " WHERE " + "(LOWER(" + Notification.ColumnName_Message + ")" + " LIKE '%" + (keyword ?? "").Replace("'", "''").ToLower() + "%'"
+                        + " AND " + Notification.ColumnName_AssignedTo + " = " + int.Parse(assignedTo) + ")"
+                        + " ORDER BY " + Notification.ColumnName_AssignedOn + " DESC"
+                        , conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var notification = new Notification
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Notification.ColumnName_Id]),
+                                    AssignedBy = Convert.ToInt64((decimal)reader[Notification.ColumnName_AssignedBy]).ToString(),
+                                    AssignedOn = (DateTime)reader[Notification.ColumnName_AssignedOn],
+                                    AssignedTo = Convert.ToInt64((decimal)reader[Notification.ColumnName_AssignedTo]).ToString(),
+                                    Message = reader[Notification.ColumnName_Message] == DBNull.Value ? null : (string)reader[Notification.ColumnName_Message],
+                                    IsRead = ((short)reader[Notification.ColumnName_IsRead]) == 1 ? true : false
+                                };
+
+                                notifications.Add(notification);
+                            }
+                        }
+                    }
+                }
+
+                return notifications;
+            }
         }
 
         public override bool HasNotifications(string assignedTo)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT COUNT(*)"
+                        + " FROM " + Core.Db.Notification.DocumentName
+                        + " WHERE (" + Notification.ColumnName_AssignedTo + " = " + int.Parse(assignedTo)
+                        + " AND " + Notification.ColumnName_IsRead + " = " + "0" + ")"
+                        , conn))
+                    {
+                        var count = Convert.ToInt64((decimal)command.ExecuteScalar());
+                        var hasNotifications = count > 0;
+                        return hasNotifications;
+                    }
+                }
+            }
         }
 
         public override void Dispose()
