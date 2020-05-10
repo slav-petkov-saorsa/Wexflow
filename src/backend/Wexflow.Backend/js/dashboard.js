@@ -2,6 +2,10 @@
     "use strict";
 
     let updateLanguage = function (language) {
+
+        document.getElementById("lnk-records").innerHTML = language.get("lnk-records");
+        document.getElementById("lnk-approval").innerHTML = language.get("lnk-approval");
+
         document.getElementById("lnk-dashboard").innerHTML = language.get("lnk-dashboard");
         document.getElementById("lnk-manager").innerHTML = language.get("lnk-manager");
         document.getElementById("lnk-designer").innerHTML = language.get("lnk-designer");

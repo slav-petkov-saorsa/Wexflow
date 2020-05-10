@@ -2,6 +2,9 @@
     "use strict";
 
     let updateLanguage = function (language) {
+        document.getElementById("lnk-records").innerHTML = language.get("lnk-records");
+        document.getElementById("lnk-approval").innerHTML = language.get("lnk-approval");
+
         document.getElementById("lnk-dashboard").innerHTML = language.get("lnk-dashboard");
         document.getElementById("lnk-manager").innerHTML = language.get("lnk-manager");
         document.getElementById("lnk-designer").innerHTML = language.get("lnk-designer");
@@ -56,9 +59,6 @@
         }
         if (document.getElementById("th-wf-e")) {
             document.getElementById("th-wf-e").innerHTML = language.get("th-wf-e");
-        }
-        if (document.getElementById("th-wf-a")) {
-            document.getElementById("th-wf-a").innerHTML = language.get("th-wf-a");
         }
         if (document.getElementById("th-wf-d")) {
             document.getElementById("th-wf-d").innerHTML = language.get("th-wf-d");

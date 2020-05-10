@@ -168,6 +168,9 @@
     languages["en"]["toast-user-update-error"] = "An error occurred while updating the user.";
     languages["en"]["confirm-user-delete"] = "Are you sure you want to delete this user?";
 
+    languages["en"]["lnk-records"] = "Records";
+    languages["en"]["lnk-approval"] = "Approval";
+
     // fr
     languages["fr"]["language"] = "Langue";
     languages["fr"]["help"] = "Aide";
@@ -323,6 +326,9 @@
     languages["fr"]["toast-user-updated"] = "L'utilisateur a été mis à jour avec succès.";
     languages["fr"]["toast-user-update-error"] = "Une erreur s'est produite lors de la mise à jour de l'utilisateur.";
     languages["fr"]["confirm-user-delete"] = "Êtes-vous sûr de vouloir supprimer cet utlisateur ?";
+
+    languages["fr"]["lnk-records"] = "Records";
+    languages["fr"]["lnk-approval"] = "Approbation";
 
     // da
     languages["da"]["language"] = "Sprog";
