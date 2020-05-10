@@ -183,6 +183,7 @@
     languages["en"]["search-records"] = "Search records";
     languages["en"]["btn-delete-record"] = "Delete";
     languages["en"]["btn-new-record"] = "New record";
+    languages["en"]["record-information"] = "Record information";
     languages["en"]["edit-record-td-id"] = "Id";
     languages["en"]["edit-record-td-name"] = "Name";
     languages["en"]["edit-record-td-description"] = "Description";
@@ -398,6 +399,7 @@
     languages["fr"]["search-records"] = "Rechercher les records";
     languages["fr"]["btn-delete-record"] = "Supprimer";
     languages["fr"]["btn-new-record"] = "Nouveau record";
+    languages["fr"]["record-information"] = "Informations sur le record";
     languages["fr"]["edit-record-td-id"] = "Id";
     languages["fr"]["edit-record-td-name"] = "Nom";
     languages["fr"]["edit-record-td-description"] = "Description";

@@ -243,7 +243,7 @@
                         modal = new jBox('Modal', {
                             width: 800,
                             height: 420,
-                            title: "Record information",
+                            title: language.get("record-information"),
                             content: document.getElementById("edit-record").innerHTML,
                             footer: document.getElementById("edit-record-footer").innerHTML,
                             overlay: true,
@@ -546,7 +546,7 @@
                     modal = new jBox('Modal', {
                         width: 800,
                         height: 420,
-                        title: "Record information",
+                        title: language.get("record-information"),
                         content: document.getElementById("edit-record").innerHTML,
                         footer: document.getElementById("edit-record-footer").innerHTML,
                         overlay: true,
