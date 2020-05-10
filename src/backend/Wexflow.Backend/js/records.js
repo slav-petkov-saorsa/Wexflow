@@ -1,6 +1,55 @@
 ﻿window.onload = function () {
     "use strict";
 
+    let translateEditRecord = function () {
+        let jBoxContent = document.getElementsByClassName("jBox-content")[0];
+        if (jBoxContent) {
+            jBoxContent.querySelector(".edit-record-td-id").innerHTML = language.get("edit-record-td-id");
+            jBoxContent.querySelector(".edit-record-td-name").innerHTML = language.get("edit-record-td-name");
+            jBoxContent.querySelector(".edit-record-td-description").innerHTML = language.get("edit-record-td-description");
+            jBoxContent.querySelector(".edit-record-td-approved").innerHTML = language.get("edit-record-td-approved");
+            jBoxContent.querySelector(".edit-record-td-start-date").innerHTML = language.get("edit-record-td-start-date");
+            jBoxContent.querySelector(".edit-record-td-end-date").innerHTML = language.get("edit-record-td-end-date");
+            jBoxContent.querySelector(".edit-record-td-comments").innerHTML = language.get("edit-record-td-comments");
+            jBoxContent.querySelector(".edit-record-td-manager-comments").innerHTML = language.get("edit-record-td-manager-comments");
+            jBoxContent.querySelector(".edit-record-td-created-by").innerHTML = language.get("edit-record-td-created-by");
+            jBoxContent.querySelector(".edit-record-td-created-on").innerHTML = language.get("edit-record-td-created-on");
+            jBoxContent.querySelector(".edit-record-td-modified-by").innerHTML = language.get("edit-record-td-modified-by");
+            jBoxContent.querySelector(".edit-record-td-modified-on").innerHTML = language.get("edit-record-td-modified-on");
+            jBoxContent.querySelector(".edit-record-td-assigned-to").innerHTML = language.get("edit-record-td-assigned-to");
+            jBoxContent.querySelector(".edit-record-td-assigned-on").innerHTML = language.get("edit-record-td-assigned-on");
+            jBoxContent.querySelector(".edit-record-td-versions").innerHTML = language.get("edit-record-td-versions");
+            jBoxContent.querySelector(".btn-upload-version").value = language.get("btn-upload-version");
+        }
+        let jBoxFooter = document.getElementsByClassName("jBox-footer")[0];
+        if (jBoxFooter) {
+            jBoxFooter.querySelector(".record-save").innerHTML = language.get("record-save");
+            jBoxFooter.querySelector(".record-cancel").innerHTML = language.get("record-cancel");
+            jBoxFooter.querySelector(".record-delete").innerHTML = language.get("record-delete");
+        }
+    };
+
+    let translateRecordsTable = function () {
+        if (document.getElementById("th-name")) {
+            document.getElementById("th-name").innerHTML = language.get("record-name");
+        }
+        if (document.getElementById("th-approved")) {
+            document.getElementById("th-approved").innerHTML = language.get("record-approved");
+        }
+        if (document.getElementById("th-start-date")) {
+            document.getElementById("th-start-date").innerHTML = language.get("record-start-date");
+        }
+        if (document.getElementById("th-end-date")) {
+            document.getElementById("th-end-date").innerHTML = language.get("record-end-date");
+        }
+        if (document.getElementById("th-assigned-to")) {
+            document.getElementById("th-assigned-to").innerHTML = language.get("record-assigned-to");
+        }
+        if (document.getElementById("th-assigned-on")) {
+            document.getElementById("th-assigned-on").innerHTML = language.get("record-assigned-on");
+        }
+    };
+
     let updateLanguage = function (language) {
         document.getElementById("lnk-records").innerHTML = language.get("lnk-records");
         document.getElementById("lnk-approval").innerHTML = language.get("lnk-approval");
@@ -12,6 +61,12 @@
         document.getElementById("lnk-users").innerHTML = language.get("lnk-users");
         document.getElementById("lnk-profiles").innerHTML = language.get("lnk-profiles");
         document.getElementById("spn-logout").innerHTML = language.get("spn-logout");
+
+        document.getElementById("search-records").placeholder = language.get("search-records");
+        document.getElementById("btn-delete").innerHTML = language.get("btn-delete-record");
+        document.getElementById("btn-new-record").innerHTML = language.get("btn-new-record");
+
+        translateRecordsTable();
     };
 
     let language = new Language("lang", updateLanguage);
@@ -126,12 +181,12 @@
                     + "<tr>"
                     + "<th class='check' " + (userProfile == 1 ? "style='display: none;'" : "") + "><input id='check-all' type='checkbox'></th>"
                     + "<th class='id'></th>"
-                    + "<th id='th-assigned-by' class='name'>" + "Name" + "</th>"
-                    + "<th id='th-assigned-on' class='approved'>" + "Approved" + "</th>"
-                    + "<th id='th-message' class='start-date'>" + "Start date" + "</th>"
-                    + "<th id='th-message' class='end-date'>" + "End date" + "</th>"
-                    + "<th id='th-message' class='assigned-to'>" + "Assigned to" + "</th>"
-                    + "<th id='th-message' class='assigned-on'>" + "Assigned on" + "</th>"
+                    + "<th id='th-name' class='name'>" + "Name" + "</th>"
+                    + "<th id='th-approved' class='approved'>" + "Approved" + "</th>"
+                    + "<th id='th-start-date' class='start-date'>" + "Start date" + "</th>"
+                    + "<th id='th-end-date' class='end-date'>" + "End date" + "</th>"
+                    + "<th id='th-assigned-to' class='assigned-to'>" + "Assigned to" + "</th>"
+                    + "<th id='th-assigned-on' class='assigned-on'>" + "Assigned on" + "</th>"
                     + "</tr>"
                     + "</thead>"
                     + "<tbody>"
@@ -141,6 +196,8 @@
 
                 let divNotifications = document.getElementById("content");
                 divNotifications.innerHTML = table;
+
+                translateRecordsTable();
 
                 let getRecord = function (recordId) {
                     for (let i = 0; i < records.length; i++) {
@@ -193,6 +250,7 @@
                             //isolateScroll: false,
                             delayOpen: 0,
                             onOpen: function () {
+                                translateEditRecord();
                                 let jBoxContent = document.getElementsByClassName("jBox-content")[0];
                                 jBoxContent.querySelector(".record-id").value = record.Id;
                                 jBoxContent.querySelector(".record-name").value = record.Name;
@@ -222,10 +280,10 @@
                                     let version = record.Versions[i];
                                     versions.push("<tr>"
                                         + "<td class='version-id'>" + version.Id + "</td>"
-                                        + "<td class='version-file-name'><a class='lnk-version-file-name' href='#'>" + version.FileName + "</a>" + (i === record.Versions.length - 1 ? "&nbsp;&nbsp;<span style='color: #28a745; border: 1px solid #34d058; border-radius: 2px; padding: 3px 4px;'>Latest version</span>" : "") + "</td>"
+                                        + "<td class='version-file-name'><a class='lnk-version-file-name' href='#'>" + version.FileName + "</a>" + (i === record.Versions.length - 1 ? "&nbsp;&nbsp;<span style='color: #28a745; border: 1px solid #34d058; border-radius: 2px; padding: 3px 4px;'>" + language.get("latest-version") + "</span>" : "") + "</td>"
                                         + "<td class='version-created-on'>" + version.CreatedOn + "</td>"
                                         + "<td class='version-file-size'>" + version.FileSize + "</td>"
-                                        + "<td class='version-delete'><input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'></td>"
+                                        + "<td class='version-delete'><input type='button' class='btn-delete-version btn btn-danger btn-xs' value='" + language.get("delete-version") + "'></td>"
                                         + "</tr>");
                                 }
                                 let versionsTable = jBoxContent.querySelector(".record-versions");
@@ -283,7 +341,7 @@
                                     filedialog.click();
 
                                     filedialog.onchange = function (e) {
-                                        jBoxContent.querySelector(".spn-upload-version").innerHTML = "Uploading...";
+                                        jBoxContent.querySelector(".spn-upload-version").innerHTML = language.get("uploading");
 
                                         let file = e.target.files[0];
                                         let fd = new FormData();
@@ -315,7 +373,7 @@
                                                 cell4.classList.add("version-file-size");
                                                 cell4.innerHTML = res.FileSize;
                                                 cell5.classList.add("version-delete");
-                                                cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
+                                                cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='" + language.get("delete-version") + "'>";
 
                                                 goToBottom(jBoxContent);
 
@@ -340,11 +398,11 @@
                                                                 editedRecord.Versions.splice(versionIndex, 1);
                                                                 // Update versions table
                                                                 row.remove();
-                                                                Common.toastSuccess("Version file deleted successfully.");
+                                                                Common.toastSuccess(language.get("toast-version-file-deleted"));
                                                             }
 
                                                         } else {
-                                                            Common.toastError("An error occured while deleting the version file.");
+                                                            Common.toastError(language.get("toast-version-file-delete-error"));
                                                         }
 
                                                     }, function () { }, "", auth);
@@ -376,18 +434,18 @@
                                                 let message = "The record " + record.Name + " was updated by the user " + username + ".";
                                                 Common.post(uri + "/notify?a=" + encodeURIComponent(record.CreatedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
                                                     if (notifyRes === true) {
-                                                        Common.toastInfo("The creator of the record was notified by the modification of the record.");
+                                                        Common.toastInfo(language.get("toast-creator-notified"));
                                                     } else {
-                                                        Common.toastError("An error occured while notifying the creator of the record.");
+                                                        Common.toastError(language.get("toast-creator-notify-error"));
                                                     }
                                                 }, function () { }, "", auth);
                                             }
                                             modal.close();
                                             modal.destroy();
                                             loadRecords();
-                                            Common.toastSuccess("Record saved successfully.");
+                                            Common.toastSuccess(language.get("toast-record-saved"));
                                         } else {
-                                            Common.toastError("An error occured while saing the record.");
+                                            Common.toastError(language.get("toast-record-save-error"));
                                         }
                                     }, function () { }, editedRecord, auth);
                                 };
@@ -395,9 +453,9 @@
                                 jBoxFooter.querySelector(".record-cancel").onclick = function () {
                                     Common.post(uri + "/deleteTempVersionFiles", function (res) {
                                         if (res === true) {
-                                            Common.toastSuccess("Modifications canceled successfully.");
+                                            Common.toastSuccess(language.get("toast-modifications-canceled"));
                                         } else {
-                                            Common.toastError("An error occurred while canceling modifications.");
+                                            Common.toastError(language.get("toast-modifications-cancel-error"));
                                         }
                                         modal.close();
                                         modal.destroy();
@@ -405,7 +463,7 @@
                                 };
 
                                 jBoxFooter.querySelector(".record-delete").onclick = function () {
-                                    let cres = confirm("Are you sure you want to delete this record?");
+                                    let cres = confirm(language.get("confirm-delete-record"));
                                     if (cres === true) {
                                         Common.post(uri + "/deleteRecords", function (res) {
                                             if (res === true) {
@@ -427,7 +485,7 @@
                             onClose: function () {
                                 Common.post(uri + "/deleteTempVersionFiles", function (res) {
                                     if (res === false) {
-                                        Common.toastError("An error occurred while canceling modifications.");
+                                        Common.toastError(language.get("toast-modifications-cancel-error"));
                                     }
                                 }, function () { }, editedRecord, auth);
                             }
@@ -454,9 +512,9 @@
 
                 document.getElementById("btn-delete").onclick = function () {
                     if (recordIds.length === 0) {
-                        Common.toastInfo("Select records to delete.");
+                        Common.toastInfo(language.get("toast-select-records"));
                     } else {
-                        let cres = confirm("Are you sure you want to delete " + (recordIds.length == 1 ? "this" : "these") + " record" + (recordIds.length == 1 ? "" : "s") + "?");
+                        let cres = confirm((recordIds.length == 1 ? language.get("confirm-delete-record") : language.get("confirm-delete-records")));
                         if (cres === true) {
                             Common.post(uri + "/deleteRecords", function (res) {
                                 if (res === true) {
@@ -495,6 +553,7 @@
                         isolateScroll: false,
                         delayOpen: 0,
                         onOpen: function () {
+                            translateEditRecord();
                             let jBoxContent = document.getElementsByClassName("jBox-content")[0];
                             jBoxContent.querySelector(".edit-record-tr-id").style.display = "none";
                             jBoxContent.querySelector(".edit-record-tr-approved").style.display = "none";
@@ -504,7 +563,7 @@
                             jBoxContent.querySelector(".edit-record-tr-modified-on").style.display = "none";
                             jBoxContent.querySelector(".edit-record-tr-assigned-to").style.display = "none";
                             jBoxContent.querySelector(".edit-record-tr-assigned-on").style.display = "none";
-                            jBoxContent.querySelector(".edit-record-td-start-date").innerHTML += " (Optional)";
+                            jBoxContent.querySelector(".edit-record-td-start-date").innerHTML += language.get("optional");
                             jBoxContent.querySelector(".edit-record-td-end-date").innerHTML += " (Optional)";
 
                             setTimeout(function () {
@@ -519,7 +578,7 @@
                                 filedialog.click();
 
                                 filedialog.onchange = function (e) {
-                                    jBoxContent.querySelector(".spn-upload-version").innerHTML = "Uploading...";
+                                    jBoxContent.querySelector(".spn-upload-version").innerHTML = language.get("uploading");
 
                                     let file = e.target.files[0];
                                     let fd = new FormData();
@@ -541,6 +600,7 @@
                                             let cell2 = row.insertCell(1);
                                             let cell3 = row.insertCell(2);
                                             let cell4 = row.insertCell(3);
+                                            let cell5 = row.insertCell(4);
 
                                             cell1.classList.add("version-id");
                                             cell1.innerHTML = "";
@@ -548,8 +608,10 @@
                                             cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
                                             cell3.classList.add("version-created-on");
                                             cell3.innerHTML = "-";
-                                            cell4.classList.add("version-delete");
-                                            cell4.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='Delete'>";
+                                            cell4.classList.add("version-file-size");
+                                            cell4.innerHTML = res.FileSize;
+                                            cell5.classList.add("version-delete");
+                                            cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='" + language.get("delete-version") + "'>";
 
                                             goToBottom(jBoxContent);
 
@@ -558,7 +620,7 @@
                                                 window.open(url, "_self");
                                             };
 
-                                            cell4.querySelector(".btn-delete-version").onclick = function () {
+                                            cell5.querySelector(".btn-delete-version").onclick = function () {
                                                 // Delete file
                                                 Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
                                                     if (deleteRes === true) {
@@ -573,11 +635,11 @@
                                                             newRecord.Versions.splice(versionIndex, 1);
                                                             // Update versions table
                                                             row.remove();
-                                                            Common.toastSuccess("Version file deleted successfully.");
+                                                            Common.toastSuccess(language.get("toast-version-file-deleted"));
                                                         }
 
                                                     } else {
-                                                        Common.toastError("An error occured while deleting the version file.");
+                                                        Common.toastError(language.get("toast-version-file-delete-error"));
                                                     }
 
                                                 }, function () { }, "", auth);
@@ -596,7 +658,7 @@
                             jBoxFooter.querySelector(".record-save").onclick = function () {
 
                                 if (jBoxContent.querySelector(".record-name").value === "") {
-                                    Common.toastInfo("Enter a name for this record.");
+                                    Common.toastInfo(language.get("toast-record-name"));
                                     return;
                                 }
 
@@ -619,9 +681,9 @@
                                         modal.close();
                                         modal.destroy();
                                         loadRecords();
-                                        Common.toastSuccess("Record saved successfully.");
+                                        Common.toastSuccess(language.get("toast-record-saved"));
                                     } else {
-                                        Common.toastError("An error occured while saing the record.");
+                                        Common.toastError(language.get("toast-record-save-error"));
                                     }
                                 }, function () { }, newRecord, auth);
                             };
@@ -629,9 +691,9 @@
                             jBoxFooter.querySelector(".record-cancel").onclick = function () {
                                 Common.post(uri + "/deleteTempVersionFiles", function (res) {
                                     if (res === true) {
-                                        Common.toastSuccess("Modifications canceled successfully.");
+                                        Common.toastSuccess(language.get("toast-modifications-canceled"));
                                     } else {
-                                        Common.toastError("An error occurred while canceling modifications.");
+                                        Common.toastError(language.get("toast-modifications-cancel-error"));
                                     }
                                     modal.close();
                                     modal.destroy();
@@ -643,7 +705,7 @@
                         onClose: function () {
                             Common.post(uri + "/deleteTempVersionFiles", function (res) {
                                 if (res === false) {
-                                    Common.toastError("An error occurred while canceling modifications.");
+                                    Common.toastError(language.get("toast-modifications-cancel-error"));
                                 }
                             }, function () { }, newRecord, auth);
                         }

@@ -177,28 +177,57 @@
     languages["en"]["th-assigned-by"] = "Assigned by";
     languages["en"]["th-assigned-on"] = "Assigned on";
     languages["en"]["th-message"] = "Message";
-
     languages["en"]["toast-select-notifications"] = "Select notifications to delete.";
     languages["en"]["confirm-delete-notification"] = "Are you sure you want to delete this notification?";
     languages["en"]["confirm-delete-notifications"] = "Are you sure you want to delete these notifications?";
+    languages["en"]["search-records"] = "Search records";
+    languages["en"]["btn-delete-record"] = "Delete";
+    languages["en"]["btn-new-record"] = "New record";
+    languages["en"]["edit-record-td-id"] = "Id";
+    languages["en"]["edit-record-td-name"] = "Name";
+    languages["en"]["edit-record-td-description"] = "Description";
+    languages["en"]["edit-record-td-approved"] = "Approved";
+    languages["en"]["edit-record-td-start-date"] = "Start date";
+    languages["en"]["edit-record-td-end-date"] = "End date";
+    languages["en"]["edit-record-td-comments"] = "Comments";
+    languages["en"]["edit-record-td-manager-comments"] = "Manager comments";
+    languages["en"]["edit-record-td-created-by"] = "Created by";
+    languages["en"]["edit-record-td-created-on"] = "Created on";
+    languages["en"]["edit-record-td-modified-by"] = "Modified by";
+    languages["en"]["edit-record-td-modified-on"] = "Modified on";
+    languages["en"]["edit-record-td-assigned-to"] = "Assigned to";
+    languages["en"]["edit-record-td-assigned-on"] = "Assigned on";
+    languages["en"]["edit-record-td-versions"] = "Versions";
+    languages["en"]["optional"] = " (Optional)";
+    languages["en"]["btn-upload-version"] = "Upload";
+    languages["en"]["delete-version"] = "Delete";
+    languages["en"]["record-save"] = "Save";
+    languages["en"]["record-cancel"] = "Cancel";
+    languages["en"]["record-delete"] = "Delete";
+    languages["en"]["latest-version"] = "Latest version";
+    languages["en"]["uploading"] = "Uploading...";
+    languages["en"]["toast-version-file-deleted"] = "Version file deleted successfully.";
+    languages["en"]["toast-version-file-delete-error"] = "An error occured while deleting the version file.";
+    languages["en"]["toast-creator-notified"] = "The creator of the record was notified by the modification of the record.";
+    languages["en"]["toast-creator-notify-error"] = "An error occured while notifying the creator of the record.";
+    languages["en"]["toast-record-saved"] = "Record saved successfully.";
+    languages["en"]["toast-record-save-error"] = "An error occured while saving the record.";
+    languages["en"]["toast-modifications-canceled"] = "Modifications canceled successfully.";
+    languages["en"]["toast-modifications-cancel-error"] = "An error occurred while canceling modifications.";
+    languages["en"]["toast-select-records"] = "Select records to delete.";
+    languages["en"]["toast-record-name"] = "Enter a name for this record.";
+    languages["en"]["confirm-delete-record"] = "Are you sure you want to delete this record?";
+    languages["en"]["confirm-delete-records"] = "Are you sure you want to delete these records?";
+    languages["en"]["record-name"] = "Name";
+    languages["en"]["record-approved"] = "Approved";
+    languages["en"]["record-start-date"] = "Start date";
+    languages["en"]["record-end-date"] = "End date";
+    languages["en"]["record-assigned-to"] = "Assigned to";
+    languages["en"]["record-assigned-on"] = "Assigned on";
 
-    //  
+    // 
     // fr
-
-    languages["fr"]["lnk-records"] = "Records";
-    languages["fr"]["lnk-approval"] = "Approbation";
-    languages["fr"]["search-notifications"] = "Rechercher les notifications";
-    languages["fr"]["btn-delete-notification"] = "Supprimer";
-    languages["fr"]["btn-mark-as-unread"] = "Marquer comme non lu";
-    languages["fr"]["btn-mark-as-read"] = "Marquer comme lu";
-    languages["fr"]["th-assigned-by"] = "Assignée par";
-    languages["fr"]["th-assigned-on"] = "Assignée le";
-    languages["fr"]["th-message"] = "Message";
-
-    languages["fr"]["toast-select-notifications"] = "Veuillez sélectionner des notifications à supprimer.";
-    languages["fr"]["confirm-delete-notification"] = "Êtes-vous sûr de vouloir supprimer cette notification ?";
-    languages["fr"]["confirm-delete-notifications"] = "Êtes-vous sûr de vouloir supprimer ces notifications ?";
-
+    //
     languages["fr"]["language"] = "Langue";
     languages["fr"]["help"] = "Aide";
     languages["fr"]["about"] = "À propos";
@@ -354,8 +383,66 @@
     languages["fr"]["toast-user-update-error"] = "Une erreur s'est produite lors de la mise à jour de l'utilisateur.";
     languages["fr"]["confirm-user-delete"] = "Êtes-vous sûr de vouloir supprimer cet utlisateur ?";
 
+    languages["fr"]["lnk-records"] = "Records";
+    languages["fr"]["lnk-approval"] = "Approbation";
+    languages["fr"]["search-notifications"] = "Rechercher les notifications";
+    languages["fr"]["btn-delete-notification"] = "Supprimer";
+    languages["fr"]["btn-mark-as-unread"] = "Marquer comme non lu";
+    languages["fr"]["btn-mark-as-read"] = "Marquer comme lu";
+    languages["fr"]["th-assigned-by"] = "Assignée par";
+    languages["fr"]["th-assigned-on"] = "Assignée le";
+    languages["fr"]["th-message"] = "Message";
+    languages["fr"]["toast-select-notifications"] = "Veuillez sélectionner des notifications à supprimer.";
+    languages["fr"]["confirm-delete-notification"] = "Êtes-vous sûr de vouloir supprimer cette notification ?";
+    languages["fr"]["confirm-delete-notifications"] = "Êtes-vous sûr de vouloir supprimer ces notifications ?";
+    languages["fr"]["search-records"] = "Rechercher les records";
+    languages["fr"]["btn-delete-record"] = "Supprimer";
+    languages["fr"]["btn-new-record"] = "Nouveau record";
+    languages["fr"]["edit-record-td-id"] = "Id";
+    languages["fr"]["edit-record-td-name"] = "Nom";
+    languages["fr"]["edit-record-td-description"] = "Description";
+    languages["fr"]["edit-record-td-approved"] = "Approuvé";
+    languages["fr"]["edit-record-td-start-date"] = "Date de début";
+    languages["fr"]["edit-record-td-end-date"] = "Date de fin";
+    languages["fr"]["edit-record-td-comments"] = "Commentaires";
+    languages["fr"]["edit-record-td-manager-comments"] = "Commentaires du manager";
+    languages["fr"]["edit-record-td-created-by"] = "Créé par";
+    languages["fr"]["edit-record-td-created-on"] = "Créé le";
+    languages["fr"]["edit-record-td-modified-by"] = "Modifié par";
+    languages["fr"]["edit-record-td-modified-on"] = "Modifié le";
+    languages["fr"]["edit-record-td-assigned-to"] = "Assigné à";
+    languages["fr"]["edit-record-td-assigned-on"] = "Assigné le";
+    languages["fr"]["edit-record-td-versions"] = "Versions";
+    languages["fr"]["optional"] = " (Optionnel)";
+    languages["fr"]["btn-upload-version"] = "Uploader";
+    languages["fr"]["delete-version"] = "Supprimer";
+    languages["fr"]["record-save"] = "Sauvegarder";
+    languages["fr"]["record-cancel"] = "Annuler";
+    languages["fr"]["record-delete"] = "Supprimer";
+    languages["fr"]["latest-version"] = "Dernière version";
+    languages["fr"]["uploading"] = "Upload en cours...";
+    languages["fr"]["toast-version-file-deleted"] = "Fichier supprimé avec succès.";
+    languages["fr"]["toast-version-file-delete-error"] = "Une erreur a eu lieu lors de la suppression du fichier.";
+    languages["fr"]["toast-creator-notified"] = "Le créateur du record a été notifié de la modification du record.";
+    languages["fr"]["toast-creator-notify-error"] = "Une erreur a eu lieu lors de la notification du créateur du record.";
+    languages["fr"]["toast-record-saved"] = "Record sauvegardé avec succès.";
+    languages["fr"]["toast-record-save-error"] = "Une erreur a eu lieu lors de la sauvegarde du record.";
+    languages["fr"]["toast-modifications-canceled"] = "Modifications annulées avec succès.";
+    languages["fr"]["toast-modifications-cancel-error"] = "une erreur a eu lieu lors de l'annulation des modifications.";
+    languages["fr"]["toast-select-records"] = "Veuillez sélectionner les records à supprimer.";
+    languages["fr"]["toast-record-name"] = "Entrer un nom pour ce record.";
+    languages["fr"]["confirm-delete-record"] = "Êtes-vous sûr de vouloir supprimer ce record ?";
+    languages["fr"]["confirm-delete-records"] = "Êtes-vous sûr de vouloir supprimer ces records ?";
+    languages["fr"]["record-name"] = "Nom";
+    languages["fr"]["record-approved"] = "Approuvé";
+    languages["fr"]["record-start-date"] = "Date de début";
+    languages["fr"]["record-end-date"] = "Date de fin";
+    languages["fr"]["record-assigned-to"] = "Assigné à";
+    languages["fr"]["record-assigned-on"] = "Assigné le";
 
+    //
     // da
+    //
     languages["da"]["language"] = "Sprog";
     languages["da"]["help"] = "Hjælp";
     languages["da"]["about"] = "Om";

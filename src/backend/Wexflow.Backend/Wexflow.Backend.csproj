@@ -217,6 +217,10 @@
     <Content Include="js\jBox.all.min.js" />
     <Content Include="js\uglify-designer.bat" />
     <Content Include="css\uglify-designer.bat" />
+    <Content Include="js\uglify-notifications.bat" />
+    <Content Include="js\uglify-records.bat" />
+    <Content Include="css\uglify-notifications.bat" />
+    <Content Include="css\uglify-records.bat" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -41,6 +41,7 @@
     let lnkNotifications = document.getElementById("lnk-notifications");
     let imgNotifications = document.getElementById("img-notifications");
     let searchText = this.document.getElementById("search-notifications");
+    let user = null;
     let username = "";
     let auth = "";
 
@@ -49,7 +50,7 @@
     if (suser === null || suser === "") {
         Common.redirectToLoginPage();
     } else {
-        let user = JSON.parse(suser);
+        user = JSON.parse(suser);
 
         username = user.Username;
         let password = user.Password;
