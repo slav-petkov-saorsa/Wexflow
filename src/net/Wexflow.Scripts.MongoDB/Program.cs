@@ -13,7 +13,7 @@ namespace Wexflow.Scripts.MongoDB
             {
                 Db db = new Db(ConfigurationManager.AppSettings["connectionString"]);
                 Helper.InsertWorkflowsAndUser(db);
-                Helper.InsertRecords(db);
+                Helper.InsertRecords(db, "mongodb");
                 db.Dispose();
             }
             catch (Exception e)

@@ -13,7 +13,7 @@ namespace Wexflow.Scripts.LiteDB
             {
                 var db = new Db(ConfigurationManager.AppSettings["connectionString"]);
                 Helper.InsertWorkflowsAndUser(db);
-                Helper.InsertRecords(db);
+                Helper.InsertRecords(db, "litedb");
                 db.Dispose();
             }
             catch (Exception e)

@@ -18,7 +18,7 @@ namespace Wexflow.Scripts.MongoDB
                 var workflowsFolder = config["workflowsFolder"];
                 Db db = new Db(config["connectionString"]);
                 Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-                Helper.InsertRecords(db, config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
+                Helper.InsertRecords(db, "mongodb", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
                 db.Dispose();
             }
             catch (Exception e)

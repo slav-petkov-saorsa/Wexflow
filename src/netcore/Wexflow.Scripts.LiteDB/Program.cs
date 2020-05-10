@@ -23,7 +23,7 @@ namespace Wexflow.Scripts.LiteDB
                 var workflowsFolder = config["workflowsFolder"];
                 var db = new Db(config["connectionString"]);
                 Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-                Helper.InsertRecords(db, config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
+                Helper.InsertRecords(db, "litedb", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
                 db.Dispose();
 
                 BuildDatabase("Windows", "windows");
@@ -60,7 +60,7 @@ namespace Wexflow.Scripts.LiteDB
 
             var db = new Db(connString);
             Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-            Helper.InsertRecords(db, config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
+            Helper.InsertRecords(db, "litedb", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
             db.Dispose();
         }
     }

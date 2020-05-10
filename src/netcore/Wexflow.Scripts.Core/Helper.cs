@@ -97,7 +97,7 @@ namespace Wexflow.Scripts.Core
             }
         }
 
-        public static void InsertRecords(Db db, string recordsFolder, string documentFile, string invoiceFile, string timesheetFile)
+        public static void InsertRecords(Db db, string dbFolderName, string recordsFolder, string documentFile, string invoiceFile, string timesheetFile)
         {
             Console.WriteLine("Inserting records...");
 
@@ -114,7 +114,7 @@ namespace Wexflow.Scripts.Core
                 , "This document needs to be completed."
                 , "Please fill the document."
                 , true
-                , "litedb");
+                , dbFolderName);
             }
 
             // Insert invoice
@@ -128,7 +128,7 @@ namespace Wexflow.Scripts.Core
                 , "This document needs to be reviewed."
                 , "Please complete the document."
                 , true
-                , "litedb");
+                , dbFolderName);
             }
 
             // Insert timesheet
@@ -142,7 +142,7 @@ namespace Wexflow.Scripts.Core
                 , "This document needs to be completed."
                 , "Please fill the document."
                 , true
-                , "litedb");
+                , dbFolderName);
             }
 
             // Insert vacation request
@@ -156,7 +156,7 @@ namespace Wexflow.Scripts.Core
                 , string.Empty
                 , string.Empty
                 , false
-                , "litedb");
+                , dbFolderName);
             }
         }
 
