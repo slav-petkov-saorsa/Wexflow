@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Wexflow>
   <Setting name="workflowsFolder" value="/opt/wexflow/Wexflow/Workflows" />
+  <Setting name="recordsFolder" value="/opt/wexflow/Wexflow/Records" />
   <Setting name="tempFolder" value="/opt/wexflow/Wexflow/Temp" />
   <Setting name="tasksFolder" value="/opt/wexflow/Wexflow/Tasks" />
   <Setting name="approvalFolder" value="/opt/wexflow/Wexflow/Approval" />
