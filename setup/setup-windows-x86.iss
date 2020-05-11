@@ -69,6 +69,7 @@ Source: "..\src\backend\Wexflow.Backend\forgot-password.html"; DestDir: "{app}\B
 Source: "..\src\backend\Wexflow.Backend\dashboard.html"; DestDir: "{app}\Backend"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\records.html"; DestDir: "{app}\Backend"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\manager.html"; DestDir: "{app}\Backend"; Flags: ignoreversion
+Source: "..\src\backend\Wexflow.Backend\approval.html"; DestDir: "{app}\Backend"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\designer.html"; DestDir: "{app}\Backend"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\history.html"; DestDir: "{app}\Backend"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\users.html"; DestDir: "{app}\Backend"; Flags: ignoreversion
@@ -84,6 +85,7 @@ Source: "..\src\backend\Wexflow.Backend\css\forgot-password.min.css"; DestDir: "
 Source: "..\src\backend\Wexflow.Backend\css\dashboard.min.css"; DestDir: "{app}\Backend\css"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\css\records.min.css"; DestDir: "{app}\Backend\css"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\css\manager.min.css"; DestDir: "{app}\Backend\css"; Flags: ignoreversion
+Source: "..\src\backend\Wexflow.Backend\css\approval.min.css"; DestDir: "{app}\Backend\css"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\css\designer.min.css"; DestDir: "{app}\Backend\css"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\css\history.min.css"; DestDir: "{app}\Backend\css"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\css\users.min.css"; DestDir: "{app}\Backend\css"; Flags: ignoreversion
@@ -97,6 +99,7 @@ Source: "..\src\backend\Wexflow.Backend\js\forgot-password.min.js"; DestDir: "{a
 Source: "..\src\backend\Wexflow.Backend\js\dashboard.min.js"; DestDir: "{app}\Backend\js"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\js\records.min.js"; DestDir: "{app}\Backend\js"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\js\manager.min.js"; DestDir: "{app}\Backend\js"; Flags: ignoreversion
+Source: "..\src\backend\Wexflow.Backend\js\approval.min.js"; DestDir: "{app}\Backend\js"; Flags: ignoreversion
 
 Source: "..\src\backend\Wexflow.Backend\js\ace.js"; DestDir: "{app}\Backend\js"; Flags: ignoreversion
 Source: "..\src\backend\Wexflow.Backend\js\worker-xml.js"; DestDir: "{app}\Backend\js"; Flags: ignoreversion

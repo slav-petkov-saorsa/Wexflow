@@ -35,8 +35,8 @@ copy "..\src\backend\Wexflow.Backend\forgot-password.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\dashboard.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\records.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\manager.html" %dstDir%\%backend%\
+copy "..\src\backend\Wexflow.Backend\approval.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\designer.html" %dstDir%\%backend%\
-::copy "..\src\backend\Wexflow.Backend\editor.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\history.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\users.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\profiles.html" %dstDir%\%backend%\
@@ -52,7 +52,7 @@ copy "..\src\backend\Wexflow.Backend\css\forgot-password.min.css" %dstDir%\%back
 copy "..\src\backend\Wexflow.Backend\css\dashboard.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\records.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\manager.min.css" %dstDir%\%backend%\css
-::copy "..\src\backend\Wexflow.Backend\css\editor.min.css" %dstDir%\%backend%\css
+copy "..\src\backend\Wexflow.Backend\css\approval.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\designer.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\history.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\users.min.css" %dstDir%\%backend%\css
@@ -66,6 +66,7 @@ copy "..\src\backend\Wexflow.Backend\js\forgot-password.min.js" %dstDir%\%backen
 copy "..\src\backend\Wexflow.Backend\js\dashboard.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\records.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\manager.min.js" %dstDir%\%backend%\js
+copy "..\src\backend\Wexflow.Backend\js\approval.min.js" %dstDir%\%backend%\js
 
 copy "..\src\backend\Wexflow.Backend\js\ace.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\worker-xml.js" %dstDir%\%backend%\js
@@ -81,7 +82,6 @@ copy "..\src\backend\Wexflow.Backend\js\theme-*.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\blockly_compressed.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\blocks_compressed.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\en.js" %dstDir%\%backend%\js
-::copy "..\src\backend\Wexflow.Backend\js\editor.min.js" %dstDir%\%backend%\js
 
 copy "..\src\backend\Wexflow.Backend\js\designer.min.js" %dstDir%\%backend%\js
 
