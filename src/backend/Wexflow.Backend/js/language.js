@@ -209,8 +209,10 @@
     languages["en"]["uploading"] = "Uploading...";
     languages["en"]["toast-version-file-deleted"] = "Version file deleted successfully.";
     languages["en"]["toast-version-file-delete-error"] = "An error occured while deleting the version file.";
-    languages["en"]["toast-creator-notified"] = "The creator of the record was notified by the modification of the record.";
+    languages["en"]["toast-creator-notified"] = "The creator of the record was notified by this modification.";
     languages["en"]["toast-creator-notify-error"] = "An error occured while notifying the creator of the record.";
+    languages["en"]["toast-assigned-to-notified"] = "The user assigned to the record was notified by this modification.";
+    languages["en"]["toast-assigned-to-notify-error"] = "An error occured while notifying the user assigned to of the record.";
     languages["en"]["toast-record-saved"] = "Record saved successfully.";
     languages["en"]["toast-record-save-error"] = "An error occured while saving the record.";
     languages["en"]["toast-modifications-canceled"] = "Modifications canceled successfully.";
@@ -425,8 +427,10 @@
     languages["fr"]["uploading"] = "Upload en cours...";
     languages["fr"]["toast-version-file-deleted"] = "Fichier supprimé avec succès.";
     languages["fr"]["toast-version-file-delete-error"] = "Une erreur a eu lieu lors de la suppression du fichier.";
-    languages["fr"]["toast-creator-notified"] = "Le créateur du record a été notifié de la modification du record.";
+    languages["fr"]["toast-creator-notified"] = "Le créateur du record a été notifié de cette modification.";
     languages["fr"]["toast-creator-notify-error"] = "Une erreur a eu lieu lors de la notification du créateur du record.";
+    languages["fr"]["toast-assigned-to-notified"] = "L'utilisateur assigné à ce record a été notifié de cette modification.";
+    languages["fr"]["toast-assigned-to-notify-error"] = "Une erreur a eu lieu lors de la notification de l'utilisateur assigné à ce record.";
     languages["fr"]["toast-record-saved"] = "Record sauvegardé avec succès.";
     languages["fr"]["toast-record-save-error"] = "Une erreur a eu lieu lors de la sauvegarde du record.";
     languages["fr"]["toast-modifications-canceled"] = "Modifications annulées avec succès.";

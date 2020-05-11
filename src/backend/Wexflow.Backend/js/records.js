@@ -440,6 +440,17 @@
                                                     }
                                                 }, function () { }, "", auth);
                                             }
+                                            // Notify record.AssignedTo
+                                            if (record.AssignedTo !== "" && username !== record.AssignedTo) {
+                                                let message = "The record " + record.Name + " was updated by the user " + username + ".";
+                                                Common.post(uri + "/notify?a=" + encodeURIComponent(record.AssignedTo) + "&m=" + encodeURIComponent(message), function (notifyRes) {
+                                                    if (notifyRes === true) {
+                                                        Common.toastInfo(language.get("toast-assigned-to-notified"));
+                                                    } else {
+                                                        Common.toastError(language.get("toast-assigned-to-notify-error"));
+                                                    }
+                                                }, function () { }, "", auth);
+                                            }
                                             modal.close();
                                             modal.destroy();
                                             loadRecords();

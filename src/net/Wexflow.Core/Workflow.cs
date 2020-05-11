@@ -1610,13 +1610,13 @@ namespace Wexflow.Core
             {
                 try
                 {
+                    StoppedBy = stoppedBy;
+                    _stopCalled = true;
                     if (_thread != null)
                     {
                         _thread.Abort();
                         _thread.Join();
                     }
-                    StoppedBy = stoppedBy;
-                    _stopCalled = true;
                     foreach (var task in Tasks)
                     {
                         task.Stop();
