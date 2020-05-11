@@ -33,12 +33,14 @@ copy ..\src\netcore\Wexflow.Core\Workflow.xsd %dstDir%\Wexflow\
 copy "..\src\backend\Wexflow.Backend\index.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\forgot-password.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\dashboard.html" %dstDir%\%backend%\
+copy "..\src\backend\Wexflow.Backend\records.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\manager.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\designer.html" %dstDir%\%backend%\
 ::copy "..\src\backend\Wexflow.Backend\editor.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\history.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\users.html" %dstDir%\%backend%\
 copy "..\src\backend\Wexflow.Backend\profiles.html" %dstDir%\%backend%\
+copy "..\src\backend\Wexflow.Backend\notifications.html" %dstDir%\%backend%\
 
 xcopy "..\src\backend\Wexflow.Backend\images\*" %dstDir%\%backend%\images\ /s /e
 
@@ -48,18 +50,21 @@ xcopy "..\src\backend\Wexflow.Backend\css\images\*" %dstDir%\%backend%\css\image
 copy "..\src\backend\Wexflow.Backend\css\login.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\forgot-password.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\dashboard.min.css" %dstDir%\%backend%\css
+copy "..\src\backend\Wexflow.Backend\css\records.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\manager.min.css" %dstDir%\%backend%\css
 ::copy "..\src\backend\Wexflow.Backend\css\editor.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\designer.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\history.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\users.min.css" %dstDir%\%backend%\css
 copy "..\src\backend\Wexflow.Backend\css\profiles.min.css" %dstDir%\%backend%\css
+copy "..\src\backend\Wexflow.Backend\css\notifications.min.css" %dstDir%\%backend%\css
 
 copy "..\src\backend\Wexflow.Backend\js\settings.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\language.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\login.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\forgot-password.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\dashboard.min.js" %dstDir%\%backend%\js
+copy "..\src\backend\Wexflow.Backend\js\records.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\manager.min.js" %dstDir%\%backend%\js
 
 copy "..\src\backend\Wexflow.Backend\js\ace.js" %dstDir%\%backend%\js
@@ -83,6 +88,7 @@ copy "..\src\backend\Wexflow.Backend\js\designer.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\history.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\users.min.js" %dstDir%\%backend%\js
 copy "..\src\backend\Wexflow.Backend\js\profiles.min.js" %dstDir%\%backend%\js
+copy "..\src\backend\Wexflow.Backend\js\notifications.min.js" %dstDir%\%backend%\js
 
 :: Wexflow server
 dotnet publish ..\src\netcore\Wexflow.Server\Wexflow.Server.csproj --configuration Release --force --output %~dp0\%dstDir%\Wexflow.Server
