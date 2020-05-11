@@ -18,19 +18,19 @@
   <!-- RavenDB -->
   <!--<Setting name="connectionString" value="Database=wexflow_netcore;RavenUrl=http://localhost:8080" />-->
   <!-- PostgreSQL -->
-  <!--<Setting name="connectionString" value="Server=127.0.0.1;User Id=postgres;Password=pwd;Database=wexflow_dotnet_core;" />-->
+  <!--<Setting name="connectionString" value="Server=127.0.0.1;User Id=postgres;Password=pwd;Database=wexflow_netcore;" />-->
   <!-- SQLServer -->
-  <!--<Setting name="connectionString" value="Server=127.0.0.1;User Id=wexflow;Password=pwd;Database=wexflow_dotnet_core;" />-->
-  <!--<Setting name="connectionString" value="Server=127.0.0.1;Trusted_Connection=True;Database=wexflow_dotnet_core;" />-->
-  <!--<Setting name="connectionString" value="Server=AELASSAS-PC\SQLEXPRESS01;Trusted_Connection=True;Database=wexflow_dotnet_core;" />-->
+  <!--<Setting name="connectionString" value="Server=127.0.0.1;User Id=wexflow;Password=pwd;Database=wexflow_netcore;" />-->
+  <!--<Setting name="connectionString" value="Server=127.0.0.1;Trusted_Connection=True;Database=wexflow_netcore;" />-->
+  <!--<Setting name="connectionString" value="Server=AELASSAS-PC\SQLEXPRESS01;Trusted_Connection=True;Database=wexflow_netcore;" />-->
   <!-- MySQL -->
-  <!--<Setting name="connectionString" value="Server=localhost;Database=wexflow_dotnet_core;Uid=root;Pwd=password;" />-->
+  <!--<Setting name="connectionString" value="Server=localhost;Database=wexflow_netcore;Uid=root;Pwd=password;" />-->
   <!-- SQLite -->
   <!--<Setting name="connectionString" value="Data Source=/Applications/wexflow/Wexflow/Database/Wexflow.sqlite;Version=3;" />-->
   <!-- Firebird -->
-  <!--<Setting name="connectionString" value="User=SYSDBA;Password=password;Database=/Applications/firebird/data/WEXFLOW-DOTNET-CORE.FDB;DataSource=localhost;Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;" />-->
+  <!--<Setting name="connectionString" value="User=SYSDBA;Password=password;Database=/Applications/firebird/data/WEXFLOW_NETCORE.FDB;DataSource=localhost;Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;" />-->
   <!-- Oracle -->
   <!--<Setting name="connectionString" value="Data Source=localhost:1521/wexflowdc;User Id=SYSTEM;Password=password;" />-->
   <!-- MariaDB -->
-  <!--<Setting name="connectionString" value="SERVER=localhost;PORT=3306;DATABASE=wexflow_dotnet_core;USER=root;PASSWORD=password;" />-->
+  <!--<Setting name="connectionString" value="SERVER=localhost;PORT=3306;DATABASE=wexflow_netcore;USER=root;PASSWORD=password;" />-->
 </Wexflow>
