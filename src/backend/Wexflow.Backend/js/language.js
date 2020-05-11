@@ -169,7 +169,7 @@
     languages["en"]["confirm-user-delete"] = "Are you sure you want to delete this user?";
 
     languages["en"]["lnk-records"] = "Records";
-    languages["en"]["lnk-approval"] = "Approval";
+    languages["en"]["lnk-approval"] = "Approvals";
     languages["en"]["search-notifications"] = "Search notifications";
     languages["en"]["btn-delete-notification"] = "Delete";
     languages["en"]["btn-mark-as-unread"] = "Mark as unread";
@@ -387,7 +387,7 @@
     languages["fr"]["confirm-user-delete"] = "Êtes-vous sûr de vouloir supprimer cet utlisateur ?";
 
     languages["fr"]["lnk-records"] = "Records";
-    languages["fr"]["lnk-approval"] = "Approbation";
+    languages["fr"]["lnk-approval"] = "Approbations";
     languages["fr"]["search-notifications"] = "Rechercher les notifications";
     languages["fr"]["btn-delete-notification"] = "Supprimer";
     languages["fr"]["btn-mark-as-unread"] = "Marquer comme non lu";
