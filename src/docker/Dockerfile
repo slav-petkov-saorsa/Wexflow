@@ -3,9 +3,9 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
 
 RUN mkdir /opt/wexflow
 
-# Copy local download of wexflow-5.4-linux-dotnet-core.zip
-# which was pre-downloaded and unzipped from https://github.com/aelassas/Wexflow/releases/download/v5.4/wexflow-5.4-linux-dotnet-core.zip
-COPY wexflow-5.4-linux-dotnet-core/ /opt/wexflow/
+# Copy local download of wexflow-5.6-linux-netcore.zip
+# which was pre-downloaded and unzipped from https://github.com/aelassas/Wexflow/releases/download/v5.6/wexflow-5.6-linux-netcore.zip
+COPY wexflow-5.6-linux-netcore/ /opt/wexflow/
 
 # Instructions below translated from https://github.com/aelassas/Wexflow/wiki/Installation
 
