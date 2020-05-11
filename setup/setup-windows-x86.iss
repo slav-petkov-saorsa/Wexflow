@@ -284,12 +284,6 @@ Source: "..\src\net\Wexflow.Server\bin\x64\Release\System.Text.Encodings.Web.dll
 Source: "..\src\net\Wexflow.Server\bin\x64\Release\System.Text.Json.dll"; DestDir: "{app}\Wexflow.Scripts.RavenDB"; Flags: ignoreversion
 Source: "..\src\net\Wexflow.Server\bin\x64\Release\System.ValueTuple.dll"; DestDir: "{app}\Wexflow.Scripts.RavenDB"; Flags: ignoreversion
 
-; Wexflow.Scripts.CosmosDB
-Source: "..\src\net\Wexflow.Scripts.CosmosDB\bin\x86\Release\Wexflow.Scripts.CosmosDB.exe"; DestDir: "{app}\Wexflow.Scripts.CosmosDB"; Flags: ignoreversion recursesubdirs
-Source: ".\net\Wexflow.Scripts.CosmosDB\Wexflow.Scripts.CosmosDB.exe.config"; DestDir: "{app}\Wexflow.Scripts.CosmosDB"; Flags: ignoreversion recursesubdirs
-Source: "..\src\net\Wexflow.Core.CosmosDB\bin\x86\Release\*.dll"; DestDir: "{app}\Wexflow.Scripts.CosmosDB"; Flags: ignoreversion
-Source: "..\src\net\Wexflow.Scripts.CosmosDB\bin\x86\Release\*.dll"; DestDir: "{app}\Wexflow.Scripts.CosmosDB"; Flags: ignoreversion recursesubdirs
-
 ; Wexflow.Scripts.PostgreSQL
 Source: "..\src\net\Wexflow.Scripts.PostgreSQL\bin\x86\Release\Wexflow.Scripts.PostgreSQL.exe"; DestDir: "{app}\Wexflow.Scripts.PostgreSQL"; Flags: ignoreversion recursesubdirs
 Source: ".\net\Wexflow.Scripts.PostgreSQL\Wexflow.Scripts.PostgreSQL.exe.config"; DestDir: "{app}\Wexflow.Scripts.PostgreSQL"; Flags: ignoreversion recursesubdirs
@@ -354,7 +348,6 @@ Name: "{commonprograms}\{#MyAppName}\Swagger"; Filename: "http://localhost:8000"
 Name: "{commonprograms}\{#MyAppName}\Configuration"; Filename: "C:\Wexflow\";
 Name: "{commonprograms}\{#MyAppName}\Documentation"; Filename: "{app}\Documentation";
 Name: "{commonprograms}\{#MyAppName}\Logs"; Filename: "{app}\Wexflow.log";
-Name: "{commonprograms}\{#MyAppName}\Install CosmosDB samples"; Filename: "{app}\Wexflow.Scripts.CosmosDB\Wexflow.Scripts.CosmosDB.exe";
 Name: "{commonprograms}\{#MyAppName}\Install MongoDB samples"; Filename: "{app}\Wexflow.Scripts.MongoDB\Wexflow.Scripts.MongoDB.exe";
 Name: "{commonprograms}\{#MyAppName}\Install RavenDB samples"; Filename: "{app}\Wexflow.Scripts.RavenDB\Wexflow.Scripts.RavenDB.exe";
 Name: "{commonprograms}\{#MyAppName}\Install PostgreSQL samples"; Filename: "{app}\Wexflow.Scripts.PostgreSQL\Wexflow.Scripts.PostgreSQL.exe";
@@ -391,10 +384,11 @@ Type: files; Name: "C:\Wexflow\Database\Wexflow.db"
 [Code]
 procedure InitializeWizard();
 begin
-  CreateDir('C:\Wexflow');
-  CreateDir('C:\Wexflow\Database');
-  CreateDir('C:\Wexflow\Workflows');
-  CreateDir('C:\Wexflow\Tasks');
-  CreateDir('C:\Wexflow\Temp');
-  CreateDir('C:\Wexflow\Approval');
+  ForceDirectories('C:\Wexflow');
+  ForceDirectories('C:\Wexflow\Database');
+  ForceDirectories('C:\Wexflow\Workflows');
+  ForceDirectories('C:\Wexflow\Records');
+  ForceDirectories('C:\Wexflow\Tasks');
+  ForceDirectories('C:\Wexflow\Temp');
+  ForceDirectories('C:\Wexflow\Approval');
 end;

@@ -1165,7 +1165,6 @@ namespace Wexflow.Core
                 }
                 foreach (List<FileInf> files in FilesPerTask.Values) files.Clear();
                 foreach (List<Entity> entities in EntitiesPerTask.Values) entities.Clear();
-                _thread = null;
                 IsRunning = false;
                 IsRejected = false;
                 GC.Collect();
