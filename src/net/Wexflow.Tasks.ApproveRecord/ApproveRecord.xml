@@ -21,6 +21,8 @@
     <Setting name="onApproved" value="$string" />
     <!--Optional. List of tasks to execute once the record is rejected. Ex: 1, 2, 3-->
     <Setting name="onRejected" value="$string" />
+    <!--Optional. List of tasks to execute once the record's due date is reached. Ex: 1, 2, 3-->
+    <Setting name="onDueDateReached" value="$string" />
     <!--Optional. List of tasks to execute once the record is deleted. Ex: 1, 2, 3-->
     <Setting name="onDeleted" value="$string" />
     <!--Optional. List of tasks to execute once the worklow is stopped. Ex: 1, 2, 3-->

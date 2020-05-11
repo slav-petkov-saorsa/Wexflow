@@ -18,6 +18,7 @@ namespace Wexflow.Tasks.ApproveRecord
         public string AssignedTo { get; private set; }
         public string OnApproved { get; private set; }
         public string OnRejected { get; private set; }
+        public string OnDueDateReached { get; private set; }
         public string OnDeleted { get; private set; }
         public string OnStopped { get; private set; }
 
@@ -27,6 +28,7 @@ namespace Wexflow.Tasks.ApproveRecord
             AssignedTo = GetSetting("assignedTo");
             OnApproved = GetSetting("onApproved");
             OnRejected = GetSetting("onRejected");
+            OnDueDateReached = GetSetting("onDueDateReached");
             OnDeleted = GetSetting("onDeleted");
             OnStopped = GetSetting("onStopped");
         }
@@ -254,6 +256,68 @@ namespace Wexflow.Tasks.ApproveRecord
                                         Info($"Record {record.GetDbId()} - {record.Name} updated.");
 
                                         var tasks = GetTasks(OnRejected);
+                                        var latestVersion = Workflow.Database.GetLatestVersion(RecordId);
+                                        if (latestVersion != null)
+                                        {
+                                            ClearFiles();
+                                            Files.Add(new FileInf(latestVersion.FilePath, Id));
+                                        }
+
+                                        foreach (var task in tasks)
+                                        {
+                                            task.Run();
+                                        }
+
+                                        if (latestVersion != null)
+                                        {
+                                            Files.RemoveAll(f => f.Path == latestVersion.FilePath);
+                                        }
+
+                                        break;
+                                    }
+
+                                    // notification onDueDateReached
+                                    if (record.EndDate.HasValue && DateTime.Now > record.EndDate.Value)
+                                    {
+                                        notificationMessage = $"The record {record.Name} due date was reached at {record.EndDate.Value:yyyy-MM-dd HH:mm:ss.fff}.";
+                                        notification = new Notification
+                                        {
+                                            Message = notificationMessage,
+                                            AssignedBy = assignedBy.GetDbId(),
+                                            AssignedTo = assignedTo.GetDbId(),
+                                            AssignedOn = DateTime.Now,
+                                            IsRead = false
+                                        };
+                                        Workflow.Database.InsertNotification(notification);
+                                        notification = new Notification
+                                        {
+                                            Message = notificationMessage,
+                                            AssignedBy = assignedBy.GetDbId(),
+                                            AssignedTo = assignedBy.GetDbId(),
+                                            AssignedOn = DateTime.Now,
+                                            IsRead = false
+                                        };
+                                        Workflow.Database.InsertNotification(notification);
+
+                                        if (Workflow.WexflowEngine.EnableEmailNotifications)
+                                        {
+                                            string subject = "Wexflow notification from " + assignedBy.Username;
+                                            string body = notificationMessage;
+
+                                            string host = Workflow.WexflowEngine.SmptHost;
+                                            int port = Workflow.WexflowEngine.SmtpPort;
+                                            bool enableSsl = Workflow.WexflowEngine.SmtpEnableSsl;
+                                            string smtpUser = Workflow.WexflowEngine.SmtpUser;
+                                            string smtpPassword = Workflow.WexflowEngine.SmtpPassword;
+                                            string from = Workflow.WexflowEngine.SmtpFrom;
+
+                                            Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
+                                        }
+
+                                        Info($"ApproveRecord.OnDueDateReached: User {assignedTo.Username} notified for due date of the record {record.GetDbId()} - {record.Name} reached at {record.EndDate.Value:yyyy-MM-dd HH:mm:ss.fff}.");
+                                        Info($"ApproveRecord.OnDueDateReached: User {assignedBy.Username} notified for due date of the record {record.GetDbId()} - {record.Name} reached at {record.EndDate.Value:yyyy-MM-dd HH:mm:ss.fff}.");
+
+                                        var tasks = GetTasks(OnDueDateReached);
                                         var latestVersion = Workflow.Database.GetLatestVersion(RecordId);
                                         if (latestVersion != null)
                                         {
