@@ -604,6 +604,66 @@
     languages["da"]["toast-user-update-error"] = "Der opstod en fejl under opdateringen af brugeren.";
     languages["da"]["confirm-user-delete"] = "Er du sikker på, at du vil slette denne bruger?";
 
+    languages["da"]["lnk-records"] = "Optegnelser";
+    languages["da"]["lnk-approval"] = "Godkendelser";
+    languages["da"]["search-notifications"] = "Søg underretninger";
+    languages["da"]["btn-delete-notification"] = "Slet";
+    languages["da"]["btn-mark-as-unread"] = "Marker som ulæst";
+    languages["da"]["btn-mark-as-read"] = "Marker som læst";
+    languages["da"]["th-assigned-by"] = "Tildelt af";
+    languages["da"]["th-assigned-on"] = "Tildelt på";
+    languages["da"]["th-message"] = "Besked";
+    languages["da"]["toast-select-notifications"] = "Vælg underretninger, der skal slettes.";
+    languages["da"]["confirm-delete-notification"] = "Er du sikker på, at du vil slette denne meddelelse?";
+    languages["da"]["confirm-delete-notifications"] = "Er du sikker på, at du vil slette disse underretninger?";
+    languages["da"]["search-records"] = "Søg i poster";
+    languages["da"]["btn-delete-record"] = "Slet";
+    languages["da"]["btn-new-record"] = "Ny rekord";
+    languages["da"]["record-information"] = "Optag information";
+    languages["da"]["edit-record-td-id"] = "Id";
+    languages["da"]["edit-record-td-name"] = "Navn";
+    languages["da"]["edit-record-td-description"] = "Beskrivelse";
+    languages["da"]["edit-record-td-approved"] = "Godkendt";
+    languages["da"]["edit-record-td-start-date"] = "Startdato";
+    languages["da"]["edit-record-td-end-date"] = "Slutdato";
+    languages["da"]["edit-record-td-comments"] = "Kommentarer";
+    languages["da"]["edit-record-td-manager-comments"] = "Manager-kommentarer";
+    languages["da"]["edit-record-td-created-by"] = "Oprettet af";
+    languages["da"]["edit-record-td-created-on"] = "Oprettet den";
+    languages["da"]["edit-record-td-modified-by"] = "Ændret af";
+    languages["da"]["edit-record-td-modified-on"] = "Ændret på";
+    languages["da"]["edit-record-td-assigned-to"] = "Tildelt til";
+    languages["da"]["edit-record-td-assigned-on"] = "Tildelt på";
+    languages["da"]["edit-record-td-versions"] = "Versioner";
+    languages["da"]["optional"] = " (Valgfrit)";
+    languages["da"]["btn-upload-version"] = "Upload";
+    languages["da"]["delete-version"] = "Slet";
+    languages["da"]["record-save"] = "Gem";
+    languages["da"]["record-cancel"] = "Annuller";
+    languages["da"]["record-delete"] = "Slet";
+    languages["da"]["latest-version"] = "Seneste version";
+    languages["da"]["uploading"] = "Upload...";
+    languages["da"]["toast-version-file-deleted"] = "Versionsfil er slettet med succes.";
+    languages["da"]["toast-version-file-delete-error"] = "Der opstod en fejl under sletning af versionfilen.";
+    languages["da"]["toast-creator-notified"] = "Skaberen af ​​posten blev underrettet af denne ændring.";
+    languages["da"]["toast-creator-notify-error"] = "Der opstod en fejl under underretning af skaberen af ​​posten.";
+    languages["da"]["toast-assigned-to-notified"] = "Brugeren, der er tildelt posten, blev underrettet af denne ændring.";
+    languages["da"]["toast-assigned-to-notify-error"] = "Der opstod en fejl under anmeldelse af den tildelte bruger af posten.";
+    languages["da"]["toast-record-saved"] = "Optagelse gemt med succes.";
+    languages["da"]["toast-record-save-error"] = "Der opstod en fejl under lagring af posten.";
+    languages["da"]["toast-modifications-canceled"] = "Modifikationer annulleret med succes.";
+    languages["da"]["toast-modifications-cancel-error"] = "Der opstod en fejl under annullering af ændringer.";
+    languages["da"]["toast-select-records"] = "Vælg poster, der skal slettes.";
+    languages["da"]["toast-record-name"] = "Indtast et navn til denne post.";
+    languages["da"]["confirm-delete-record"] = "Er du sikker på, at du vil slette denne post?";
+    languages["da"]["confirm-delete-records"] = "Er du sikker på, at du vil slette disse poster?";
+    languages["da"]["record-name"] = "Navn";
+    languages["da"]["record-approved"] = "Godkendt";
+    languages["da"]["record-start-date"] = "Startdato";
+    languages["da"]["record-end-date"] = "Slutdato";
+    languages["da"]["record-assigned-to"] = "Tildelt til";
+    languages["da"]["record-assigned-on"] = "Tildelt på";
+
     return {
         codes: codes,
         languages: languages

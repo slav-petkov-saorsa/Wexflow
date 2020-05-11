@@ -1,6 +1,18 @@
 ﻿window.onload = function () {
     "use strict";
 
+    let translateTable = function () {
+        if (document.getElementById("th-assigned-by")) {
+            document.getElementById("th-assigned-by").innerHTML = language.get("th-assigned-by");
+        }
+        if (document.getElementById("th-assigned-on")) {
+            document.getElementById("th-assigned-on").innerHTML = language.get("th-assigned-on");
+        }
+        if (document.getElementById("th-message")) {
+            document.getElementById("th-message").innerHTML = language.get("th-message");
+        }
+    };
+
     let updateLanguage = function (language) {
         document.getElementById("lnk-records").innerHTML = language.get("lnk-records");
         document.getElementById("lnk-approval").innerHTML = language.get("lnk-approval");
@@ -17,15 +29,8 @@
         document.getElementById("btn-delete").innerHTML = language.get("btn-delete-notification");
         document.getElementById("btn-mark-as-unread").innerHTML = language.get("btn-mark-as-unread");
         document.getElementById("btn-mark-as-read").innerHTML = language.get("btn-mark-as-read");
-        if (document.getElementById("th-assigned-by")) {
-            document.getElementById("th-assigned-by").innerHTML = language.get("th-assigned-by");
-        }
-        if (document.getElementById("th-assigned-on")) {
-            document.getElementById("th-assigned-on").innerHTML = language.get("th-assigned-on");
-        }
-        if (document.getElementById("th-message")) {
-            document.getElementById("th-message").innerHTML = language.get("th-message");
-        }
+
+        translateTable();
     };
 
     let language = new Language("lang", updateLanguage);
@@ -143,6 +148,8 @@
 
                 let divNotifications = document.getElementById("content");
                 divNotifications.innerHTML = table;
+
+                translateTable();
 
                 let notificationsTable = document.getElementById("notifications-table");
                 let rows = notificationsTable.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
