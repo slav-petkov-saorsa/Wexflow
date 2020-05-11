@@ -5,7 +5,7 @@ services:
     ports:
           - 8011:8011
     volumes:
-      - ./wexflow-5.4-linux-dotnet-core/Backend:/public
+      - ./wexflow-5.6-linux-netcore/Backend:/public
     command:
       http-server --cors -p 8011
 
@@ -14,7 +14,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./wexflow-5.4-linux-dotnet-core/:/opt/wexflow/
+      - ./wexflow-5.6-linux-netcore/:/opt/wexflow/
     working_dir: /opt/wexflow/Wexflow.Server
     command:
       sh -c "cd /opt/wexflow/Wexflow.Server && dotnet Wexflow.Server.dll"
