@@ -232,6 +232,7 @@ Source: "..\src\net\Wexflow.Tasks.Twilio\Twilio.xml"; DestDir: "{app}\Documentat
 Source: "..\src\net\Wexflow.Tasks.SshCmd\SshCmd.xml"; DestDir: "{app}\Documentation"; Flags: ignoreversion
 Source: "..\src\net\Wexflow.Tasks.FileSystemWatcher\FileSystemWatcher.xml"; DestDir: "{app}\Documentation"; Flags: ignoreversion
 Source: "..\src\net\Wexflow.Tasks.SubWorkflow\SubWorkflow.xml"; DestDir: "{app}\Documentation"; Flags: ignoreversion
+Source: "..\src\net\Wexflow.Tasks.ApproveRecord\ApproveRecord.xml"; DestDir: "{app}\Documentation"; Flags: ignoreversion
 
 Source: "..\LICENSE.txt"; DestDir: "{app}\"; Flags: ignoreversion
 
