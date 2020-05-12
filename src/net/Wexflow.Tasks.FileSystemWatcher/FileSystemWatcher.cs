@@ -94,18 +94,6 @@ namespace Wexflow.Tasks.FileSystemWatcher
             return new TaskStatus(Status.Success);
         }
 
-        private string[] GetFiles()
-        {
-            if (IncludeSubFolders)
-            {
-                return Directory.GetFiles(FolderToWatch, Filter, SearchOption.AllDirectories);
-            }
-            else
-            {
-                return Directory.GetFiles(FolderToWatch, Filter, SearchOption.TopDirectoryOnly);
-            }
-        }
-
         private void InitFileSystemWatcher()
         {
             Info("Checking existing files...");
@@ -121,6 +109,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     var tasks = GetTasks(OnFileFound);
                     foreach (var task in tasks)
                     {
+                        task.Logs.Clear();
                         task.Run();
                         CurrentLogs.AddRange(task.Logs);
                     }
@@ -135,20 +124,19 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     ErrorFormat("An error while triggering FileSystemWatcher.OnFound on the file {0}. Message: {1}", file, ex.Message);
                 }
                 Info("FileSystemWatcher.OnFound finished.");
-
-                try
-                {
-                    Info("FileSystemWatcher.OnFound updating database entry ...");
-                    var entry = Workflow.Database.GetEntry(Workflow.Id, Workflow.InstanceId);
-                    entry.Logs = string.Join("\r\n", CurrentLogs);
-                    Workflow.Database.UpdateEntry(entry.GetDbId(), entry);
-                    Info("FileSystemWatcher.OnFound database entry updated.");
-                }
-                catch (Exception ex)
-                {
-                    ErrorFormat("An error while updating FileSystemWatcher.OnCreated database entry.", ex);
-                }
             }
+
+            try
+            {
+                var entry = Workflow.Database.GetEntry(Workflow.Id, Workflow.InstanceId);
+                entry.Logs = string.Join("\r\n", CurrentLogs);
+                Workflow.Database.UpdateEntry(entry.GetDbId(), entry);
+            }
+            catch (Exception ex)
+            {
+                ErrorFormat("An error while updating FileSystemWatcher.OnCreated database entry.", ex);
+            }
+
             Info("Checking existing files finished.");
 
             Info("Initializing FileSystemWatcher...");
@@ -193,6 +181,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
                         var tasks = GetTasks(OnFileCreated);
                         foreach (var task in tasks)
                         {
+                            task.Logs.Clear();
                             task.Run();
                             CurrentLogs.AddRange(task.Logs);
                         }
@@ -210,11 +199,9 @@ namespace Wexflow.Tasks.FileSystemWatcher
 
                     try
                     {
-                        Info("FileSystemWatcher.OnCreated updating database entry ...");
                         var entry = Workflow.Database.GetEntry(Workflow.Id, Workflow.InstanceId);
                         entry.Logs = string.Join("\r\n", CurrentLogs);
                         Workflow.Database.UpdateEntry(entry.GetDbId(), entry);
-                        Info("FileSystemWatcher.OnCreated database entry updated.");
                     }
                     catch (Exception ex)
                     {
@@ -248,6 +235,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
                         var tasks = GetTasks(OnFileChanged);
                         foreach (var task in tasks)
                         {
+                            task.Logs.Clear();
                             task.Run();
                             CurrentLogs.AddRange(task.Logs);
                         }
@@ -265,11 +253,9 @@ namespace Wexflow.Tasks.FileSystemWatcher
 
                     try
                     {
-                        Info("FileSystemWatcher.OnChanged updating database entry ...");
                         var entry = Workflow.Database.GetEntry(Workflow.Id, Workflow.InstanceId);
                         entry.Logs = string.Join("\r\n", CurrentLogs);
                         Workflow.Database.UpdateEntry(entry.GetDbId(), entry);
-                        Info("FileSystemWatcher.OnChanged database entry updated.");
                     }
                     catch (Exception ex)
                     {
@@ -297,6 +283,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
                 var tasks = GetTasks(OnFileDeleted);
                 foreach (var task in tasks)
                 {
+                    task.Logs.Clear();
                     task.Run();
                     CurrentLogs.AddRange(task.Logs);
                 }
@@ -314,15 +301,25 @@ namespace Wexflow.Tasks.FileSystemWatcher
 
             try
             {
-                Info("FileSystemWatcher.OnDeleted updating database entry ...");
                 var entry = Workflow.Database.GetEntry(Workflow.Id, Workflow.InstanceId);
                 entry.Logs = string.Join("\r\n", CurrentLogs);
                 Workflow.Database.UpdateEntry(entry.GetDbId(), entry);
-                Info("FileSystemWatcher.OnDeleted database entry updated.");
             }
             catch (Exception ex)
             {
                 ErrorFormat("An error while updating FileSystemWatcher.OnDeleted database entry.", ex);
+            }
+        }
+
+        private string[] GetFiles()
+        {
+            if (IncludeSubFolders)
+            {
+                return Directory.GetFiles(FolderToWatch, Filter, SearchOption.AllDirectories);
+            }
+            else
+            {
+                return Directory.GetFiles(FolderToWatch, Filter, SearchOption.TopDirectoryOnly);
             }
         }
 
