@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	<DebugType>full</DebugType>
     <Platforms>AnyCPU;x64;x86</Platforms> 
-    <Version>5.6.0</Version>
+    <Version>5.7.0</Version>
     <RootNamespace>Wexflow.Tasks.FilesJoiner</RootNamespace>
   </PropertyGroup>
 
