@@ -15,6 +15,7 @@ namespace Wexflow.Tasks.HttpPost
         public string Payload { get; private set; }
         public string Authorization { get; private set; }
         public string Bearer { get; private set; }
+        public string Type { get; private set; }
 
         public HttpPost(XElement xe, Workflow wf) : base(xe, wf)
         {
@@ -22,6 +23,7 @@ namespace Wexflow.Tasks.HttpPost
             Payload = GetSetting("payload");
             Authorization = GetSetting("authorization");
             Bearer = GetSetting("bearer");
+            Type = GetSetting("type", "application/json");
         }
 
         public override TaskStatus Run()
@@ -53,7 +55,7 @@ namespace Wexflow.Tasks.HttpPost
 
         public async System.Threading.Tasks.Task<string> Post(string url, string auth, string bearer, string payload)
         {
-            using (var httpContent = new StringContent(payload, Encoding.UTF8))
+            using (var httpContent = new StringContent(payload, Encoding.UTF8, Type))
             using (var httpClient = new HttpClient())
             {
                 if (!string.IsNullOrEmpty(auth))

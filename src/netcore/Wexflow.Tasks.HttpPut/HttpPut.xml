@@ -14,5 +14,7 @@
     <Setting name="bearer" value="$string" />
     <!-- Optional. The payload.-->
     <Setting name="payload" value="$string" />
+    <!-- Optional. The type. Defaults to application/json -->
+    <Setting name="type" value="$string" />
   </Task>
 </Tasks>
