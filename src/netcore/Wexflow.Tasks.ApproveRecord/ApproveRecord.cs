@@ -115,6 +115,7 @@ namespace Wexflow.Tasks.ApproveRecord
                                 record.ModifiedBy = assignedBy.GetDbId();
                                 record.AssignedTo = assignedTo.GetDbId();
                                 record.AssignedOn = DateTime.Now;
+                                record.Approved = false;
                                 Workflow.Database.UpdateRecord(record.GetDbId(), record);
                                 Info($"Record {record.GetDbId()} - {record.Name} assigned to {assignedTo.Username}.");
 
