@@ -319,7 +319,7 @@ namespace Wexflow.Tasks.ApproveRecord
                                             string from = Workflow.WexflowEngine.SmtpFrom;
 
                                             Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
-                                            Send(host, port, enableSsl, smtpUser, smtpPassword, assignedBy.Email, from, subject, body);
+                                            Send(host, port, enableSsl, smtpUser, smtpPassword, assignedBy.Email, from, subject, body + " The task has not been completed.");
                                         }
 
                                         Info($"ApproveRecord.OnReminderDateReached: User {assignedTo.Username} notified that due date of the record {record.GetDbId()} - {record.Name} will be reached at {record.EndDate.Value:yyyy-MM-dd HH:mm:ss.fff}.");
