@@ -17,12 +17,16 @@
     <Setting name="record" value="$string" />
     <!--Required. Username of the user assigned to the record.-->
     <Setting name="assignedTo" value="$string" />
+    <!--Optional. Reminder delay. Defaults to 3.00:00:00 (3 days before due date)-->
+    <Setting name="reminderDelay" value="$string" />
     <!--Optional. List of tasks to execute once the record is approved. Ex: 1, 2, 3-->
     <Setting name="onApproved" value="$string" />
     <!--Optional. List of tasks to execute once the record is rejected. Ex: 1, 2, 3-->
     <Setting name="onRejected" value="$string" />
     <!--Optional. List of tasks to execute once the record's due date is reached. Ex: 1, 2, 3-->
     <Setting name="onDueDateReached" value="$string" />
+    <!--Optional. List of tasks to execute once the record's reminder date is reached. Ex: 1, 2, 3-->
+    <Setting name="onReminderDateReached" value="$string" />
     <!--Optional. List of tasks to execute once the record is deleted. Ex: 1, 2, 3-->
     <Setting name="onDeleted" value="$string" />
     <!--Optional. List of tasks to execute once the worklow is stopped. Ex: 1, 2, 3-->
