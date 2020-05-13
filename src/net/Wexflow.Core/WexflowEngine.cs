@@ -1630,6 +1630,8 @@ namespace Wexflow.Core
                             }
                         }
                     }
+
+                    Database.DeleteApproversByRecordId(recordId);
                 }
                 return true;
             }
