@@ -818,7 +818,7 @@
                                                     val = defaultValue;
                                                     tasks[index].Settings[sIndex].Value = val;
                                                 }
-                                                settingValueHtml += '<input class="form-control wf-setting-value" type="text" value="' + val + '" />';
+                                                settingValueHtml += '<input class="form-control wf-setting-value" type="text" value="' + Common.escape(val) + '" />';
                                             } else if (settingType === "password") {
                                                 settingValueHtml += '<input class="form-control wf-setting-value" type="password" value="" />';
                                             }
@@ -1420,9 +1420,9 @@
                                                 taskSettings += '<input class="wf-setting-type" type="hidden" value="' + settingType + '">';
 
                                                 if (settingType === "string" || settingType === "int") {
-                                                    taskSettings += '<input class="form-control wf-setting-value" type="text" value="' + settingValue + '" />';
+                                                    taskSettings += '<input class="form-control wf-setting-value" type="text" value="' + Common.escape(settingValue) + '" />';
                                                 } else if (settingType === "password") {
-                                                    taskSettings += '<input class="form-control wf-setting-value" type="password" value="' + settingValue + '" />';
+                                                    taskSettings += '<input class="form-control wf-setting-value" type="password" value="' + Common.escape(settingValue) + '" />';
                                                 }
                                                 else if (settingType === "bool") {
                                                     let checked = false;
