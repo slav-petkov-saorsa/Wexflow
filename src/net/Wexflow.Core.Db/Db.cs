@@ -55,7 +55,7 @@ namespace Wexflow.Core.Db
         public abstract void DeleteUserWorkflowRelationsByUserId(string userId);
         public abstract IEnumerable<string> GetUserWorkflows(string userId);
         public abstract bool CheckUserWorkflow(string userId, string workflowId);
-        
+
         public abstract IEnumerable<User> GetAdministrators(string keyword, UserOrderBy uo);
         public abstract void InsertUser(User user);
         public abstract void UpdateUser(string id, User user);
@@ -123,6 +123,13 @@ namespace Wexflow.Core.Db
         public abstract void DeleteNotifications(string[] notificationIds);
         public abstract IEnumerable<Notification> GetNotifications(string assignedTo, string keyword);
         public abstract bool HasNotifications(string assignedTo);
+
+        public abstract string InsertApprover(Approver approver);
+        public abstract void UpdateApprover(string approverId, Approver approver);
+        public abstract void DeleteApproversByRecordId(string recordId);
+        public abstract void DeleteApprovedApprovers(string recordId);
+        public abstract void DeleteApproversByUserId(string userId);
+        public abstract IEnumerable<Approver> GetApprovers(string recordId);
 
         public abstract void Dispose();
 

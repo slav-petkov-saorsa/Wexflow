@@ -2571,6 +2571,36 @@ namespace Wexflow.Core.Db.Firebird
             }
         }
 
+        public override string InsertApprover(Core.Db.Approver approver)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateApprover(string approverId, Core.Db.Approver approver)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteApproversByRecordId(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteApprovedApprovers(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteApproversByUserId(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Core.Db.Approver> GetApprovers(string recordId)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Dispose()
         {
         }

@@ -87,6 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Approver.cs" />
     <Compile Include="Db.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="Record.cs" />

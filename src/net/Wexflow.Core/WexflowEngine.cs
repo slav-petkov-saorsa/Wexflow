@@ -1786,5 +1786,74 @@ namespace Wexflow.Core
         {
             return Database.HasNotifications(assignedTo);
         }
+
+        /// <summary>
+        /// Inserts an approver.
+        /// </summary>
+        /// <param name="approver">Approver.</param>
+        /// <returns>Approver Id.</returns>
+        public string InsertApprover(Approver approver)
+        {
+            try
+            {
+                var approverId = Database.InsertApprover(approver);
+                return approverId;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while inserting an approver.", e);
+                return "-1";
+            }
+        }
+
+        /// <summary>
+        /// Inserts an approver.
+        /// </summary>
+        /// <param name="approverId">Approver Id.</param>
+        /// <param name="approver">Approver.</param>
+        /// <returns>Result.</returns>
+        public bool UpdateApprover(string approverId, Approver approver)
+        {
+            try
+            {
+                Database.UpdateApprover(approverId, approver);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("An error occured while updating an approver.", e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Deletes approved approvers of a record.
+        /// </summary>
+        /// <param name="recordId">Record Id.</param>
+        /// <returns>Result.</returns>
+        public bool DeleteApprovedApprovers(string recordId)
+        {
+            try
+            {
+                Database.DeleteApprovedApprovers(recordId);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.ErrorFormat("An error occured while deleting approved approvers of the record {0}.", e, recordId);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves approvers by record Id.
+        /// </summary>
+        /// <param name="recordId">Record Id.</param>
+        /// <returns>Approvers.</returns>
+        public Approver[] GetApprovers(string recordId)
+        {
+            return Database.GetApprovers(recordId).ToArray();
+        }
+
     }
 }

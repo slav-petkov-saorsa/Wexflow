@@ -1734,6 +1734,81 @@ namespace Wexflow.Core.Db.LiteDB
             }
         }
 
+        public override string InsertApprover(Core.Db.Approver approver)
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                var a = new Approver
+                {
+                    UserId = approver.UserId,
+                    RecordId = approver.RecordId,
+                    Approved = approver.Approved,
+                    ApprovedOn = approver.ApprovedOn
+                };
+                var approverId = col.Insert(a).AsInt32.ToString();
+
+                return approverId;
+            }
+        }
+
+        public override void UpdateApprover(string approverId, Core.Db.Approver approver)
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                var bsonId = int.Parse(approverId);
+
+                var a = new Approver
+                {
+                    Id = bsonId,
+                    UserId = approver.UserId,
+                    RecordId = approver.RecordId,
+                    Approved = approver.Approved,
+                    ApprovedOn = approver.ApprovedOn
+                };
+
+                col.Update(a);
+            }
+        }
+
+        public override void DeleteApproversByRecordId(string recordId)
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                col.DeleteMany(a => a.RecordId == recordId);
+            }
+        }
+
+        public override void DeleteApprovedApprovers(string recordId)
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                col.DeleteMany(a => a.Approved && a.RecordId == recordId);
+            }
+        }
+
+        public override void DeleteApproversByUserId(string userId)
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                col.DeleteMany(a => a.UserId == userId);
+            }
+        }
+
+        public override IEnumerable<Core.Db.Approver> GetApprovers(string recordId)
+        {
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                var approvers = col.Find(a => a.RecordId == recordId).ToList();
+                return approvers;
+            }
+        }
+
         public override void Dispose()
         {
             db.Dispose();
