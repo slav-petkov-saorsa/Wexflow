@@ -13,16 +13,16 @@ namespace Wexflow.Tasks.HttpPut
     {
         public string Url { get; private set; }
         public string Payload { get; private set; }
-        public string Authorization { get; private set; }
-        public string Bearer { get; private set; }
+        public string AuthorizationScheme { get; private set; }
+        public string AuthorizationParameter { get; private set; }
         public string Type { get; private set; }
 
         public HttpPut(XElement xe, Workflow wf) : base(xe, wf)
         {
             Url = GetSetting("url");
             Payload = GetSetting("payload");
-            Authorization = GetSetting("authorization");
-            Bearer = GetSetting("bearer");
+            AuthorizationScheme = GetSetting("authorizationScheme");
+            AuthorizationParameter = GetSetting("authorizationParameter");
             Type = GetSetting("type", "application/json");
         }
 
@@ -32,7 +32,7 @@ namespace Wexflow.Tasks.HttpPut
             var status = Status.Success;
             try
             {
-                var putTask = Put(Url, Authorization, Bearer, Payload);
+                var putTask = Put(Url, AuthorizationScheme, AuthorizationParameter, Payload);
                 putTask.Wait();
                 var result = putTask.Result;
                 var destFile = Path.Combine(Workflow.WorkflowTempFolder, string.Format("HttpPut_{0:yyyy-MM-dd-HH-mm-ss-fff}", DateTime.Now));
@@ -53,19 +53,16 @@ namespace Wexflow.Tasks.HttpPut
             return new TaskStatus(status);
         }
 
-        public async System.Threading.Tasks.Task<string> Put(string url, string auth, string bearer, string payload)
+        public async System.Threading.Tasks.Task<string> Put(string url, string authScheme, string authParam, string payload)
         {
             using (var httpContent = new StringContent(payload, Encoding.UTF8, Type))
             using (var httpClient = new HttpClient())
             {
-                if (!string.IsNullOrEmpty(auth))
+                if (!string.IsNullOrEmpty(authScheme) && !string.IsNullOrEmpty(authParam))
                 {
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", auth);
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authScheme, authParam);
                 }
-                else if (!string.IsNullOrEmpty(bearer))
-                {
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
-                }
+
                 var httpResponse = await httpClient.PutAsync(url, httpContent);
                 if (httpResponse.Content != null)
                 {
