@@ -1180,6 +1180,7 @@ namespace Wexflow.Core
             var user = Database.GetUser(username);
             Database.DeleteUser(username, password);
             Database.DeleteUserWorkflowRelationsByUserId(user.GetDbId());
+            Database.DeleteApproversByUserId(user.GetDbId());
         }
 
         /// <summary>
