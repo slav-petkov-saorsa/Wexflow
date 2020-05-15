@@ -5,13 +5,16 @@ using System.Threading;
 
 namespace Wexflow.Tasks.Wait
 {
-    public class Wait:Task
+    public class Wait : Task
     {
+        private CancellationTokenSource _cancellationTokenSource;
+
         public TimeSpan Duration { get; private set; }
 
-        public Wait(XElement xe, Workflow wf): base(xe, wf)
+        public Wait(XElement xe, Workflow wf) : base(xe, wf)
         {
             Duration = TimeSpan.Parse(GetSetting("duration"));
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public override TaskStatus Run()
@@ -22,7 +25,7 @@ namespace Wexflow.Tasks.Wait
 
             try
             {
-                Thread.Sleep(Duration);
+                _cancellationTokenSource.Token.WaitHandle.WaitOne(Duration);
             }
             catch (ThreadAbortException)
             {
@@ -43,6 +46,12 @@ namespace Wexflow.Tasks.Wait
 
             Info("Task finished.");
             return new TaskStatus(status);
+        }
+
+        public override void Stop()
+        {
+            base.Stop();
+            _cancellationTokenSource.Cancel();
         }
     }
 }
