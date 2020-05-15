@@ -57,6 +57,7 @@ namespace Wexflow.Core.Db.PostgreSQL
             helper.CreateTableIfNotExists(Core.Db.Version.DocumentName, Version.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.Record.DocumentName, Record.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.Notification.DocumentName, Notification.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Approver.DocumentName, Approver.TableStruct);
         }
 
         public override void Init()
@@ -2362,7 +2363,7 @@ namespace Wexflow.Core.Db.PostgreSQL
                                     Id = (int)reader[Version.ColumnName_Id],
                                     RecordId = ((int)reader[Version.ColumnName_RecordId]).ToString(),
                                     FilePath = (string)reader[Version.ColumnName_FilePath],
-                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                    CreatedOn = (DateTime)reader[Version.ColumnName_CreatedOn]
                                 };
 
                                 versions.Add(version);
@@ -2620,32 +2621,152 @@ namespace Wexflow.Core.Db.PostgreSQL
 
         public override string InsertApprover(Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("INSERT INTO " + Core.Db.Approver.DocumentName + "("
+                        + Approver.ColumnName_UserId + ", "
+                        + Approver.ColumnName_RecordId + ", "
+                        + Approver.ColumnName_Approved + ", "
+                        + Approver.ColumnName_ApprovedOn + ") VALUES("
+                        + int.Parse(approver.UserId) + ", "
+                        + int.Parse(approver.RecordId) + ", "
+                        + (approver.Approved ? "TRUE" : "FALSE") + ", "
+                        + (approver.ApprovedOn == null ? "NULL" : "'" + approver.ApprovedOn.Value.ToString(dateTimeFormat) + "'") + ") "
+                        + "RETURNING " + Approver.ColumnName_Id + ";"
+                        , conn))
+                    {
+                        var id = (int)command.ExecuteScalar();
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
         public override void UpdateApprover(string approverId, Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("UPDATE " + Core.Db.Approver.DocumentName + " SET "
+                        + Approver.ColumnName_UserId + " = " + int.Parse(approver.UserId) + ", "
+                        + Approver.ColumnName_RecordId + " = " + int.Parse(approver.RecordId) + ", "
+                        + Approver.ColumnName_Approved + " = " + (approver.Approved ? "TRUE" : "FALSE") + ", "
+                        + Approver.ColumnName_ApprovedOn + " = " + (approver.ApprovedOn == null ? "NULL" : "'" + approver.ApprovedOn.Value.ToString(dateTimeFormat) + "'")
+                        + " WHERE "
+                        + Approver.ColumnName_Id + " = " + int.Parse(approverId) + ";"
+                        , conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteApproversByRecordId(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_RecordId + " = " + int.Parse(recordId) + ";", conn))
+                    {
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteApprovedApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        + " AND " + Approver.ColumnName_Approved + " = " + "TRUE"
+                        + ";"
+                        , conn))
+                    {
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteApproversByUserId(string userId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_UserId + " = " + int.Parse(userId) + ";", conn))
+                    {
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override IEnumerable<Core.Db.Approver> GetApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Approver> approvers = new List<Approver>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new NpgsqlCommand("SELECT "
+                        + Approver.ColumnName_Id + ", "
+                        + Approver.ColumnName_UserId + ", "
+                        + Approver.ColumnName_RecordId + ", "
+                        + Approver.ColumnName_Approved + ", "
+                        + Approver.ColumnName_ApprovedOn
+                        + " FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        + ";", conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var approver = new Approver
+                                {
+                                    Id = (int)reader[Approver.ColumnName_Id],
+                                    UserId = ((int)reader[Approver.ColumnName_UserId]).ToString(),
+                                    RecordId = ((int)reader[Approver.ColumnName_RecordId]).ToString(),
+                                    Approved = (bool)reader[Approver.ColumnName_Approved],
+                                    ApprovedOn = reader[Approver.ColumnName_ApprovedOn] == DBNull.Value ? null : (DateTime?)reader[Approver.ColumnName_ApprovedOn]
+                                };
+
+                                approvers.Add(approver);
+                            }
+                        }
+                    }
+                }
+
+                return approvers;
+            }
         }
 
         public override void Dispose()
