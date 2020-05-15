@@ -2404,7 +2404,7 @@ namespace Wexflow.Core.Db.PostgreSQL
                                     Id = (int)reader[Version.ColumnName_Id],
                                     RecordId = ((int)reader[Version.ColumnName_RecordId]).ToString(),
                                     FilePath = (string)reader[Version.ColumnName_FilePath],
-                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                    CreatedOn = (DateTime)reader[Version.ColumnName_CreatedOn]
                                 };
 
                                 return version;
@@ -2680,7 +2680,6 @@ namespace Wexflow.Core.Db.PostgreSQL
                     using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Approver.DocumentName
                         + " WHERE " + Approver.ColumnName_RecordId + " = " + int.Parse(recordId) + ";", conn))
                     {
-
                         command.ExecuteNonQuery();
                     }
                 }
@@ -2701,7 +2700,6 @@ namespace Wexflow.Core.Db.PostgreSQL
                         + ";"
                         , conn))
                     {
-
                         command.ExecuteNonQuery();
                     }
                 }
@@ -2719,7 +2717,6 @@ namespace Wexflow.Core.Db.PostgreSQL
                     using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Approver.DocumentName
                         + " WHERE " + Approver.ColumnName_UserId + " = " + int.Parse(userId) + ";", conn))
                     {
-
                         command.ExecuteNonQuery();
                     }
                 }
