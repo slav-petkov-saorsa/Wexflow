@@ -420,14 +420,14 @@
                                 };
 
                                 // Drag & Drop file
-                                jBoxContent.addEventListener('dragover', function (event) {
+                                jBoxContent.addEventListener("dragover", function (event) {
                                     event.stopPropagation();
                                     event.preventDefault();
                                     // Style the drag-and-drop as a "copy file" operation.
-                                    event.dataTransfer.dropEffect = 'copy';
+                                    event.dataTransfer.dropEffect = "copy";
                                 });
 
-                                jBoxContent.addEventListener('drop', function (event) {
+                                jBoxContent.addEventListener("drop", function (event) {
                                     event.stopPropagation();
                                     event.preventDefault();
                                     const fileList = event.dataTransfer.files;
@@ -692,14 +692,14 @@
                             };
 
                             // Drag & Drop file
-                            jBoxContent.addEventListener('dragover', function (event) {
+                            jBoxContent.addEventListener("dragover", function (event) {
                                 event.stopPropagation();
                                 event.preventDefault();
                                 // Style the drag-and-drop as a "copy file" operation.
-                                event.dataTransfer.dropEffect = 'copy';
+                                event.dataTransfer.dropEffect = "copy";
                             });
 
-                            jBoxContent.addEventListener('drop', function (event) {
+                            jBoxContent.addEventListener("drop", function (event) {
                                 event.stopPropagation();
                                 event.preventDefault();
                                 const fileList = event.dataTransfer.files;
