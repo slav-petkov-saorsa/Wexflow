@@ -336,8 +336,76 @@
                                 }
 
                                 // Upload version
+                                let filedialog = document.getElementById("file-dialog");
+                                let uploadFileVersion = function (fd) {
+                                    Common.post(uri + "/uploadVersion?r=" + recordId, function (res) {
+                                        if (res.Result === true) {
+                                            editedRecord.Versions.push({
+                                                RecordId: recordId,
+                                                FilePath: res.FilePath,
+                                                FileName: res.FileName,
+                                                CreatedOn: ""
+                                            });
+
+                                            // Add row in .record-versions
+                                            let row = versionsTable.insertRow(-1);
+                                            let cell1 = row.insertCell(0);
+                                            let cell2 = row.insertCell(1);
+                                            let cell3 = row.insertCell(2);
+                                            let cell4 = row.insertCell(3);
+                                            let cell5 = row.insertCell(4);
+
+                                            cell1.classList.add("version-id");
+                                            cell1.innerHTML = "";
+                                            cell2.classList.add("version-file-name");
+                                            cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
+                                            cell3.classList.add("version-created-on");
+                                            cell3.innerHTML = "-";
+                                            cell4.classList.add("version-file-size");
+                                            cell4.innerHTML = res.FileSize;
+                                            cell5.classList.add("version-delete");
+                                            cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='" + language.get("delete-version") + "'>";
+
+                                            goToBottom(jBoxContent);
+
+                                            // Download version
+                                            cell2.querySelector(".lnk-version-file-name").onclick = function () {
+                                                let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
+                                                window.open(url, "_self");
+                                            };
+
+                                            cell5.querySelector(".btn-delete-version").onclick = function () {
+                                                // Delete file
+                                                Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
+                                                    if (deleteRes === true) {
+                                                        let versionIndex = -1;
+                                                        for (let j = 0; j < editedRecord.Versions.length; j++) {
+                                                            if (editedRecord.Versions[j].FilePath === res.FilePath) {
+                                                                versionIndex = j;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (versionIndex > -1) {
+                                                            editedRecord.Versions.splice(versionIndex, 1);
+                                                            // Update versions table
+                                                            row.remove();
+                                                            Common.toastSuccess(language.get("toast-version-file-deleted"));
+                                                        }
+
+                                                    } else {
+                                                        Common.toastError(language.get("toast-version-file-delete-error"));
+                                                    }
+
+                                                }, function () { }, "", auth);
+                                            };
+
+                                            jBoxContent.querySelector(".spn-upload-version").innerHTML = "";
+                                        }
+                                        filedialog.value = "";
+                                    }, function () { }, fd, auth, true);
+                                };
+
                                 jBoxContent.querySelector(".btn-upload-version").onclick = function () {
-                                    let filedialog = document.getElementById("file-dialog");
                                     filedialog.click();
 
                                     filedialog.onchange = function (e) {
@@ -347,73 +415,29 @@
                                         let fd = new FormData();
                                         fd.append("file", file);
 
-                                        Common.post(uri + "/uploadVersion?r=" + recordId, function (res) {
-                                            if (res.Result === true) {
-                                                editedRecord.Versions.push({
-                                                    RecordId: recordId,
-                                                    FilePath: res.FilePath,
-                                                    FileName: res.FileName,
-                                                    CreatedOn: ""
-                                                });
-
-                                                // Add row in .record-versions
-                                                let row = versionsTable.insertRow(-1);
-                                                let cell1 = row.insertCell(0);
-                                                let cell2 = row.insertCell(1);
-                                                let cell3 = row.insertCell(2);
-                                                let cell4 = row.insertCell(3);
-                                                let cell5 = row.insertCell(4);
-
-                                                cell1.classList.add("version-id");
-                                                cell1.innerHTML = "";
-                                                cell2.classList.add("version-file-name");
-                                                cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
-                                                cell3.classList.add("version-created-on");
-                                                cell3.innerHTML = "-";
-                                                cell4.classList.add("version-file-size");
-                                                cell4.innerHTML = res.FileSize;
-                                                cell5.classList.add("version-delete");
-                                                cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='" + language.get("delete-version") + "'>";
-
-                                                goToBottom(jBoxContent);
-
-                                                // Download version
-                                                cell2.querySelector(".lnk-version-file-name").onclick = function () {
-                                                    let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
-                                                    window.open(url, "_self");
-                                                };
-
-                                                cell5.querySelector(".btn-delete-version").onclick = function () {
-                                                    // Delete file
-                                                    Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
-                                                        if (deleteRes === true) {
-                                                            let versionIndex = -1;
-                                                            for (let j = 0; j < editedRecord.Versions.length; j++) {
-                                                                if (editedRecord.Versions[j].FilePath === res.FilePath) {
-                                                                    versionIndex = j;
-                                                                    break;
-                                                                }
-                                                            }
-                                                            if (versionIndex > -1) {
-                                                                editedRecord.Versions.splice(versionIndex, 1);
-                                                                // Update versions table
-                                                                row.remove();
-                                                                Common.toastSuccess(language.get("toast-version-file-deleted"));
-                                                            }
-
-                                                        } else {
-                                                            Common.toastError(language.get("toast-version-file-delete-error"));
-                                                        }
-
-                                                    }, function () { }, "", auth);
-                                                };
-
-                                                jBoxContent.querySelector(".spn-upload-version").innerHTML = "";
-                                            }
-                                            filedialog.value = "";
-                                        }, function () { }, fd, auth, true);
+                                        uploadFileVersion(fd);
                                     };
                                 };
+
+                                // Drag & Drop file
+                                jBoxContent.addEventListener('dragover', function (event) {
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                    // Style the drag-and-drop as a "copy file" operation.
+                                    event.dataTransfer.dropEffect = 'copy';
+                                });
+
+                                jBoxContent.addEventListener('drop', function (event) {
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                    const fileList = event.dataTransfer.files;
+
+                                    let file = fileList[0];
+                                    let fd = new FormData();
+                                    fd.append("file", file);
+
+                                    uploadFileVersion(fd);
+                                });
 
                                 let jBoxFooter = document.getElementsByClassName("jBox-footer")[0];
                                 if (userProfile === 1 && record.CreatedBy !== username) {
@@ -584,8 +608,76 @@
                             }, 0);
 
                             // Upload version
+                            let filedialog = document.getElementById("file-dialog");
+                            let uploadFileVersion = function (fd) {
+                                Common.post(uri + "/uploadVersion?r=-1", function (res) {
+                                    if (res.Result === true) {
+                                        newRecord.Versions.push({
+                                            RecordId: "-1",
+                                            FilePath: res.FilePath,
+                                            FileName: res.FileName,
+                                            CreatedOn: ""
+                                        });
+
+                                        // Add row in .record-versions
+                                        let versionsTable = jBoxContent.querySelector(".record-versions");
+                                        let row = versionsTable.insertRow(-1);
+                                        let cell1 = row.insertCell(0);
+                                        let cell2 = row.insertCell(1);
+                                        let cell3 = row.insertCell(2);
+                                        let cell4 = row.insertCell(3);
+                                        let cell5 = row.insertCell(4);
+
+                                        cell1.classList.add("version-id");
+                                        cell1.innerHTML = "";
+                                        cell2.classList.add("version-file-name");
+                                        cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
+                                        cell3.classList.add("version-created-on");
+                                        cell3.innerHTML = "-";
+                                        cell4.classList.add("version-file-size");
+                                        cell4.innerHTML = res.FileSize;
+                                        cell5.classList.add("version-delete");
+                                        cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='" + language.get("delete-version") + "'>";
+
+                                        goToBottom(jBoxContent);
+
+                                        cell2.querySelector(".lnk-version-file-name").onclick = function () {
+                                            let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
+                                            window.open(url, "_self");
+                                        };
+
+                                        cell5.querySelector(".btn-delete-version").onclick = function () {
+                                            // Delete file
+                                            Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
+                                                if (deleteRes === true) {
+                                                    let versionIndex = -1;
+                                                    for (let j = 0; j < newRecord.Versions.length; j++) {
+                                                        if (newRecord.Versions[j].FilePath === res.FilePath) {
+                                                            versionIndex = j;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (versionIndex > -1) {
+                                                        newRecord.Versions.splice(versionIndex, 1);
+                                                        // Update versions table
+                                                        row.remove();
+                                                        Common.toastSuccess(language.get("toast-version-file-deleted"));
+                                                    }
+
+                                                } else {
+                                                    Common.toastError(language.get("toast-version-file-delete-error"));
+                                                }
+
+                                            }, function () { }, "", auth);
+                                        };
+
+                                        jBoxContent.querySelector(".spn-upload-version").innerHTML = "";
+                                    }
+                                    filedialog.value = "";
+                                }, function () { }, fd, auth, true);
+                            };
+
                             jBoxContent.querySelector(".btn-upload-version").onclick = function () {
-                                let filedialog = document.getElementById("file-dialog");
                                 filedialog.click();
 
                                 filedialog.onchange = function (e) {
@@ -595,73 +687,29 @@
                                     let fd = new FormData();
                                     fd.append("file", file);
 
-                                    Common.post(uri + "/uploadVersion?r=-1", function (res) {
-                                        if (res.Result === true) {
-                                            newRecord.Versions.push({
-                                                RecordId: "-1",
-                                                FilePath: res.FilePath,
-                                                FileName: res.FileName,
-                                                CreatedOn: ""
-                                            });
-
-                                            // Add row in .record-versions
-                                            let versionsTable = jBoxContent.querySelector(".record-versions");
-                                            let row = versionsTable.insertRow(-1);
-                                            let cell1 = row.insertCell(0);
-                                            let cell2 = row.insertCell(1);
-                                            let cell3 = row.insertCell(2);
-                                            let cell4 = row.insertCell(3);
-                                            let cell5 = row.insertCell(4);
-
-                                            cell1.classList.add("version-id");
-                                            cell1.innerHTML = "";
-                                            cell2.classList.add("version-file-name");
-                                            cell2.innerHTML = "<a class='lnk-version-file-name' href='#'>" + res.FileName + "</a>";
-                                            cell3.classList.add("version-created-on");
-                                            cell3.innerHTML = "-";
-                                            cell4.classList.add("version-file-size");
-                                            cell4.innerHTML = res.FileSize;
-                                            cell5.classList.add("version-delete");
-                                            cell5.innerHTML = "<input type='button' class='btn-delete-version btn btn-danger btn-xs' value='" + language.get("delete-version") + "'>";
-
-                                            goToBottom(jBoxContent);
-
-                                            cell2.querySelector(".lnk-version-file-name").onclick = function () {
-                                                let url = "http://" + encodeURIComponent(username) + ":" + encodeURIComponent(password) + "@" + Settings.Hostname + ":" + Settings.Port + "/wexflow/downloadFile?p=" + encodeURIComponent(res.FilePath);
-                                                window.open(url, "_self");
-                                            };
-
-                                            cell5.querySelector(".btn-delete-version").onclick = function () {
-                                                // Delete file
-                                                Common.post(uri + "/deleteTempVersionFile?p=" + encodeURIComponent(res.FilePath), function (deleteRes) {
-                                                    if (deleteRes === true) {
-                                                        let versionIndex = -1;
-                                                        for (let j = 0; j < newRecord.Versions.length; j++) {
-                                                            if (newRecord.Versions[j].FilePath === res.FilePath) {
-                                                                versionIndex = j;
-                                                                break;
-                                                            }
-                                                        }
-                                                        if (versionIndex > -1) {
-                                                            newRecord.Versions.splice(versionIndex, 1);
-                                                            // Update versions table
-                                                            row.remove();
-                                                            Common.toastSuccess(language.get("toast-version-file-deleted"));
-                                                        }
-
-                                                    } else {
-                                                        Common.toastError(language.get("toast-version-file-delete-error"));
-                                                    }
-
-                                                }, function () { }, "", auth);
-                                            };
-
-                                            jBoxContent.querySelector(".spn-upload-version").innerHTML = "";
-                                        }
-                                        filedialog.value = "";
-                                    }, function () { }, fd, auth, true);
+                                    uploadFileVersion(fd);
                                 };
                             };
+
+                            // Drag & Drop file
+                            jBoxContent.addEventListener('dragover', function (event) {
+                                event.stopPropagation();
+                                event.preventDefault();
+                                // Style the drag-and-drop as a "copy file" operation.
+                                event.dataTransfer.dropEffect = 'copy';
+                            });
+
+                            jBoxContent.addEventListener('drop', function (event) {
+                                event.stopPropagation();
+                                event.preventDefault();
+                                const fileList = event.dataTransfer.files;
+
+                                let file = fileList[0];
+                                let fd = new FormData();
+                                fd.append("file", file);
+
+                                uploadFileVersion(fd);
+                            });
 
                             let jBoxFooter = document.getElementsByClassName("jBox-footer")[0];
                             jBoxFooter.querySelector(".record-delete").style.display = "none";
