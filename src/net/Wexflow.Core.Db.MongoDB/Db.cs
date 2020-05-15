@@ -1184,32 +1184,70 @@ namespace Wexflow.Core.Db.MongoDB
 
         public override string InsertApprover(Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                var a = new Approver
+                {
+                    UserId = approver.UserId,
+                    RecordId = approver.RecordId,
+                    Approved = approver.Approved,
+                    ApprovedOn = approver.ApprovedOn
+                };
+                col.InsertOne(a);
+                return a.Id;
+            }
         }
 
         public override void UpdateApprover(string approverId, Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                var update = Builders<Approver>.Update
+                    .Set(u => u.UserId, approver.UserId)
+                    .Set(u => u.RecordId, approver.RecordId)
+                    .Set(u => u.Approved, approver.Approved)
+                    .Set(u => u.ApprovedOn, approver.ApprovedOn);
+
+                col.UpdateOne(a => a.Id == approverId, update);
+            }
         }
 
         public override void DeleteApproversByRecordId(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                col.DeleteMany(a => a.RecordId == recordId);
+            }
         }
 
         public override void DeleteApprovedApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                col.DeleteMany(a => a.Approved && a.RecordId == recordId);
+            }
         }
 
         public override void DeleteApproversByUserId(string userId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                col.DeleteMany(a => a.UserId == userId);
+            }
         }
 
         public override IEnumerable<Core.Db.Approver> GetApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                var col = db.GetCollection<Approver>(Core.Db.Approver.DocumentName);
+                return col.Find(a => a.RecordId == recordId).ToList();
+            }
         }
 
         public override void Dispose()

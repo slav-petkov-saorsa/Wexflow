@@ -124,6 +124,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Approver.cs" />
     <Compile Include="Db.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="HistoryEntry.cs" />
