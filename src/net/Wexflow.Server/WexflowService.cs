@@ -4624,6 +4624,26 @@ namespace Wexflow.Server
                             AssignedOn = record.AssignedOn != null ? record.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
                         };
 
+                        // Approvers
+                        Core.Db.Approver[] approvers = WexflowServer.WexflowEngine.GetApprovers(record.GetDbId());
+                        var approversList = new List<Contracts.Approver>();
+                        foreach (var approver in approvers)
+                        {
+                            var approverUser = WexflowServer.WexflowEngine.GetUserById(approver.UserId);
+                            if (approverUser != null)
+                            {
+                                var a = new Contracts.Approver
+                                {
+                                    ApprovedBy = approverUser.Username,
+                                    Approved = approver.Approved,
+                                    ApprovedOn = approver.ApprovedOn == null ? string.Empty : approver.ApprovedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"])
+                                };
+                                approversList.Add(a);
+                            }
+                        }
+                        r.Approvers = approversList.ToArray();
+
+                        // Versions
                         var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());
                         List<Contracts.Version> versionsList = new List<Contracts.Version>();
                         foreach (var version in versions)
@@ -4701,6 +4721,26 @@ namespace Wexflow.Server
                             AssignedOn = record.AssignedOn.HasValue ? record.AssignedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
                         };
 
+                        // Approvers
+                        Core.Db.Approver[] approvers = WexflowServer.WexflowEngine.GetApprovers(record.GetDbId());
+                        var approversList = new List<Contracts.Approver>();
+                        foreach (var approver in approvers)
+                        {
+                            var approverUser = WexflowServer.WexflowEngine.GetUserById(approver.UserId);
+                            if (approverUser != null)
+                            {
+                                var a = new Contracts.Approver
+                                {
+                                    ApprovedBy = approverUser.Username,
+                                    Approved = approver.Approved,
+                                    ApprovedOn = approver.ApprovedOn == null ? string.Empty : approver.ApprovedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"])
+                                };
+                                approversList.Add(a);
+                            }
+                        }
+                        r.Approvers = approversList.ToArray();
+
+                        // Versions
                         var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());
                         List<Contracts.Version> versionsList = new List<Contracts.Version>();
                         foreach (var version in versions)
@@ -4781,6 +4821,26 @@ namespace Wexflow.Server
                             AssignedOn = record.AssignedOn != null ? record.AssignedOn.ToString(WexflowServer.Config["DateTimeFormat"]) : string.Empty
                         };
 
+                        // Approvers
+                        Core.Db.Approver[] approvers = WexflowServer.WexflowEngine.GetApprovers(record.GetDbId());
+                        var approversList = new List<Contracts.Approver>();
+                        foreach (var approver in approvers)
+                        {
+                            var approverUser = WexflowServer.WexflowEngine.GetUserById(approver.UserId);
+                            if (approverUser != null)
+                            {
+                                var a = new Contracts.Approver
+                                {
+                                    ApprovedBy = approverUser.Username,
+                                    Approved = approver.Approved,
+                                    ApprovedOn = approver.ApprovedOn == null ? string.Empty : approver.ApprovedOn.Value.ToString(WexflowServer.Config["DateTimeFormat"])
+                                };
+                                approversList.Add(a);
+                            }
+                        }
+                        r.Approvers = approversList.ToArray();
+
+                        // Versions
                         var versions = WexflowServer.WexflowEngine.GetVersions(record.GetDbId());
                         List<Contracts.Version> versionsList = new List<Contracts.Version>();
                         foreach (var version in versions)

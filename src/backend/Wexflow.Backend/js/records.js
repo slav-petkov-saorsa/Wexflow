@@ -18,6 +18,12 @@
             jBoxContent.querySelector(".edit-record-td-modified-on").innerHTML = language.get("edit-record-td-modified-on");
             jBoxContent.querySelector(".edit-record-td-assigned-to").innerHTML = language.get("edit-record-td-assigned-to");
             jBoxContent.querySelector(".edit-record-td-assigned-on").innerHTML = language.get("edit-record-td-assigned-on");
+
+            jBoxContent.querySelector(".edit-record-td-approvers").innerHTML = language.get("edit-record-td-approvers");
+            jBoxContent.querySelector(".th-approved-by").innerHTML = language.get("th-approved-by");
+            jBoxContent.querySelector(".th-approved").innerHTML = language.get("th-approved");
+            jBoxContent.querySelector(".th-approved-on").innerHTML = language.get("th-approved-on");
+
             jBoxContent.querySelector(".edit-record-td-versions").innerHTML = language.get("edit-record-td-versions");
             jBoxContent.querySelector(".btn-upload-version").value = language.get("btn-upload-version");
         }
@@ -273,6 +279,24 @@
                                     jBoxContent.querySelector(".record-start-date").disabled = true;
                                     jBoxContent.querySelector(".record-end-date").disabled = true;
                                     jBoxContent.querySelector(".record-manager-comments").disabled = true;
+                                }
+
+                                let approvers = [];
+                                for (let i = 0; i < record.Approvers.length; i++) {
+                                    let approver = record.Approvers[i];
+                                    approvers.push("<tr>"
+                                        + "<td>" + approver.ApprovedBy + "</td>"
+                                        + "<td>" + "<input type='checkbox' style='width: auto;' disabled" + (approver.Approved === true ? " checked" : "") + ">" + "</td>"
+                                        + "<td>" + approver.ApprovedOn + "</td>"
+                                        + "</tr>");
+                                }
+                                let approversTable = jBoxContent.querySelector(".record-approvers");
+                                approversTable.getElementsByTagName("tbody")[0].innerHTML = approvers.join("");
+
+                                if (record.Approvers.length === 0) {
+                                    approversTable.getElementsByTagName("thead")[0].style.display = "none";
+                                } else {
+                                    approversTable.getElementsByTagName("thead")[0].style.display = "table-header-group";
                                 }
 
                                 let versions = [];
@@ -600,6 +624,7 @@
                             jBoxContent.querySelector(".edit-record-tr-assigned-on").style.display = "none";
                             jBoxContent.querySelector(".edit-record-td-start-date").innerHTML += language.get("optional");
                             jBoxContent.querySelector(".edit-record-td-end-date").innerHTML += " (Optional)";
+                            jBoxContent.querySelector(".edit-record-tr-approvers").style.display = "none";
 
                             setTimeout(function () {
                                 let recodNameTxt = jBoxContent.querySelector(".record-name");

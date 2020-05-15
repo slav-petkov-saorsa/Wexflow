@@ -192,6 +192,7 @@
   <ItemGroup>
     <Compile Include="AppConfiguration.cs" />
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Contracts\Approver.cs" />
     <Compile Include="Contracts\AttributeInfo.cs" />
     <Compile Include="Contracts\Auth.cs" />
     <Compile Include="Contracts\Entry.cs" />

@@ -318,3 +318,11 @@
 .record-versions .version-id{
     display: none;
 }
+
+.edit-record-td-approvers {
+    height: 55px;
+}
+
+.record-approvers tbody tr:hover {
+    background: #EEEEEE;
+}

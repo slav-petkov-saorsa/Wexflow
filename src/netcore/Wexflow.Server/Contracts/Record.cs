@@ -16,6 +16,7 @@
         public string CreatedOn { get; set; }
         public string AssignedTo { get; set; }
         public string AssignedOn { get; set; }
+        public Approver[] Approvers { get; set; }
         public Version[] Versions { get; set; }
     }
 }
