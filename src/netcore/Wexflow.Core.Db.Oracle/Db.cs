@@ -26,6 +26,7 @@ namespace Wexflow.Core.Db.Oracle
             helper.CreateTableIfNotExists(Core.Db.Version.DocumentName, Version.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.Record.DocumentName, Record.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.Notification.DocumentName, Notification.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.Approver.DocumentName, Approver.TableStruct);
         }
 
         public override void Init()
@@ -1932,7 +1933,7 @@ namespace Wexflow.Core.Db.Oracle
                         + Record.ColumnName_Name + " = '" + (record.Name ?? "").Replace("'", "''") + "', "
                         + Record.ColumnName_Description + " = '" + (record.Description ?? "").Replace("'", "''") + "', "
                         + Record.ColumnName_Approved + " = " + (record.Approved ? "1" : "0") + ", "
-                        + Record.ColumnName_StartDate + " = " + (record.StartDate == null ? "NULL" : "'" + "TO_TIMESTAMP(" + record.StartDate.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
+                        + Record.ColumnName_StartDate + " = " + (record.StartDate == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.StartDate.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
                         + Record.ColumnName_EndDate + " = " + (record.EndDate == null ? "NULL" : "TO_TIMESTAMP(" + "'" + record.EndDate.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ", "
                         + Record.ColumnName_Comments + " = '" + (record.Comments ?? "").Replace("'", "''") + "', "
                         + Record.ColumnName_ManagerComments + " = '" + (record.ManagerComments ?? "").Replace("'", "''") + "', "
@@ -2356,7 +2357,7 @@ namespace Wexflow.Core.Db.Oracle
                                     Id = Convert.ToInt64((decimal)reader[Version.ColumnName_Id]),
                                     RecordId = Convert.ToInt64((decimal)reader[Version.ColumnName_RecordId]).ToString(),
                                     FilePath = reader[Version.ColumnName_FilePath] == DBNull.Value ? null : (string)reader[Version.ColumnName_FilePath],
-                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                    CreatedOn = (DateTime)reader[Version.ColumnName_CreatedOn]
                                 };
 
                                 versions.Add(version);
@@ -2396,7 +2397,7 @@ namespace Wexflow.Core.Db.Oracle
                                     Id = Convert.ToInt64((decimal)reader[Version.ColumnName_Id]),
                                     RecordId = Convert.ToInt64((decimal)reader[Version.ColumnName_RecordId]).ToString(),
                                     FilePath = reader[Version.ColumnName_FilePath] == DBNull.Value ? null : (string)reader[Version.ColumnName_FilePath],
-                                    CreatedOn = (DateTime)reader[Record.ColumnName_CreatedOn]
+                                    CreatedOn = (DateTime)reader[Version.ColumnName_CreatedOn]
                                 };
 
                                 return version;
@@ -2624,32 +2625,158 @@ namespace Wexflow.Core.Db.Oracle
 
         public override string InsertApprover(Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("INSERT INTO " + Core.Db.Approver.DocumentName + "("
+                        + Approver.ColumnName_UserId + ", "
+                        + Approver.ColumnName_RecordId + ", "
+                        + Approver.ColumnName_Approved + ", "
+                        + Approver.ColumnName_ApprovedOn + ") VALUES("
+                        + int.Parse(approver.UserId) + ", "
+                        + int.Parse(approver.RecordId) + ", "
+                        + (approver.Approved ? "1" : "0") + ", "
+                        + (approver.ApprovedOn == null ? "NULL" : "TO_TIMESTAMP(" + "'" + approver.ApprovedOn.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')") + ") "
+                        + "RETURNING " + Approver.ColumnName_Id + " INTO :id"
+                        , conn))
+                    {
+                        command.Parameters.Add(new OracleParameter
+                        {
+                            ParameterName = ":id",
+                            DbType = System.Data.DbType.Decimal,
+                            Direction = System.Data.ParameterDirection.Output
+                        });
+
+                        command.ExecuteNonQuery();
+
+                        var id = Convert.ToInt64(command.Parameters[":id"].Value).ToString();
+
+                        return id.ToString();
+                    }
+                }
+            }
         }
 
         public override void UpdateApprover(string approverId, Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("UPDATE " + Core.Db.Approver.DocumentName + " SET "
+                        + Approver.ColumnName_UserId + " = " + int.Parse(approver.UserId) + ", "
+                        + Approver.ColumnName_RecordId + " = " + int.Parse(approver.RecordId) + ", "
+                        + Approver.ColumnName_Approved + " = " + (approver.Approved ? "1" : "0") + ", "
+                        + Approver.ColumnName_ApprovedOn + " = " + (approver.ApprovedOn == null ? "NULL" : "TO_TIMESTAMP(" + "'" + approver.ApprovedOn.Value.ToString(dateTimeFormat) + "'" + ", 'YYYY-MM-DD HH24:MI:SS.FF')")
+                        + " WHERE "
+                        + Approver.ColumnName_Id + " = " + int.Parse(approverId)
+                        , conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteApproversByRecordId(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("DELETE FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_RecordId + " = " + int.Parse(recordId), conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteApprovedApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("DELETE FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        + " AND " + Approver.ColumnName_Approved + " = " + "1"
+                        , conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override void DeleteApproversByUserId(string userId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("DELETE FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_UserId + " = " + int.Parse(userId), conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public override IEnumerable<Core.Db.Approver> GetApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                List<Approver> approvers = new List<Approver>();
+
+                using (var conn = new OracleConnection(connectionString))
+                {
+                    conn.Open();
+
+                    using (var command = new OracleCommand("SELECT "
+                        + Approver.ColumnName_Id + ", "
+                        + Approver.ColumnName_UserId + ", "
+                        + Approver.ColumnName_RecordId + ", "
+                        + Approver.ColumnName_Approved + ", "
+                        + Approver.ColumnName_ApprovedOn
+                        + " FROM " + Core.Db.Approver.DocumentName
+                        + " WHERE " + Approver.ColumnName_RecordId + " = " + int.Parse(recordId)
+                        , conn))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var approver = new Approver
+                                {
+                                    Id = Convert.ToInt64((decimal)reader[Approver.ColumnName_Id]),
+                                    UserId = Convert.ToInt64((decimal)reader[Approver.ColumnName_UserId]).ToString(),
+                                    RecordId = Convert.ToInt64((decimal)reader[Approver.ColumnName_RecordId]).ToString(),
+                                    Approved = (short)reader[Approver.ColumnName_Approved] == 1 ? true : false,
+                                    ApprovedOn = reader[Approver.ColumnName_ApprovedOn] == DBNull.Value ? null : (DateTime?)reader[Approver.ColumnName_ApprovedOn]
+                                };
+
+                                approvers.Add(approver);
+                            }
+                        }
+                    }
+                }
+
+                return approvers;
+            }
         }
 
         public override void Dispose()
