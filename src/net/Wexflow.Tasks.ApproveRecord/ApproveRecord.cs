@@ -291,6 +291,36 @@ namespace Wexflow.Tasks.ApproveRecord
                                                         Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
                                                         Send(host, port, enableSsl, smtpUser, smtpPassword, approverUser.Email, from, subject, body);
                                                     }
+
+                                                    // Notify other approvers
+                                                    foreach (var otherApprover in otherApprovers)
+                                                    {
+                                                        notification = new Notification
+                                                        {
+                                                            Message = notificationMessage,
+                                                            AssignedBy = otherApprover.UserId,
+                                                            AssignedTo = otherApprover.UserId,
+                                                            AssignedOn = DateTime.Now,
+                                                            IsRead = false
+                                                        };
+                                                        Workflow.Database.InsertNotification(notification);
+
+                                                        if (Workflow.WexflowEngine.EnableEmailNotifications)
+                                                        {
+                                                            string subject = "Wexflow notification on the record " + record.Name;
+                                                            string body = notificationMessage;
+
+                                                            string host = Workflow.WexflowEngine.SmptHost;
+                                                            int port = Workflow.WexflowEngine.SmtpPort;
+                                                            bool enableSsl = Workflow.WexflowEngine.SmtpEnableSsl;
+                                                            string smtpUser = Workflow.WexflowEngine.SmtpUser;
+                                                            string smtpPassword = Workflow.WexflowEngine.SmtpPassword;
+                                                            string from = Workflow.WexflowEngine.SmtpFrom;
+
+                                                            var otherApproverUser = Workflow.WexflowEngine.GetUserById(otherApprover.UserId);
+                                                            Send(host, port, enableSsl, smtpUser, smtpPassword, otherApproverUser.Email, from, subject, body);
+                                                        }
+                                                    }
                                                 }
 
                                                 var tasks = GetTasks(OnApproved);
