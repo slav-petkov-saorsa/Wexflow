@@ -1863,32 +1863,108 @@ namespace Wexflow.Core.Db.RavenDB
 
         public override string InsertApprover(Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var a = new Approver
+                    {
+                        UserId = approver.UserId,
+                        RecordId = approver.RecordId,
+                        Approved = approver.Approved,
+                        ApprovedOn = approver.ApprovedOn
+                    };
+                    session.Store(a);
+                    session.SaveChanges();
+                    Wait();
+                    return a.Id;
+                }
+            }
         }
 
         public override void UpdateApprover(string approverId, Core.Db.Approver approver)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Approver>();
+                    var ua = col.First(a => a.Id == approverId);
+                    ua.UserId = approver.UserId;
+                    ua.RecordId = approver.RecordId;
+                    ua.Approved = approver.Approved;
+                    ua.ApprovedOn = approver.ApprovedOn;
+
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override void DeleteApproversByRecordId(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Approver>();
+                    var approvers = col.Where(a => a.RecordId == recordId).ToArray();
+                    foreach (var approver in approvers)
+                    {
+                        session.Delete(approver);
+                    }
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override void DeleteApprovedApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Approver>();
+                    var approvers = col.Where(a => a.Approved && a.RecordId == recordId).ToArray();
+                    foreach (var approver in approvers)
+                    {
+                        session.Delete(approver);
+                    }
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override void DeleteApproversByUserId(string userId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Approver>();
+                    var approvers = col.Where(a => a.UserId == userId).ToArray();
+                    foreach (var approver in approvers)
+                    {
+                        session.Delete(approver);
+                    }
+                    session.SaveChanges();
+                    Wait();
+                }
+            }
         }
 
         public override IEnumerable<Core.Db.Approver> GetApprovers(string recordId)
         {
-            throw new NotImplementedException();
+            lock (padlock)
+            {
+                using (var session = store.OpenSession())
+                {
+                    var col = session.Query<Approver>();
+                    return col.Where(a => a.RecordId == recordId).ToList();
+                }
+            }
         }
 
         public override void Dispose()
