@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Wexflow</id>
-    <version>5.6.0</version>
+    <version>5.7.0</version>
     <title>Wexflow</title>
     <authors>Akram El Assas</authors>
     <owners>akram.elassas</owners>
@@ -11,7 +11,7 @@
     <repository type="git" url="https://github.com/aelassas/Wexflow" />
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Core assembly of Wexflow workflow engine.</description>
-    <releaseNotes>New features, security fixes, bug fixes, performance enhancements and under the hood updates.</releaseNotes>
+    <releaseNotes>Bug fixes, performance enhancements and under the hood updates.</releaseNotes>
     <copyright>Copyright (c) 2017-2020 Akram El Assas.</copyright>
     <tags>Wexflow Workflow</tags>
     <dependencies>
