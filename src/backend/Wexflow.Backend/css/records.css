@@ -326,3 +326,16 @@
 .record-approvers tbody tr:hover {
     background: #EEEEEE;
 }
+
+.row-approved {
+    background: #c5f1c5;
+}
+
+.label {
+    color: #fff;
+    padding: 5px;
+}
+
+.label-approved {
+    background-color: #171717;
+}

@@ -173,7 +173,7 @@
                         + "<td class='check' " + (userProfile == 1 ? "style='display: none;'" : "") + "><input type='checkbox'></td>"
                         + "<td class='id'>" + record.Id + "</td>"
                         + "<td class='name'>" + record.Name + "</td>"
-                        + "<td class='approved'>" + "<input type='checkbox' " + (record.Approved === true ? "checked" : "") + " disabled>" + "</td>"
+                        + "<td class='approved'>" + "<input class='record-approved' type='checkbox' " + (record.Approved === true ? "checked" : "") + " disabled>" + "</td>"
                         + "<td class='start-date'>" + (record.StartDate === "" ? "-" : record.StartDate) + "</td>"
                         + "<td class='end-date'>" + (record.EndDate === "" ? "-" : record.EndDate) + "</td>"
                         + "<td class='assigned-to'>" + (record.AssignedTo === "" ? "-" : record.AssignedTo) + "</td>"
@@ -231,6 +231,14 @@
                             recordIds = Common.removeItemOnce(recordIds, recordId);
                         }
                     };
+
+                    let recordApproved = row.querySelector(".record-approved").checked;
+                    if (recordApproved === true) {
+                        row.classList.add("row-approved");
+                        row.querySelector(".name").innerHTML += '&nbsp;&nbsp;<span class="label label-approved">Approved</span>';
+                    } else {
+                        row.classList.remove("row-approved");
+                    }
 
                     row.onclick = function (e) {
                         if (e.target.type && e.target.type === "checkbox") {
