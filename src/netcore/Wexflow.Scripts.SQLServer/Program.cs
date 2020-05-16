@@ -17,7 +17,7 @@ namespace Wexflow.Scripts.SQLServer
                 var workflowsFolder = config["workflowsFolder"];
                 Db db = new Db(config["connectionString"]);
                 Core.Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-                Core.Helper.InsertRecords(db, "sql-server", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
+                Core.Helper.InsertRecords(db, "sqlserver", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
                 db.Dispose();
             }
             catch (Exception e)

@@ -2,6 +2,7 @@
 <Wexflow>
   <Setting name="workflowsFolder" value="C:\Wexflow\Workflows" />
   <Setting name="recordsFolder" value="C:\Wexflow\Records" />
+  <Setting name="recordsHotFolder" value="C:\Wexflow\Records\_HotFolder" />
   <Setting name="tempFolder" value="C:\Wexflow\Temp" />
   <Setting name="tasksFolder" value="C:\Wexflow\Tasks" />
   <Setting name="approvalFolder" value="C:\Wexflow\Approval" />

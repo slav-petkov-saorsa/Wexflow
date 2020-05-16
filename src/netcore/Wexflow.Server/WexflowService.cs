@@ -56,7 +56,7 @@ namespace Wexflow.Server
             //
             // Records
             //
-            UploadVerion();
+            UploadVersion();
             DeleteTempVersionFile();
             DeleteTempVersionFiles();
             DownloadFile();
@@ -4198,7 +4198,7 @@ namespace Wexflow.Server
         /// <summary>
         /// Uploads a version.
         /// </summary>
-        private void UploadVerion()
+        private void UploadVersion()
         {
             Post(Root + "uploadVersion", args =>
             {

@@ -2,6 +2,7 @@
 <Wexflow>
   <Setting name="workflowsFolder" value="C:\Wexflow-netcore\Workflows" />
   <Setting name="recordsFolder" value="C:\Wexflow-netcore\Records" />
+  <Setting name="recordsHotFolder" value="C:\Wexflow-netcore\Records\_HotFolder" />
   <Setting name="tempFolder" value="C:\Wexflow-netcore\Temp" />
   <Setting name="tasksFolder" value="C:\Wexflow-netcore\Tasks" />
   <Setting name="approvalFolder" value="C:\Wexflow-netcore\Approval" />

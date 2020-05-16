@@ -118,6 +118,10 @@ namespace Wexflow.Core
         /// </summary>
         public string RecordsFolder { get; private set; }
         /// <summary>
+        /// Records hot folder path.
+        /// </summary>
+        public string RecordsHotFolder { get; private set; }
+        /// <summary>
         /// Temp folder path.
         /// </summary>
         public string TempFolder { get; private set; }
@@ -229,47 +233,39 @@ namespace Wexflow.Core
 
             LoadSettings();
 
+            DbFolderName = DbType.ToString().ToLower();
+
             switch (DbType)
             {
                 case DbType.LiteDB:
                     Database = new Db.LiteDB.Db(ConnectionString);
-                    DbFolderName = "litedb";
                     break;
                 case DbType.MongoDB:
                     Database = new Db.MongoDB.Db(ConnectionString);
-                    DbFolderName = "mongodb";
                     break;
                 case DbType.RavenDB:
                     Database = new Db.RavenDB.Db(ConnectionString);
-                    DbFolderName = "ravendb";
                     break;
                 case DbType.PostgreSQL:
                     Database = new Db.PostgreSQL.Db(ConnectionString);
-                    DbFolderName = "postgresql";
                     break;
                 case DbType.SQLServer:
                     Database = new Db.SQLServer.Db(ConnectionString);
-                    DbFolderName = "sql-server";
                     break;
                 case DbType.MySQL:
                     Database = new Db.MySQL.Db(ConnectionString);
-                    DbFolderName = "mysql";
                     break;
                 case DbType.SQLite:
                     Database = new Db.SQLite.Db(ConnectionString);
-                    DbFolderName = "sqlite";
                     break;
                 case DbType.Firebird:
                     Database = new Db.Firebird.Db(ConnectionString);
-                    DbFolderName = "firebird";
                     break;
                 case DbType.Oracle:
                     Database = new Db.Oracle.Db(ConnectionString);
-                    DbFolderName = "oracle";
                     break;
                 case DbType.MariaDB:
                     Database = new Db.MariaDB.Db(ConnectionString);
-                    DbFolderName = "mariadb";
                     break;
             }
 
@@ -300,6 +296,8 @@ namespace Wexflow.Core
             WorkflowsFolder = GetWexflowSetting(xdoc, "workflowsFolder");
             RecordsFolder = GetWexflowSetting(xdoc, "recordsFolder");
             if (!Directory.Exists(RecordsFolder)) Directory.CreateDirectory(RecordsFolder);
+            RecordsHotFolder = GetWexflowSetting(xdoc, "recordsHotFolder");
+            if (!Directory.Exists(RecordsHotFolder)) Directory.CreateDirectory(RecordsHotFolder);
             TempFolder = GetWexflowSetting(xdoc, "tempFolder");
             TasksFolder = GetWexflowSetting(xdoc, "tasksFolder");
             if (!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
@@ -1495,28 +1493,31 @@ namespace Wexflow.Core
                         var versionId = Database.InsertVersion(v);
 
                         // Move version file from temp folder to Records folder.
-                        var fileName = Path.GetFileName(version.FilePath);
-                        var destDir = Path.Combine(RecordsFolder, DbFolderName, id, versionId);
-                        if (!Directory.Exists(destDir))
+                        if (version.FilePath.Contains(RecordsTempFolder))
                         {
-                            Directory.CreateDirectory(destDir);
-                        }
-                        var destPath = Path.Combine(destDir, fileName);
-                        File.Move(version.FilePath, destPath);
-                        var parentDir = Path.GetDirectoryName(version.FilePath);
-                        if (IsDirectoryEmpty(parentDir))
-                        {
-                            Directory.Delete(parentDir);
-                            var recordTempDir = Directory.GetParent(parentDir).FullName;
-                            if (IsDirectoryEmpty(recordTempDir))
+                            var fileName = Path.GetFileName(version.FilePath);
+                            var destDir = Path.Combine(RecordsFolder, DbFolderName, id, versionId);
+                            if (!Directory.Exists(destDir))
                             {
-                                Directory.Delete(recordTempDir);
+                                Directory.CreateDirectory(destDir);
                             }
-                        }
+                            var destPath = Path.Combine(destDir, fileName);
+                            File.Move(version.FilePath, destPath);
+                            var parentDir = Path.GetDirectoryName(version.FilePath);
+                            if (IsDirectoryEmpty(parentDir))
+                            {
+                                Directory.Delete(parentDir);
+                                var recordTempDir = Directory.GetParent(parentDir).FullName;
+                                if (IsDirectoryEmpty(recordTempDir))
+                                {
+                                    Directory.Delete(recordTempDir);
+                                }
+                            }
 
-                        // Update version.
-                        v.FilePath = destPath;
-                        Database.UpdateVersion(versionId, v);
+                            // Update version.
+                            v.FilePath = destPath;
+                            Database.UpdateVersion(versionId, v);
+                        }
                     }
 
                     return id;
@@ -1613,6 +1614,8 @@ namespace Wexflow.Core
                 foreach (var recordId in recordIds)
                 {
                     var versions = Database.GetVersions(recordId);
+                    var versionIds = versions.Select(v => v.GetDbId()).ToArray();
+                    Database.DeleteVersions(versionIds);
                     foreach (var version in versions)
                     {
                         if (File.Exists(version.FilePath))
