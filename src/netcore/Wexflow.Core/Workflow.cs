@@ -189,7 +189,7 @@ namespace Wexflow.Core
         /// <summary>
         /// Hashtable used as shared memory for tasks.
         /// </summary>
-        public Hashtable Hashtable { get; private set; }
+        public Hashtable SharedMemory { get; private set; }
         /// <summary>
         /// Database.
         /// </summary>
@@ -275,7 +275,7 @@ namespace Wexflow.Core
             Database = database;
             FilesPerTask = new Dictionary<int, List<FileInf>>();
             EntitiesPerTask = new Dictionary<int, List<Entity>>();
-            Hashtable = new Hashtable();
+            SharedMemory = new Hashtable();
             GlobalVariables = globalVariables;
             RestVariables = new List<Variable>();
             StartedOn = DateTime.MinValue;

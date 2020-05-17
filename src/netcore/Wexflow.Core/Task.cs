@@ -72,11 +72,11 @@ namespace Wexflow.Core
         /// <summary>
         /// Hashtable used as shared memory for tasks.
         /// </summary>
-        public Hashtable Hashtable
+        public Hashtable SharedMemory
         {
             get
             {
-                return Workflow.Hashtable;
+                return Workflow.SharedMemory;
             }
         }
 
@@ -361,9 +361,9 @@ namespace Wexflow.Core
         public object SelectObject()
         {
             var key = GetSetting("selectObject");
-            if (Hashtable.ContainsKey(key))
+            if (SharedMemory.ContainsKey(key))
             {
-                return Hashtable[key];
+                return SharedMemory[key];
             }
             return null;
         }
