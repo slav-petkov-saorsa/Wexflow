@@ -171,7 +171,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
         {
             try
             {
-                Thread.Sleep(500);
+                Thread.Sleep(200);
 
                 if (File.Exists(e.FullPath) && !IsDirectory(e.FullPath))
                 {
