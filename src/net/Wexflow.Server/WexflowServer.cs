@@ -68,7 +68,16 @@ namespace Wexflow.Server
                 // On file found.
                 foreach (var file in Directory.GetFiles(WexflowEngine.RecordsHotFolder))
                 {
-                    SaveRecord(file);
+                    var recordId = WexflowEngine.SaveRecordFromFile(file, superAdminUsername);
+
+                    if (recordId != "-1")
+                    {
+                        Logger.Info($"Record inserted from file {file}. RecordId: {recordId}");
+                    }
+                    else
+                    {
+                        Logger.Error($"An error occured while inserting a record from the file {file}.");
+                    }
                 }
 
                 // On file created.
@@ -130,7 +139,7 @@ namespace Wexflow.Server
 
         private static void OnWorkflowCreated(object source, FileSystemEventArgs e)
         {
-            if (!IsDirectory(e.FullPath))
+            if (!WexflowEngine.IsDirectory(e.FullPath))
             {
                 Logger.Info("Workflow.FileSystemWatcher.OnCreated");
                 try
@@ -147,7 +156,7 @@ namespace Wexflow.Server
 
         private static void OnWorkflowChanged(object source, FileSystemEventArgs e)
         {
-            if (!IsDirectory(e.FullPath))
+            if (!WexflowEngine.IsDirectory(e.FullPath))
             {
                 Logger.Info("Workflow.FileSystemWatcher.OnChanged");
                 try
@@ -203,13 +212,21 @@ namespace Wexflow.Server
 
         private static void OnRecordCreated(object source, FileSystemEventArgs e)
         {
-            if (!IsDirectory(e.FullPath))
+            if (!WexflowEngine.IsDirectory(e.FullPath))
             {
                 Logger.Info("Record.FileSystemWatcher.OnCreated");
                 try
                 {
                     Thread.Sleep(1000);
-                    SaveRecord(e.FullPath);
+                    var recordId = WexflowEngine.SaveRecordFromFile(e.FullPath, superAdminUsername);
+                    if (recordId != "-1")
+                    {
+                        Logger.Info($"Record inserted from file {e.FullPath}. RecordId: {recordId}");
+                    }
+                    else
+                    {
+                        Logger.Error($"An error occured while inserting a record from the file {e.FullPath}.");
+                    }
                 }
                 catch (IOException ex) when ((ex.HResult & 0x0000FFFF) == 32)
                 {
@@ -222,60 +239,6 @@ namespace Wexflow.Server
             }
         }
 
-        private static void SaveRecord(string filePath)
-        {
-            var fileName = Path.GetFileName(filePath);
-            var destDir = Path.Combine(WexflowEngine.RecordsTempFolder, WexflowEngine.DbFolderName, "-1", Guid.NewGuid().ToString());
-            if (!Directory.Exists(destDir))
-            {
-                Directory.CreateDirectory(destDir);
-            }
-            var destPath = Path.Combine(destDir, fileName);
-            File.Move(filePath, destPath);
-            var parentDir = Path.GetDirectoryName(destPath);
-            if (WexflowEngine.IsDirectoryEmpty(parentDir))
-            {
-                Directory.Delete(parentDir);
-                var recordTempDir = Directory.GetParent(parentDir).FullName;
-                if (WexflowEngine.IsDirectoryEmpty(recordTempDir))
-                {
-                    Directory.Delete(recordTempDir);
-                }
-            }
-
-            var admin = WexflowEngine.GetUser(superAdminUsername);
-            var record = new Record
-            {
-                Name = Path.GetFileNameWithoutExtension(fileName),
-                CreatedBy = admin.GetDbId()
-            };
-
-            var version = new Core.Db.Version
-            {
-                FilePath = destPath
-            };
-
-            List<Core.Db.Version> versions = new List<Core.Db.Version>() { version };
-
-            var recordId = WexflowEngine.SaveRecord("-1", record, versions);
-            if (recordId != "-1")
-            {
-                Logger.Info($"Record inserted from file {filePath}. RecordId: {recordId}");
-            }
-            else
-            {
-                Logger.Error($"An error occured while inserting a record from the file {filePath}.");
-            }
-        }
-
-        private static bool IsDirectory(string path)
-        {
-            FileAttributes attr = File.GetAttributes(path);
-
-            var isDir = attr.HasFlag(FileAttributes.Directory);
-
-            return isDir;
-        }
 
     }
 }
