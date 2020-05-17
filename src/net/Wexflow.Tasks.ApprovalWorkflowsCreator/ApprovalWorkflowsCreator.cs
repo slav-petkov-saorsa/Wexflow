@@ -22,7 +22,7 @@ namespace Wexflow.Tasks.ApprovalWorkflowsCreator
 
         public override TaskStatus Run()
         {
-            Info("Importing records...");
+            Info("Creating and starting approval workflows for records...");
 
             var success = true;
             var atLeastOneSuccess = false;
@@ -85,7 +85,7 @@ namespace Wexflow.Tasks.ApprovalWorkflowsCreator
                     }
                     catch (Exception e)
                     {
-                        ErrorFormat("An error occured while importing the record {0}.", e, recordId);
+                        ErrorFormat("An error occured while creating the approval workflow for the record {0}.", e, recordId);
                         success = false;
                     }
                 }
@@ -96,7 +96,7 @@ namespace Wexflow.Tasks.ApprovalWorkflowsCreator
             }
             catch (Exception e)
             {
-                ErrorFormat("An error occured while importing records.", e);
+                ErrorFormat("An error occured while creating approval workflows.", e);
                 success = false;
             }
 
