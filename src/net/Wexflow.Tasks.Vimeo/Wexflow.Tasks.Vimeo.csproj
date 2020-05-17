@@ -77,8 +77,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VimeoDotNet, Version=2.0.0.19, Culture=neutral, PublicKeyToken=5bf7ec1d1f3f7066, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\VimeoDotNet.2.0.0.19\lib\net45\VimeoDotNet.dll</HintPath>
+    <Reference Include="VimeoDotNet, Version=2.0.0.21, Culture=neutral, PublicKeyToken=5bf7ec1d1f3f7066, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\VimeoDotNet.2.0.0.21\lib\net45\VimeoDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
