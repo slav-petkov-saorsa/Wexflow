@@ -242,6 +242,10 @@
       <Project>{5aee3696-ff81-423f-ab21-550aa85b0ccb}</Project>
       <Name>Wexflow.Tasks.ApprovalRecordsCreator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wexflow.Tasks.ApprovalWorkflowsCreator\Wexflow.Tasks.ApprovalWorkflowsCreator.csproj">
+      <Project>{a175634e-7ee6-426a-a1f7-f1b90dbcc1e3}</Project>
+      <Name>Wexflow.Tasks.ApprovalWorkflowsCreator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wexflow.Tasks.Approval\Wexflow.Tasks.Approval.csproj">
       <Project>{8bff752c-4eb0-49cb-a367-92046d78d010}</Project>
       <Name>Wexflow.Tasks.Approval</Name>
