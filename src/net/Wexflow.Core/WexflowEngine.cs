@@ -1619,6 +1619,7 @@ namespace Wexflow.Core
         /// </summary>
         /// <param name="filePath">File path.</param>
         /// <param name="createdBy">Created by username.</param>
+        /// <returns>Record Id.</returns>
         public string SaveRecordFromFile(string filePath, string createdBy)
         {
             var fileName = Path.GetFileName(filePath);
