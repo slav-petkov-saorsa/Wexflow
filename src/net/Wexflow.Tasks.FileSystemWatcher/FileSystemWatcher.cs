@@ -171,7 +171,9 @@ namespace Wexflow.Tasks.FileSystemWatcher
         {
             try
             {
-                if (!IsDirectory(e.FullPath))
+                Thread.Sleep(500);
+
+                if (File.Exists(e.FullPath) && !IsDirectory(e.FullPath))
                 {
                     Info("FileSystemWatcher.OnCreated started.");
                     try
@@ -225,7 +227,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
             {
                 Thread.Sleep(500);
 
-                if (!IsDirectory(e.FullPath))
+                if (File.Exists(e.FullPath) && !IsDirectory(e.FullPath))
                 {
                     Info("FileSystemWatcher.OnChanged started.");
                     try

@@ -234,11 +234,9 @@
 
                     let recordApproved = row.querySelector(".record-approved").checked;
                     if (recordApproved === true) {
-                        row.classList.add("row-approved");
                         row.querySelector(".name").innerHTML += '&nbsp;&nbsp;<span class="label label-approved">Approved</span>';
-                    } else {
-                        row.classList.remove("row-approved");
                     }
+
 
                     row.onclick = function (e) {
                         if (e.target.type && e.target.type === "checkbox") {
