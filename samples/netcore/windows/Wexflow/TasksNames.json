@@ -1,5 +1,6 @@
 [
 	{ "Name": "Approval", "Description": "Marks the current workflow as needing approval."},
+	{ "Name": "ApprovalRecordsCreator", "Description": "Creates records from files."},
 	{ "Name": "ApproveRecord", "Description": "Assigns a record to a user and launches the approval process on that record."},
 	{ "Name": "CsvToJson", "Description": "Converts CSV files to JSON files."},
 	{ "Name": "CsvToSql", "Description": "Converts CSV files to SQL scripts."},

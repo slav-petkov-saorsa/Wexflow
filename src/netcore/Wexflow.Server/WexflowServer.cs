@@ -71,7 +71,16 @@ namespace Wexflow.Server
                 // On file found.
                 foreach (var file in Directory.GetFiles(WexflowEngine.RecordsHotFolder))
                 {
-                    SaveRecord(file);
+                    var recordId = WexflowEngine.SaveRecordFromFile(file, superAdminUsername);
+
+                    if (recordId != "-1")
+                    {
+                        Logger.Info($"Record inserted from file {file}. RecordId: {recordId}");
+                    }
+                    else
+                    {
+                        Logger.Error($"An error occured while inserting a record from the file {file}.");
+                    }
                 }
 
                 // On file created.
@@ -193,59 +202,23 @@ namespace Wexflow.Server
                     try
                     {
                         Thread.Sleep(1000);
-                        SaveRecord(path);
+                        var recordId = WexflowEngine.SaveRecordFromFile(path, superAdminUsername);
+
+                        if (recordId != "-1")
+                        {
+                            Logger.Info($"Record inserted from file {path}. RecordId: {recordId}");
+                        }
+                        else
+                        {
+                            Logger.Error($"An error occured while inserting a record from the file {path}.");
+                        }
+
                     }
                     catch (Exception ex)
                     {
                         Logger.ErrorFormat("Error while creating the record {0}", ex, path);
                     }
                 }
-            }
-        }
-
-        private static void SaveRecord(string filePath)
-        {
-            var fileName = Path.GetFileName(filePath);
-            var destDir = Path.Combine(WexflowEngine.RecordsTempFolder, WexflowEngine.DbFolderName, "-1", Guid.NewGuid().ToString());
-            if (!Directory.Exists(destDir))
-            {
-                Directory.CreateDirectory(destDir);
-            }
-            var destPath = Path.Combine(destDir, fileName);
-            File.Move(filePath, destPath);
-            var parentDir = Path.GetDirectoryName(destPath);
-            if (WexflowEngine.IsDirectoryEmpty(parentDir))
-            {
-                Directory.Delete(parentDir);
-                var recordTempDir = Directory.GetParent(parentDir).FullName;
-                if (WexflowEngine.IsDirectoryEmpty(recordTempDir))
-                {
-                    Directory.Delete(recordTempDir);
-                }
-            }
-
-            var admin = WexflowEngine.GetUser(superAdminUsername);
-            var record = new Record
-            {
-                Name = Path.GetFileNameWithoutExtension(fileName),
-                CreatedBy = admin.GetDbId()
-            };
-
-            var version = new Core.Db.Version
-            {
-                FilePath = destPath
-            };
-
-            List<Core.Db.Version> versions = new List<Core.Db.Version>() { version };
-
-            var recordId = WexflowEngine.SaveRecord("-1", record, versions);
-            if (recordId != "-1")
-            {
-                Logger.Info($"Record inserted from file {filePath}. RecordId: {recordId}");
-            }
-            else
-            {
-                Logger.Error($"An error occured while inserting a record from the file {filePath}.");
             }
         }
 

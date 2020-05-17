@@ -1594,6 +1594,51 @@ namespace Wexflow.Core
         }
 
         /// <summary>
+        /// Saves a new record from a file.
+        /// </summary>
+        /// <param name="filePath">File path.</param>
+        /// <param name="createdBy">Created by username.</param>
+        /// <returns>Record Id.</returns>
+        public string SaveRecordFromFile(string filePath, string createdBy)
+        {
+            var fileName = Path.GetFileName(filePath);
+            var destDir = Path.Combine(RecordsTempFolder, DbFolderName, "-1", Guid.NewGuid().ToString());
+            if (!Directory.Exists(destDir))
+            {
+                Directory.CreateDirectory(destDir);
+            }
+            var destPath = Path.Combine(destDir, fileName);
+            File.Move(filePath, destPath);
+            var parentDir = Path.GetDirectoryName(destPath);
+            if (IsDirectoryEmpty(parentDir))
+            {
+                Directory.Delete(parentDir);
+                var recordTempDir = Directory.GetParent(parentDir).FullName;
+                if (IsDirectoryEmpty(recordTempDir))
+                {
+                    Directory.Delete(recordTempDir);
+                }
+            }
+
+            var admin = GetUser(createdBy);
+            var record = new Record
+            {
+                Name = Path.GetFileNameWithoutExtension(fileName),
+                CreatedBy = admin.GetDbId()
+            };
+
+            var version = new Db.Version
+            {
+                FilePath = destPath
+            };
+
+            List<Db.Version> versions = new List<Db.Version>() { version };
+
+            var recordId = SaveRecord("-1", record, versions);
+            return recordId;
+        }
+
+        /// <summary>
         /// Deletes records.
         /// </summary>
         /// <param name="recordIds">Record ids.</param>

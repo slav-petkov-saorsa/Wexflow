@@ -118,6 +118,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Wexflow.Core\Wexflow.Core.csproj" />
+    <ProjectReference Include="..\Wexflow.Tasks.ApprovalRecordsCreator\Wexflow.Tasks.ApprovalRecordsCreator.csproj" />
     <ProjectReference Include="..\Wexflow.Tasks.Approval\Wexflow.Tasks.Approval.csproj" />
     <ProjectReference Include="..\Wexflow.Tasks.ApproveRecord\Wexflow.Tasks.ApproveRecord.csproj" />
     <ProjectReference Include="..\Wexflow.Tasks.CsvToJson\Wexflow.Tasks.CsvToJson.csproj" />
