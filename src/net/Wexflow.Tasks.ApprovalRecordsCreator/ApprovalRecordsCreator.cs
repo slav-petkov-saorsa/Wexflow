@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Xml.Linq;
 using Wexflow.Core;
@@ -23,6 +24,7 @@ namespace Wexflow.Tasks.ApprovalRecordsCreator
 
             try
             {
+                var recordIds = new List<string>();
                 var files = SelectFiles();
 
                 foreach (var file in files)
@@ -34,6 +36,7 @@ namespace Wexflow.Tasks.ApprovalRecordsCreator
                         if (recordId != "-1")
                         {
                             Info($"Record inserted from file {file.Path}. RecordId: {recordId}");
+                            recordIds.Add(recordId);
                         }
                         else
                         {
@@ -54,6 +57,12 @@ namespace Wexflow.Tasks.ApprovalRecordsCreator
                     }
                 }
 
+                var smKey = "ApprovalRecordsCreator.RecordIds";
+                if (SharedMemory.ContainsKey(smKey))
+                {
+                    SharedMemory.Remove(smKey);
+                }
+                SharedMemory.Add(smKey, recordIds.ToArray());
             }
             catch (ThreadAbortException)
             {
