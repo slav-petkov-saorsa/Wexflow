@@ -37,14 +37,16 @@ namespace Wexflow.Tasks.ApprovalRecordsCreator
                         {
                             Info($"Record inserted from file {file.Path}. RecordId: {recordId}");
                             recordIds.Add(recordId);
+                            if (!atLeastOneSuccess)
+                            {
+                                atLeastOneSuccess = true;
+                            }
                         }
                         else
                         {
                             Error($"An error occured while inserting a record from the file {file.Path}.");
                             success = false;
                         }
-
-                        if (success && !atLeastOneSuccess) atLeastOneSuccess = true;
                     }
                     catch (ThreadAbortException)
                     {

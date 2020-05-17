@@ -71,14 +71,16 @@ namespace Wexflow.Tasks.ApprovalWorkflowsCreator
                                 var workflow = Workflow.WexflowEngine.GetWorkflow(workflowId);
                                 workflow.StartAsync(Approver);
                                 Info($"Approval Workflow of the record {recordId} - {record.Name} created and started successfully.");
+                                if (!atLeastOneSuccess)
+                                {
+                                    atLeastOneSuccess = true;
+                                }
                             }
                             else
                             {
                                 Error($"An error occured while creating the approval workflow of the record {recordId} - {record.Name}.");
                                 success = false;
                             }
-
-                            if (success && !atLeastOneSuccess) atLeastOneSuccess = true;
                         }
                         catch (ThreadAbortException)
                         {
