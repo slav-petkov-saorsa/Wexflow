@@ -31,5 +31,7 @@
     <Setting name="onDeleted" value="$string" />
     <!--Optional. List of tasks to execute once the worklow is stopped. Ex: 1, 2, 3-->
     <Setting name="onStopped" value="$string" />
+    <!--Optional and defaults to false. Indicates whether the approval workflow is deleted once the record is approved. -->
+    <Setting name="deleteWorkflowOnApproval" value="$bool" />
   </Task>
 </Tasks>

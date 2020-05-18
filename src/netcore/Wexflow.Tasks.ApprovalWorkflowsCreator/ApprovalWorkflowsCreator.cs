@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Security;
 using System.Threading;
@@ -13,11 +14,13 @@ namespace Wexflow.Tasks.ApprovalWorkflowsCreator
 
         public string AssignedTo { get; private set; }
         public string Approver { get; private set; }
+        public bool DeleteWorkflowOnApproval { get; private set; }
 
         public ApprovalWorkflowsCreator(XElement xe, Workflow wf) : base(xe, wf)
         {
             AssignedTo = GetSetting("assignedTo");
             Approver = GetSetting("approver");
+            DeleteWorkflowOnApproval = bool.Parse(GetSetting("deleteWorkflowOnApproval", "true"));
         }
 
         public override TaskStatus Run()
@@ -59,16 +62,27 @@ namespace Wexflow.Tasks.ApprovalWorkflowsCreator
                                    + $"    <Task id='1' name='ApproveRecord' description='Approving record {SecurityElement.Escape(record.Name)}' enabled='true'>\r\n"
                                    + $"      <Setting name='record' value='{SecurityElement.Escape(recordId)}' />\r\n"
                                    + $"      <Setting name='assignedTo' value='{SecurityElement.Escape(AssignedTo)}' />\r\n"
+                                   + $"      <Setting name='deleteWorkflowOnApproval' value='{DeleteWorkflowOnApproval.ToString().ToLower()}' />"
                                     + "    </Task>\r\n"
                                     + "  </Tasks>\r\n"
                                     + "</Workflow>\r\n";
 
                             var approver = Workflow.WexflowEngine.GetUser(Approver);
-                            var worflowId = Workflow.WexflowEngine.SaveWorkflow(approver.GetDbId(), approver.UserProfile, xml, false);
+                            var workflowDbId = Workflow.WexflowEngine.SaveWorkflow(approver.GetDbId(), approver.UserProfile, xml, false);
 
-                            if (worflowId != "-1")
+                            if (workflowDbId != "-1")
                             {
                                 var workflow = Workflow.WexflowEngine.GetWorkflow(workflowId);
+
+                                if (Workflow.WexflowEngine.EnableWorkflowsHotFolder)
+                                {
+                                    var filePath = Path.Combine(Workflow.WexflowEngine.WorkflowsFolder, "Workflow_" + workflowId + ".xml");
+                                    var xdoc = XDocument.Parse(xml);
+                                    xdoc.Save(filePath);
+                                    Thread.Sleep(5 * 1000); // Wait until the workflow get reloaded in the system
+                                    workflow = Workflow.WexflowEngine.GetWorkflow(workflowId); // Reload the workflow
+                                }
+
                                 workflow.StartAsync(Approver);
                                 Info($"Approval Workflow of the record {recordId} - {record.Name} created and started successfully.");
                                 if (!atLeastOneSuccess)

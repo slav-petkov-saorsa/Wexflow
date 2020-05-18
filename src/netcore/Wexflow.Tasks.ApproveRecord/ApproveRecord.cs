@@ -23,6 +23,7 @@ namespace Wexflow.Tasks.ApproveRecord
         public string OnReminderDateReached { get; private set; }
         public string OnDeleted { get; private set; }
         public string OnStopped { get; private set; }
+        public bool DeleteWorkflowOnApproval { get; private set; }
 
         public ApproveRecord(XElement xe, Workflow wf) : base(xe, wf)
         {
@@ -35,6 +36,7 @@ namespace Wexflow.Tasks.ApproveRecord
             OnReminderDateReached = GetSetting("onReminderDateReached");
             OnDeleted = GetSetting("onDeleted");
             OnStopped = GetSetting("onStopped");
+            DeleteWorkflowOnApproval = bool.Parse(GetSetting("deleteWorkflowOnApproval", "false"));
         }
 
         public override TaskStatus Run()
@@ -251,6 +253,33 @@ namespace Wexflow.Tasks.ApproveRecord
                                                 record.Approved = approved;
                                                 Workflow.Database.UpdateRecord(record.GetDbId(), record);
                                                 Info($"Record {record.GetDbId()} - {record.Name} updated.");
+
+                                                // Delete workflow on approval
+                                                if (approved && DeleteWorkflowOnApproval)
+                                                {
+                                                    Workflow.Database.DeleteWorkflow(Workflow.DbId);
+                                                    Workflow.Database.DeleteUserWorkflowRelationsByWorkflowId(Workflow.DbId);
+
+                                                    var removedWorkflow = Workflow.WexflowEngine.Workflows.SingleOrDefault(wf => wf.DbId == Workflow.DbId);
+                                                    if (removedWorkflow != null)
+                                                    {
+                                                        InfoFormat("Workflow {0} is removed.", removedWorkflow.Name);
+                                                        Workflow.WexflowEngine.StopCronJobs(removedWorkflow.Id);
+                                                        lock (Workflow.WexflowEngine.Workflows)
+                                                        {
+                                                            Workflow.WexflowEngine.Workflows.Remove(removedWorkflow);
+                                                        }
+
+                                                        if (Workflow.WexflowEngine.EnableWorkflowsHotFolder)
+                                                        {
+                                                            if (!string.IsNullOrEmpty(removedWorkflow.FilePath) && File.Exists(removedWorkflow.FilePath))
+                                                            {
+                                                                File.Delete(removedWorkflow.FilePath);
+                                                                InfoFormat("Workflow file {0} removed.", removedWorkflow.FilePath);
+                                                            }
+                                                        }
+                                                    }
+                                                }
 
                                                 // All must approve notification
                                                 if (approved && otherApprovers.Length > 0)

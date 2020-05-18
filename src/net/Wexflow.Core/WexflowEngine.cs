@@ -356,7 +356,7 @@ namespace Wexflow.Core
             }
         }
 
-        private void StopCronJobs(int workflowId)
+        public void StopCronJobs(int workflowId)
         {
             string jobIdentity = "Workflow Job " + workflowId;
             var jobKey = new JobKey(jobIdentity);
@@ -567,7 +567,10 @@ namespace Wexflow.Core
                     removedWorkflow.Stop(SuperAdminUsername);
 
                     StopCronJobs(removedWorkflow.Id);
-                    Workflows.Remove(removedWorkflow);
+                    lock (Workflows)
+                    {
+                        Workflows.Remove(removedWorkflow);
+                    }
 
                     if (EnableWorkflowsHotFolder)
                     {
