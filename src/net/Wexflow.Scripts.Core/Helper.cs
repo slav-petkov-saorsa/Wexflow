@@ -74,7 +74,7 @@ namespace Wexflow.Scripts.Core
                         var xdoc = XDocument.Parse(workflow.Xml);
                         var workflowId = int.Parse(xdoc.Element(xn + "Workflow").Attribute("id").Value);
 
-                        if (workflowId != 146 && workflowId != 147 && workflowId != 148 && workflowId != 149)
+                        if (workflowId != 146 && workflowId != 147 && workflowId != 148 && workflowId != 149 && workflowId != 150)
                         {
                             db.InsertUserWorkflowRelation(new UserWorkflow
                             {
