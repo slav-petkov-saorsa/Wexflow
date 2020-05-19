@@ -1,5 +1,5 @@
 # Linux Alpine environment with .NET runtime
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
 
 RUN mkdir /opt/wexflow
 
