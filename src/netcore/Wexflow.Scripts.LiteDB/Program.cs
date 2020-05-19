@@ -48,7 +48,7 @@ namespace Wexflow.Scripts.LiteDB
             var path2 = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "..",
                 "samples", "netcore", platformFolder, "Wexflow", "Database", "Wexflow-log.db");
-            var connString = "Filename=" + path1 + "; Mode=Exclusive";
+            var connString = "Filename=" + path1 + "; Connection=direct";
 
             var workflowsFolder = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "..",
@@ -60,7 +60,17 @@ namespace Wexflow.Scripts.LiteDB
 
             var db = new Db(connString);
             Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-            Helper.InsertRecords(db, "litedb", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
+            var recordsFolder = config["recordsFolder"];
+            if (platformFolder == "linux")
+            {
+                recordsFolder = "/opt/wexflow/Wexflow/Records";
+            }
+            else if (platformFolder == "macos")
+            {
+                recordsFolder = "/Applications/wexflow/Wexflow/Records";
+            }
+            var isUnix = platformFolder == "linux" || platformFolder == "macos";
+            Helper.InsertRecords(db, "litedb", recordsFolder, config["documentFile"], config["invoiceFile"], config["timesheetFile"], isUnix);
             db.Dispose();
         }
     }

@@ -97,7 +97,7 @@ namespace Wexflow.Scripts.Core
             }
         }
 
-        public static void InsertRecords(Db db, string dbFolderName, string recordsFolder, string documentFile, string invoiceFile, string timesheetFile)
+        public static void InsertRecords(Db db, string dbFolderName, string recordsFolder, string documentFile, string invoiceFile, string timesheetFile, bool isUnix = false)
         {
             Console.WriteLine("Inserting records...");
 
@@ -114,7 +114,8 @@ namespace Wexflow.Scripts.Core
                 , "This document needs to be completed."
                 , "Please fill the document."
                 , true
-                , dbFolderName);
+                , dbFolderName
+                , isUnix);
             }
 
             // Insert invoice
@@ -128,7 +129,8 @@ namespace Wexflow.Scripts.Core
                 , "This document needs to be reviewed."
                 , "Please complete the document."
                 , true
-                , dbFolderName);
+                , dbFolderName
+                , isUnix);
             }
 
             // Insert timesheet
@@ -142,7 +144,8 @@ namespace Wexflow.Scripts.Core
                 , "This document needs to be completed."
                 , "Please fill the document."
                 , true
-                , dbFolderName);
+                , dbFolderName
+                , isUnix);
             }
 
             // Insert vacation request
@@ -156,11 +159,12 @@ namespace Wexflow.Scripts.Core
                 , string.Empty
                 , string.Empty
                 , false
-                , dbFolderName);
+                , dbFolderName
+                , isUnix);
             }
         }
 
-        private static void InsertRecord(Db db, string recordsFolder, string recordSrc, string name, string desc, string comments, string managerComments, bool hasFile, string dbFolderName)
+        private static void InsertRecord(Db db, string recordsFolder, string recordSrc, string name, string desc, string comments, string managerComments, bool hasFile, string dbFolderName, bool isUnix)
         {
             try
             {
@@ -202,8 +206,15 @@ namespace Wexflow.Scripts.Core
                     {
                         File.Delete(recordFilePath);
                     }
-                    File.Copy(recordSrc, recordFilePath);
-                    recordVersion.FilePath = recordFilePath;
+                    File.Copy(recordSrc, recordFilePath, true);
+                    if (isUnix)
+                    {
+                        recordVersion.FilePath = recordsFolder + "/" + dbFolderName + "/" + recordId + "/" + recordVersionId + "/" + recordFileName;
+                    }
+                    else
+                    {
+                        recordVersion.FilePath = recordFilePath;
+                    }
                     db.UpdateVersion(recordVersionId, recordVersion);
                 }
 

@@ -201,7 +201,7 @@ namespace Wexflow.Scripts.Core
                     {
                         File.Delete(recordFilePath);
                     }
-                    File.Copy(recordSrc, recordFilePath);
+                    File.Copy(recordSrc, recordFilePath, true);
                     recordVersion.FilePath = recordFilePath;
                     db.UpdateVersion(recordVersionId, recordVersion);
                 }
