@@ -4474,21 +4474,23 @@ namespace Wexflow.Server
                         var assignedOn = o.Value<string>("AssignedOn");
                         var versions = JsonConvert.DeserializeObject<Contracts.Version[]>(o.Value<JArray>("Versions").ToString());
 
+                        var dateTimeFormat = WexflowServer.Config["DateTimeFormat"];
+
                         var record = new Core.Db.Record
                         {
                             Name = name,
                             Description = description,
-                            StartDate = string.IsNullOrEmpty(startDate) ? null : (DateTime?)DateTime.Parse(startDate),
-                            EndDate = string.IsNullOrEmpty(endDate) ? null : (DateTime?)DateTime.Parse(endDate),
+                            StartDate = string.IsNullOrEmpty(startDate) ? null : (DateTime?)DateTime.ParseExact(startDate, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture),
+                            EndDate = string.IsNullOrEmpty(endDate) ? null : (DateTime?)DateTime.ParseExact(endDate, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture),
                             Comments = comments,
                             Approved = approved,
                             ManagerComments = managerComments,
                             ModifiedBy = !string.IsNullOrEmpty(modifiedBy) ? WexflowServer.WexflowEngine.GetUser(modifiedBy).GetDbId() : null,
-                            ModifiedOn = string.IsNullOrEmpty(modifiedOn) ? null : (DateTime?)DateTime.Parse(modifiedOn),
+                            ModifiedOn = string.IsNullOrEmpty(modifiedOn) ? null : (DateTime?)DateTime.ParseExact(modifiedOn, dateTimeFormat, CultureInfo.InvariantCulture),
                             CreatedBy = !string.IsNullOrEmpty(createdBy) ? WexflowServer.WexflowEngine.GetUser(createdBy).GetDbId() : null,
-                            CreatedOn = !string.IsNullOrEmpty(createdOn) ? DateTime.Parse(createdOn) : DateTime.MinValue,
+                            CreatedOn = !string.IsNullOrEmpty(createdOn) ? DateTime.ParseExact(createdOn, dateTimeFormat, CultureInfo.InvariantCulture) : DateTime.MinValue,
                             AssignedTo = !string.IsNullOrEmpty(assignedTo) ? WexflowServer.WexflowEngine.GetUser(assignedTo).GetDbId() : null,
-                            AssignedOn = string.IsNullOrEmpty(assignedOn) ? null : (DateTime?)DateTime.Parse(assignedOn)
+                            AssignedOn = string.IsNullOrEmpty(assignedOn) ? null : (DateTime?)DateTime.ParseExact(assignedOn, dateTimeFormat, CultureInfo.InvariantCulture)
                         };
 
                         List<Core.Db.Version> recordVersions = new List<Core.Db.Version>();
