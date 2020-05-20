@@ -244,6 +244,8 @@ copy "..\src\netcore\Wexflow.Tasks.Reddit\Reddit.xml" %dstDir%\Documentation\
 copy "..\src\netcore\Wexflow.Tasks.RedditListComments\RedditListComments.xml" %dstDir%\Documentation\
 copy "..\src\netcore\Wexflow.Tasks.RedditListPosts\RedditListPosts.xml" %dstDir%\Documentation\
 copy "..\src\netcore\Wexflow.Tasks.ApproveRecord\ApproveRecord.xml" %dstDir%\Documentation\
+copy "..\src\netcore\Wexflow.Tasks.ApprovalRecordsCreator\ApprovalRecordsCreator.xml" %dstDir%\Documentation\
+copy "..\src\netcore\Wexflow.Tasks.ApprovalWorkflowsCreator\ApprovalWorkflowsCreator.xml" %dstDir%\Documentation\
 
 :: compress
 7z.exe a -tzip %dst%.zip %dstDir%
