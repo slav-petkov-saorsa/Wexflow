@@ -17,7 +17,7 @@ You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
 
 ## What's New?
 
-Check out the new [version 5.7](https://github.com/aelassas/Wexflow/releases/tag/v5.7). This version includes [all must approve](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#all-must-approve) feature, multiple approvers on the same record, a reminder feature in approval workfows for notifying the approver and the user assigned to the record N days before due date, records hot folder, an [automated import flow](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#automated-import-flow) for importing and approving records, files Drag & Drop to records tab, bug fixes, performance enhancements, and under the hood updates.
+Check out the new [version 5.7](https://github.com/aelassas/Wexflow/releases/tag/v5.7). This version includes [all must approve](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#all-must-approve) feature, multiple approvers for the same record, a reminder feature in approval workfows for notifying the approver and the user assigned to the record N days before due date, records hot folder, an [automated import flow](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#automated-import-flow) for importing and approving records, files Drag & Drop to records tab, bug fixes, performance enhancements, and under the hood updates.
 
 ## Wexflow
 
