@@ -557,6 +557,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wexflow.Tasks.ApprovalWorkf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wexflow.Tasks.ApprovalWorkflowsCreator", "src\netcore\Wexflow.Tasks.ApprovalWorkflowsCreator\Wexflow.Tasks.ApprovalWorkflowsCreator.csproj", "{3B8311AF-E35A-4648-AC20-F6DDFB228DC6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{4D81D112-3F59-4561-8EC4-533B10E797BA}"
+	ProjectSection(SolutionItems) = preProject
+		src\docker\docker-compose.yml = src\docker\docker-compose.yml
+		src\docker\Dockerfile = src\docker\Dockerfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
