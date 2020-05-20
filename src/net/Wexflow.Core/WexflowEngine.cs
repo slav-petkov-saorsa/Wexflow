@@ -356,6 +356,10 @@ namespace Wexflow.Core
             }
         }
 
+        /// <summary>
+        /// Stops cron jobs.
+        /// </summary>
+        /// <param name="workflowId">Workflow Id.</param>
         public void StopCronJobs(int workflowId)
         {
             string jobIdentity = "Workflow Job " + workflowId;
