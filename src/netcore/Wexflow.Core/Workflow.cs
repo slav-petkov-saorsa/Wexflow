@@ -1625,6 +1625,7 @@ namespace Wexflow.Core
             {
                 try
                 {
+                    var jobId = JobId;
                     _stopCalled = true;
                     StoppedBy = stoppedBy;
                     foreach (var task in Tasks)
@@ -1661,6 +1662,7 @@ namespace Wexflow.Core
 
                     Load(Xml); // Reload the original workflow
 
+                    Logger.Info($"Workflow {Name} / {jobId} / {InstanceId} stopped.");
                     return true;
                 }
                 catch (Exception e)

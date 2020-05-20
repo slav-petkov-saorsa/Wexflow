@@ -29,7 +29,7 @@ namespace Wexflow.Tasks.Approval
 
                     while (!File.Exists(trigger) && !Workflow.IsRejected && !IsStopped)
                     {
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                     }
 
                     IsWaitingForApproval = false;

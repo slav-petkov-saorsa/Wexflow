@@ -1608,6 +1608,7 @@ namespace Wexflow.Core
             {
                 try
                 {
+                    var jobId = JobId;
                     StoppedBy = stoppedBy;
                     _stopCalled = true;
                     if (_thread != null)
@@ -1645,6 +1646,7 @@ namespace Wexflow.Core
 
                     Load(Xml); // Reload the original workflow
 
+                    Logger.Info($"Workflow {Name} / {jobId} / {InstanceId} stopped.");
                     return true;
                 }
                 catch (Exception e)

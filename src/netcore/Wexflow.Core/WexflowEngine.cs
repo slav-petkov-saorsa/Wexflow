@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -850,21 +851,29 @@ namespace Wexflow.Core
                 QuartzScheduler.Shutdown().Wait();
             }
 
-            foreach (var wf in Workflows)
+            foreach (var workflow in Workflows)
             {
-                if (wf.IsRunning)
+                var innerWorkflows = workflow.Jobs.Values.ToArray();
+                for (int i = innerWorkflows.Length - 1; i >= 0; i--)
                 {
-                    wf.Stop(SuperAdminUsername);
+                    var innerWorkflow = innerWorkflows[i];
+                    if (innerWorkflow.IsRunning)
+                    {
+                        innerWorkflow.Stop(SuperAdminUsername);
+                    }
                 }
             }
+            Logger.Info("Workflows stopped.");
 
             if (clearStatusCountAndEntries)
             {
                 Database.ClearStatusCount();
                 Database.ClearEntries();
+                Logger.Info("Status count and dashboard entries cleared.");
             }
 
             Database.Dispose();
+            Logger.Info("Database disposed.");
         }
 
         /// <summary>
