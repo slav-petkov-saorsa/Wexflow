@@ -934,7 +934,7 @@ namespace Wexflow.Core
             _thread = thread;
             thread.Start();
 
-            return InstanceId;
+            return instanceId;
         }
 
         /// <summary>
