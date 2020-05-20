@@ -930,7 +930,6 @@ namespace Wexflow.Core
             var instanceId = Guid.NewGuid();
             var warning = false;
             var thread = new Thread(() => StartSync(startedBy, instanceId, ref warning));
-
             _thread = thread;
             thread.Start();
 
