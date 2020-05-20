@@ -372,6 +372,7 @@
                     saveAction.style.display = "none";
                 } if (u.Username === logedinUser && u.UserProfile === 0) {
                     saveAction.style.display = "block";
+                    emailText.disabled = false;
                 } else if (logedinUserProfile === 0 && u.Username !== logedinUser && (u.UserProfile === 1 || u.UserProfile === 2)) {
                     txtUsername.disabled = false;
                     emailText.disabled = false;
