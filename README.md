@@ -2,6 +2,8 @@
 
 [![Downloads](https://img.shields.io/github/downloads/aelassas/Wexflow/total.svg)](https://wexflow.github.io/stats)
 [![Nuget](https://img.shields.io/nuget/v/Wexflow)](https://www.nuget.org/packages/Wexflow)
+[![Docker](https://img.shields.io/badge/docker-v5.7-blue)](https://hub.docker.com/r/aelassas/wexflow)
+
 
 ## Download
 
