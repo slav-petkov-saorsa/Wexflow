@@ -387,11 +387,11 @@
 
                 for (let j = 0; j < rows.length; j++) {
                     rows[j].onclick = function () {
-                        let selected = document.getElementsByClassName("selected");
-                        if (selected.length > 0) {
-                            selected[0].className = selected[0].className.replace("selected", "");
-                        }
-                        this.className += "selected";
+                        //let selected = document.getElementsByClassName("selected");
+                        //if (selected.length > 0) {
+                        //    selected[0].className = selected[0].className.replace("selected", "");
+                        //}
+                        //this.className += "selected";
 
                         let entryId = this.getElementsByClassName("entryId")[0].value;
 
