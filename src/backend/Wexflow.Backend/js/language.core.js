@@ -1,4 +1,4 @@
-function Language(domId, updateLanguage) {
+const Language = function (domId, updateLanguage) {
     "use strict";
 
     let self = this;
@@ -104,4 +104,4 @@ function Language(domId, updateLanguage) {
 
         return is_ie;
     }
-}
+};

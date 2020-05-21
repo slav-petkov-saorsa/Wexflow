@@ -1,4 +1,4 @@
-﻿let Settings = (function () {
+﻿const Settings = (function () {
     let hostname = (window.location.hostname === "" ? "localhost" : window.location.hostname);
     let port = 8000;
 

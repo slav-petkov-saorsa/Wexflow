@@ -1,4 +1,4 @@
-﻿let languageModule = (function () {
+﻿const languageModule = (function () {
     "use strict";
 
     let codes = [
