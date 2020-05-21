@@ -20,7 +20,6 @@
         document.getElementById("lbl-to").innerHTML = language.get("lbl-to");
         document.getElementById("btn-search").value = language.get("btn-search");
 
-
         let statusPendingLabels = document.getElementsByClassName("st-pending");
         for (let i = 0; i < statusPendingLabels.length; i++) {
             statusPendingLabels[i].innerHTML = language.get("status-pending-label");
@@ -347,11 +346,11 @@
 
                 for (let i = 0; i < rows.length; i++) {
                     rows[i].onclick = function () {
-                        let selected = document.getElementsByClassName("selected");
-                        if (selected.length > 0) {
-                            selected[0].className = selected[0].className.replace("selected", "");
-                        }
-                        this.className += "selected";
+                        //let selected = document.getElementsByClassName("selected");
+                        //if (selected.length > 0) {
+                        //    selected[0].className = selected[0].className.replace("selected", "");
+                        //}
+                        //this.className += "selected";
 
                         let entryId = this.getElementsByClassName("entryId")[0].value;
 
