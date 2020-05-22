@@ -348,7 +348,10 @@ namespace Wexflow.Core
             foreach (var workflow in workflows)
             {
                 var wf = LoadWorkflowFromDatabase(workflow);
-                Workflows.Add(wf);
+                if (wf != null)
+                {
+                    Workflows.Add(wf);
+                }
             }
 
         }
