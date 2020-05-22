@@ -128,6 +128,7 @@ namespace Wexflow.Tasks.ApproveRecord
                                     var approvers = Workflow.WexflowEngine.GetApprovers(record.GetDbId());
                                     var approver = approvers.FirstOrDefault(a => a.UserId == approverUser.GetDbId());
                                     var approverUpserted = false;
+
                                     if (approver == null)
                                     {
                                         // insert
@@ -138,8 +139,8 @@ namespace Wexflow.Tasks.ApproveRecord
                                             Approved = false
                                         };
 
-                                        var approverId = Workflow.WexflowEngine.InsertApprover(a);
-                                        approverUpserted = approverId != "-1";
+                                        var id = Workflow.WexflowEngine.InsertApprover(a);
+                                        approverUpserted = id != "-1";
                                     }
                                     else
                                     {
@@ -209,11 +210,12 @@ namespace Wexflow.Tasks.ApproveRecord
                                             // notification onApproved
                                             if (File.Exists(trigger))
                                             {
+                                                var currentApprover = Workflow.WexflowEngine.GetUser(Workflow.ApprovedBy);
                                                 notificationMessage = $"The record {record.Name} was approved by the user {Workflow.ApprovedBy}.";
                                                 notification = new Notification
                                                 {
                                                     Message = notificationMessage,
-                                                    AssignedBy = approverUser.GetDbId(),
+                                                    AssignedBy = currentApprover.GetDbId(),
                                                     AssignedTo = assignedTo.GetDbId(),
                                                     AssignedOn = DateTime.Now,
                                                     IsRead = false
@@ -239,10 +241,11 @@ namespace Wexflow.Tasks.ApproveRecord
 
                                                 // update the record
                                                 var recordApprovers = Workflow.WexflowEngine.GetApprovers(record.GetDbId());
-                                                var currentApprover = recordApprovers.First(a => a.UserId == approverUser.GetDbId());
-                                                currentApprover.Approved = true;
-                                                currentApprover.ApprovedOn = DateTime.Now;
-                                                Workflow.WexflowEngine.UpdateApprover(currentApprover.GetDbId(), currentApprover);
+                                                var currApprover = recordApprovers.First(a => a.UserId == approverUser.GetDbId());
+                                                currApprover.UserId = currentApprover.GetDbId();
+                                                currApprover.Approved = true;
+                                                currApprover.ApprovedOn = DateTime.Now;
+                                                Workflow.WexflowEngine.UpdateApprover(currApprover.GetDbId(), currApprover);
                                                 var otherApprovers = recordApprovers.Where(a => a.UserId != approverUser.GetDbId()).ToArray();
                                                 var approved = true;
                                                 foreach (var otherApprover in otherApprovers)
@@ -376,11 +379,12 @@ namespace Wexflow.Tasks.ApproveRecord
                                             // notification onRejected
                                             if (Workflow.IsRejected)
                                             {
+                                                var rejectedUser = Workflow.WexflowEngine.GetUser(Workflow.RejectedBy);
                                                 notificationMessage = $"The record {record.Name} was rejected by the user {Workflow.RejectedBy}.";
                                                 notification = new Notification
                                                 {
                                                     Message = notificationMessage,
-                                                    AssignedBy = approverUser.GetDbId(),
+                                                    AssignedBy = rejectedUser.GetDbId(),
                                                     AssignedTo = assignedTo.GetDbId(),
                                                     AssignedOn = DateTime.Now,
                                                     IsRead = false
@@ -405,11 +409,19 @@ namespace Wexflow.Tasks.ApproveRecord
                                                 Info($"ApproveRecord.OnRejected: User {assignedTo.Username} notified for the rejection of the record {record.GetDbId()} - {record.Name}.");
 
                                                 // update the record
+                                                User rejectedApprover = null;
+                                                if (!string.IsNullOrEmpty(Workflow.RejectedBy))
+                                                {
+                                                    rejectedApprover = Workflow.WexflowEngine.GetUser(Workflow.RejectedBy);
+                                                }
+                                                var rejectedId = rejectedApprover == null ? approverUser.GetDbId() : rejectedApprover.GetDbId();
+
                                                 var recordApprovers = Workflow.WexflowEngine.GetApprovers(record.GetDbId());
-                                                var currentApprover = recordApprovers.First(a => a.UserId == approverUser.GetDbId());
-                                                currentApprover.Approved = false;
-                                                currentApprover.ApprovedOn = null;
-                                                Workflow.WexflowEngine.UpdateApprover(currentApprover.GetDbId(), currentApprover);
+                                                var currApprover = recordApprovers.First(a => a.UserId == approverUser.GetDbId());
+                                                currApprover.UserId = rejectedId;
+                                                currApprover.Approved = false;
+                                                currApprover.ApprovedOn = null;
+                                                Workflow.WexflowEngine.UpdateApprover(currApprover.GetDbId(), currApprover);
 
                                                 record.Approved = false;
                                                 Workflow.Database.UpdateRecord(record.GetDbId(), record);
