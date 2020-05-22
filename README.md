@@ -35,7 +35,7 @@ Since workflows are typically long running processes, they will need to be persi
 
 Wexflow comes with a powerful backend, so you can search and filter among all your workflows, have real-time stats on your workflows, manage your workflows with ease, design your workflows with ease, and track your workflows with ease:
 
-![Dashboard](https://aelassas.github.io/wexflow/images/wbo-dashboard-4.4-2.png)
+![Dashboard](https://aelassas.github.io/wexflow/images/wbo-dashboard-5.8.png)
 
 Just to give you an idea of what Wexflow does, this is a screenshot from the [designer](https://github.com/aelassas/Wexflow/wiki/Usage#designer). Using the designer, we get a nice visual overview of the dependency graph of the workflow. Each node represents a task which has to be run:
 
