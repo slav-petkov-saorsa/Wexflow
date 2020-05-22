@@ -409,16 +409,9 @@ namespace Wexflow.Tasks.ApproveRecord
                                                 Info($"ApproveRecord.OnRejected: User {assignedTo.Username} notified for the rejection of the record {record.GetDbId()} - {record.Name}.");
 
                                                 // update the record
-                                                User rejectedApprover = null;
-                                                if (!string.IsNullOrEmpty(Workflow.RejectedBy))
-                                                {
-                                                    rejectedApprover = Workflow.WexflowEngine.GetUser(Workflow.RejectedBy);
-                                                }
-                                                var rejectedId = rejectedApprover == null ? approverUser.GetDbId() : rejectedApprover.GetDbId();
-
                                                 var recordApprovers = Workflow.WexflowEngine.GetApprovers(record.GetDbId());
                                                 var currApprover = recordApprovers.First(a => a.UserId == approverUser.GetDbId());
-                                                currApprover.UserId = rejectedId;
+                                                currApprover.UserId = rejectedUser.GetDbId();
                                                 currApprover.Approved = false;
                                                 currApprover.ApprovedOn = null;
                                                 Workflow.WexflowEngine.UpdateApprover(currApprover.GetDbId(), currApprover);
