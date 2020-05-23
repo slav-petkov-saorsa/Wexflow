@@ -387,7 +387,7 @@
     languages["fr"]["toast-new-password"] = "Entrez un nouveau mot de passe.";
     languages["fr"]["toast-user-updated"] = "L'utilisateur a été mis à jour avec succès.";
     languages["fr"]["toast-user-update-error"] = "Une erreur s'est produite lors de la mise à jour de l'utilisateur.";
-    languages["fr"]["confirm-user-delete"] = "Êtes-vous sûr de vouloir supprimer cet utlisateur ?";
+    languages["fr"]["confirm-user-delete"] = "Êtes-vous sûr de vouloir supprimer cet utilisateur ?";
     languages["fr"]["lnk-records"] = "Records";
     languages["fr"]["lnk-approval"] = "Approbations";
     languages["fr"]["search-notifications"] = "Rechercher les notifications";
