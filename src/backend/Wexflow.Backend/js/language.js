@@ -1,7 +1,7 @@
 ﻿const languageModule = (function () {
     "use strict";
 
-    let codes = [
+    const codes = [
         { Name: "English", Code: "en", Icon: "images/en.png" },
         { Name: "Français", Code: "fr", Icon: "images/fr.png" },
         { Name: "Dansk", Code: "da", Icon: "images/da.png" }
@@ -167,7 +167,6 @@
     languages["en"]["toast-user-updated"] = "The user was updated with success.";
     languages["en"]["toast-user-update-error"] = "An error occurred while updating the user.";
     languages["en"]["confirm-user-delete"] = "Are you sure you want to delete this user?";
-
     languages["en"]["lnk-records"] = "Records";
     languages["en"]["lnk-approval"] = "Approvals";
     languages["en"]["search-notifications"] = "Search notifications";
@@ -227,7 +226,6 @@
     languages["en"]["record-end-date"] = "End date";
     languages["en"]["record-assigned-to"] = "Assigned to";
     languages["en"]["record-assigned-on"] = "Assigned on";
-
     languages["en"]["edit-record-td-approvers"] = "Approvers";
     languages["en"]["th-approved-by"] = "Approved by";
     languages["en"]["th-approved"] = "Approved";
@@ -390,7 +388,6 @@
     languages["fr"]["toast-user-updated"] = "L'utilisateur a été mis à jour avec succès.";
     languages["fr"]["toast-user-update-error"] = "Une erreur s'est produite lors de la mise à jour de l'utilisateur.";
     languages["fr"]["confirm-user-delete"] = "Êtes-vous sûr de vouloir supprimer cet utlisateur ?";
-
     languages["fr"]["lnk-records"] = "Records";
     languages["fr"]["lnk-approval"] = "Approbations";
     languages["fr"]["search-notifications"] = "Rechercher les notifications";
@@ -450,7 +447,6 @@
     languages["fr"]["record-end-date"] = "Date de fin";
     languages["fr"]["record-assigned-to"] = "Assigné à";
     languages["fr"]["record-assigned-on"] = "Assigné le";
-
     languages["fr"]["edit-record-td-approvers"] = "Approuveurs";
     languages["fr"]["th-approved-by"] = "Approuvé par";
     languages["fr"]["th-approved"] = "Approuvé";
@@ -613,7 +609,6 @@
     languages["da"]["toast-user-updated"] = "Brugeren blev opdateret med succes.";
     languages["da"]["toast-user-update-error"] = "Der opstod en fejl under opdateringen af brugeren.";
     languages["da"]["confirm-user-delete"] = "Er du sikker på, at du vil slette denne bruger?";
-
     languages["da"]["lnk-records"] = "Poster";
     languages["da"]["lnk-approval"] = "Godkendelse";
     languages["da"]["search-notifications"] = "Søg underretninger";
@@ -673,7 +668,6 @@
     languages["da"]["record-information"] = "Post information";
     languages["da"]["toast-assigned-to-notified"] = "Brugern tildelt denne post er blevet informeret om rettelsen.";
     languages["da"]["toast-assigned-to-notify-error"] = "Der opstod en fejl under under informeringen af tildeleren til denne post.";
-
     languages["da"]["edit-record-td-approvers"] = "Godkendere";
     languages["da"]["th-approved-by"] = "Godkendt af";
     languages["da"]["th-approved"] = "Godkendt";
