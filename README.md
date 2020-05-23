@@ -53,7 +53,7 @@ The history allows you to track your workflow jobs in the system and have detail
 
 You can deploy Wexflow using Docker containers on Windows, Linux and macOS distributions. [Here](https://github.com/aelassas/Wexflow/wiki/Docker) is the documentation for creating and building Docker images.
 
-Moreover, you can create custom integration with any other SaaS product on the cloud through [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
+Moreover, you can create custom integration with any other SaaS product in the cloud through [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
 
 ## Why Wexflow?
 
