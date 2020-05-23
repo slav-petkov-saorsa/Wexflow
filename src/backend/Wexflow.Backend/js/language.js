@@ -12,7 +12,9 @@
     languages["fr"] = {};
     languages["da"] = {};
 
+    //
     // en
+    //
     languages["en"]["language"] = "Language";
     languages["en"]["help"] = "Help";
     languages["en"]["about"] = "About";
