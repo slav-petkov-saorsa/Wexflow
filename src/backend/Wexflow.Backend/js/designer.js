@@ -950,7 +950,6 @@
                                         return false;
                                     }
 
-
                                     // Bind remove event
                                     let deleteButton = settingsTable.getElementsByClassName("wf-remove-setting")[sIndex];
                                     deleteButton.onclick = function () {
@@ -1164,11 +1163,19 @@
                                                     taskSettings += "</td>";
                                                     taskSettings += "</tr>";
 
-                                                    tasks[index].Settings.push({
-                                                        "Name": settingName,
-                                                        "Value": "",
-                                                        "Attributes": []
-                                                    });
+                                                    if (settingType === "bool") {
+                                                        tasks[index].Settings.push({
+                                                            "Name": settingName,
+                                                            "Value": "false",
+                                                            "Attributes": []
+                                                        });
+                                                    } else {
+                                                        tasks[index].Settings.push({
+                                                            "Name": settingName,
+                                                            "Value": "",
+                                                            "Attributes": []
+                                                        });
+                                                    }
 
                                                     defaultSettingIndex++;
                                                 }
@@ -1555,11 +1562,19 @@
                                                     taskSettings += "</td>";
                                                     taskSettings += "</tr>";
 
-                                                    tasks[index].Settings.push({
-                                                        "Name": settingName,
-                                                        "Value": "",
-                                                        "Attributes": []
-                                                    });
+                                                    if (settingType === "bool") {
+                                                        tasks[index].Settings.push({
+                                                            "Name": settingName,
+                                                            "Value": "false",
+                                                            "Attributes": []
+                                                        });
+                                                    } else {
+                                                        tasks[index].Settings.push({
+                                                            "Name": settingName,
+                                                            "Value": "",
+                                                            "Attributes": []
+                                                        });
+                                                    }
 
                                                     defaultSettingIndex++;
                                                 }
