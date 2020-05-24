@@ -11,7 +11,15 @@ You can download the latest release from [here](https://github.com/aelassas/Wexf
 
 ## Installation
 
+You can install Wexflow on Windows, Linux or macOS distributions.
+
 You can find installation instructions [here](https://github.com/aelassas/Wexflow/wiki/Installation).
+
+## Deployment
+
+You can deploy Wexflow using Docker containers on Windows, Linux or macOS distributions.
+
+You can find deployment instructions [here](https://github.com/aelassas/Wexflow/wiki/Docker).
 
 ## Documentation
 
@@ -51,7 +59,7 @@ The history allows you to track your workflow jobs in the system and have detail
 
 ![Docker](https://aelassas.github.io/wexflow/images/small_h-trans.png)
 
-You can deploy Wexflow using Docker containers on Windows, Linux and macOS distributions. [Here](https://github.com/aelassas/Wexflow/wiki/Docker) is the documentation for creating and building Docker images.
+You can deploy Wexflow using Docker containers on Windows, Linux or macOS distributions. [Here](https://github.com/aelassas/Wexflow/wiki/Docker) is the documentation for creating and building Docker images.
 
 Moreover, you can create custom integration with any other SaaS product in the cloud through [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
 
