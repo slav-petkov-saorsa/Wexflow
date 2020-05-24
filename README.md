@@ -17,6 +17,8 @@ You can find installation instructions [here](https://github.com/aelassas/Wexflo
 
 ## Deployment
 
+![Docker](https://aelassas.github.io/wexflow/images/small_h-trans.png)
+
 You can deploy Wexflow using Docker containers on Windows, Linux or macOS distributions.
 
 You can find deployment instructions [here](https://github.com/aelassas/Wexflow/wiki/Docker).
@@ -56,10 +58,6 @@ The graph view gives you a nice overview of the dependency graph of the workflow
 The history allows you to track your workflow jobs in the system and have detailed information about each job:
 
 ![History](https://aelassas.github.io/wexflow/images/wbo-history-5.3.png)
-
-![Docker](https://aelassas.github.io/wexflow/images/small_h-trans.png)
-
-You can deploy Wexflow using Docker containers on Windows, Linux or macOS distributions. [Here](https://github.com/aelassas/Wexflow/wiki/Docker) is the documentation for creating and building Docker images.
 
 Moreover, you can create custom integration with any other SaaS product in the cloud through [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
 
