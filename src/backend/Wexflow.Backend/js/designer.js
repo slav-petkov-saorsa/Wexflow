@@ -3249,7 +3249,7 @@
 
                             return table;
                         };
-                        let browserHeader = '<div id="searchworkflows"><img src="assets/search.svg"><input id="searchworkflowsinput" type="text" placeholder="' + language.get("search-workflows") + '"></div><span id="open-wfs-msg"><small style="float: right;">' + language.get("open-wfs-msg") + '</small></span>';
+                        let browserHeader = '<div id="searchworkflows"><img src="assets/search.svg"><input id="searchworkflowsinput" type="text" autocomplete="off" placeholder="' + language.get("search-workflows") + '"></div><span id="open-wfs-msg"><small style="float: right;">' + language.get("open-wfs-msg") + '</small></span>';
                         let browserHtml = workflowsToTable(data);
 
                         let browserFooter = '<div id="openworkflow">' + language.get("wf-open") + '</div><div id="deleteworkflows">' + language.get("wfs-delete") + '</div>';
