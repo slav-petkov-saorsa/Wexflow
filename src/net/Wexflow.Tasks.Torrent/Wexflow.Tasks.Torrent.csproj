@@ -81,7 +81,7 @@
       <HintPath>..\..\..\packages\Mono.Nat.2.0.1\lib\netstandard2.0\Mono.Nat.dll</HintPath>
     </Reference>
     <Reference Include="MonoTorrent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\MonoTorrent.1.0.21\lib\netstandard2.0\MonoTorrent.dll</HintPath>
+      <HintPath>..\..\..\packages\MonoTorrent.1.0.22\lib\netstandard2.0\MonoTorrent.dll</HintPath>
     </Reference>
     <Reference Include="ReusableTasks, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\ReusableTasks.2.0.0\lib\netstandard2.0\ReusableTasks.dll</HintPath>
