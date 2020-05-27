@@ -368,6 +368,7 @@
                                 // Upload version
                                 let filedialog = document.getElementById("file-dialog");
                                 let uploadFileVersion = function (fd) {
+                                    jBoxContent.querySelector(".spn-upload-version").innerHTML = language.get("uploading");
                                     Common.post(uri + "/uploadVersion?r=" + recordId, function (res) {
                                         if (res.Result === true) {
                                             editedRecord.Versions.push({
@@ -439,8 +440,6 @@
                                     filedialog.click();
 
                                     filedialog.onchange = function (e) {
-                                        jBoxContent.querySelector(".spn-upload-version").innerHTML = language.get("uploading");
-
                                         let file = e.target.files[0];
                                         let fd = new FormData();
                                         fd.append("file", file);
@@ -484,13 +483,13 @@
                                     Common.post(uri + "/saveRecord", function (res) {
                                         if (res === true) {
                                             if (username !== record.CreatedBy) {
-                                                // Notify record.CreatedBy
+                                                // Notify approvers
                                                 let message = "The record " + record.Name + " was updated by the user " + username + ".";
-                                                Common.post(uri + "/notify?a=" + encodeURIComponent(record.CreatedBy) + "&m=" + encodeURIComponent(message), function (notifyRes) {
+                                                Common.post(uri + "/notifyApprovers?r=" + encodeURIComponent(record.Id) + "&m=" + encodeURIComponent(message), function (notifyRes) {
                                                     if (notifyRes === true) {
-                                                        Common.toastInfo(language.get("toast-creator-notified"));
+                                                        Common.toastInfo(language.get("toast-approvers-notified"));
                                                     } else {
-                                                        Common.toastError(language.get("toast-creator-notify-error"));
+                                                        Common.toastError(language.get("toast-approvers-notify-error"));
                                                     }
                                                 }, function () { }, "", auth);
                                             }

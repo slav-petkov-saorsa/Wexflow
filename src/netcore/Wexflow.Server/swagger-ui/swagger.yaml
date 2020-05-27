@@ -1564,6 +1564,27 @@ paths:
         200:
           description: "successful operation"
 
+  /notifyApprovers:
+    post:
+     tags:
+     - "Notifications"
+     summary: "Notifies the approvers"
+     description: ""
+     produces:
+       - "application/json"
+     parameters:
+        - in: query
+          name: r
+          type: "string"
+          description: Record Id
+        - in: query
+          name: m
+          type: "string"
+          description: Notification message
+     responses:
+        200:
+          description: "successful operation"
+
 #
 # Definitions
 #

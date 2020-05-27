@@ -149,6 +149,7 @@ namespace Wexflow.Server
             DeleteNotifications();
             SearchNotifications();
             Notify();
+            NotifyApprovers();
         }
 
         /// <summary>
@@ -5110,6 +5111,48 @@ namespace Wexflow.Server
         /// <summary>
         /// Notifies a user.
         /// </summary>
+        /// <param name="assignedBy">Assigned by.</param>
+        /// <param name="assignedTo">Assigned to.</param>
+        /// <param name="message">Message.</param>
+        /// <returns>Result.</returns>
+        private bool NotifyUser(Core.Db.User assignedBy, Core.Db.User assignedTo, string message)
+        {
+            var res = false;
+            if (assignedTo != null && !string.IsNullOrEmpty(message))
+            {
+                var notification = new Core.Db.Notification
+                {
+                    AssignedBy = assignedBy.GetDbId(),
+                    AssignedOn = DateTime.Now,
+                    AssignedTo = assignedTo.GetDbId(),
+                    Message = message,
+                    IsRead = false
+                };
+                var id = WexflowServer.WexflowEngine.InsertNotification(notification);
+                res = id != "-1";
+
+                bool enableEmailNotifications = bool.Parse(WexflowServer.Config["EnableEmailNotifications"]);
+                if (enableEmailNotifications)
+                {
+                    string subject = "Wexflow notification from " + assignedBy.Username;
+                    string body = message;
+
+                    string host = WexflowServer.Config["Smtp.Host"];
+                    int port = int.Parse(WexflowServer.Config["Smtp.Port"]);
+                    bool enableSsl = bool.Parse(WexflowServer.Config["Smtp.EnableSsl"]);
+                    string smtpUser = WexflowServer.Config["Smtp.User"];
+                    string smtpPassword = WexflowServer.Config["Smtp.Password"];
+                    string from = WexflowServer.Config["Smtp.From"];
+
+                    Send(host, port, enableSsl, smtpUser, smtpPassword, assignedTo.Email, from, subject, body);
+                }
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Notifies a user.
+        /// </summary>
         private void Notify()
         {
             Post(Root + "notify", args =>
@@ -5128,35 +5171,7 @@ namespace Wexflow.Server
                         var assignedToUsername = Request.Query["a"].ToString();
                         var message = Request.Query["m"].ToString();
                         var assignedTo = WexflowServer.WexflowEngine.GetUser(assignedToUsername);
-                        if (assignedTo != null && !string.IsNullOrEmpty(message))
-                        {
-                            var notification = new Core.Db.Notification
-                            {
-                                AssignedBy = user.GetDbId(),
-                                AssignedOn = DateTime.Now,
-                                AssignedTo = assignedTo.GetDbId(),
-                                Message = message,
-                                IsRead = false
-                            };
-                            var id = WexflowServer.WexflowEngine.InsertNotification(notification);
-                            res = id != "-1";
-
-                            bool enableEmailNotifications = bool.Parse(WexflowServer.Config["EnableEmailNotifications"]);
-                            if (enableEmailNotifications)
-                            {
-                                string subject = "Wexflow notification from " + user.Username;
-                                string body = message;
-
-                                string host = WexflowServer.Config["Smtp.Host"];
-                                int port = int.Parse(WexflowServer.Config["Smtp.Port"]);
-                                bool enableSsl = bool.Parse(WexflowServer.Config["Smtp.EnableSsl"]);
-                                string smtpUser = WexflowServer.Config["Smtp.User"];
-                                string smtpPassword = WexflowServer.Config["Smtp.Password"];
-                                string from = WexflowServer.Config["Smtp.From"];
-
-                                Send(host, port, enableSsl, smtpUser, smtpPassword, user.Email, from, subject, body);
-                            }
-                        }
+                        res = NotifyUser(user, assignedTo, message);
                     }
 
                     var resStr = JsonConvert.SerializeObject(res);
@@ -5168,6 +5183,60 @@ namespace Wexflow.Server
                         Contents = s => s.Write(resBytes, 0, resBytes.Length)
                     };
 
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                    var resStr = JsonConvert.SerializeObject(false);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
+                }
+            });
+        }
+
+        /// <summary>
+        /// Notifies a user.
+        /// </summary>
+        private void NotifyApprovers()
+        {
+            Post(Root + "notifyApprovers", args =>
+            {
+                try
+                {
+                    var res = true;
+
+                    var auth = GetAuth(Request);
+                    var username = auth.Username;
+                    var password = auth.Password;
+
+                    var user = WexflowServer.WexflowEngine.GetUser(username);
+                    if (user.Password.Equals(password) && (user.UserProfile == Core.Db.UserProfile.SuperAdministrator || user.UserProfile == Core.Db.UserProfile.Administrator))
+                    {
+                        var recordId = Request.Query["r"].ToString();
+                        var message = Request.Query["m"].ToString();
+
+                        var approvers = WexflowServer.WexflowEngine.GetApprovers(recordId);
+                        foreach (var approver in approvers)
+                        {
+                            var approverUser = WexflowServer.WexflowEngine.GetUserById(approver.UserId);
+                            res &= NotifyUser(user, approverUser, message);
+                        }
+                    }
+
+                    var resStr = JsonConvert.SerializeObject(res);
+                    var resBytes = Encoding.UTF8.GetBytes(resStr);
+
+                    return new Response()
+                    {
+                        ContentType = "application/json",
+                        Contents = s => s.Write(resBytes, 0, resBytes.Length)
+                    };
                 }
                 catch (Exception e)
                 {

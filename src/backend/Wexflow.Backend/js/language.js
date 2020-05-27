@@ -210,8 +210,8 @@
     languages["en"]["uploading"] = "Uploading...";
     languages["en"]["toast-version-file-deleted"] = "Version file deleted successfully.";
     languages["en"]["toast-version-file-delete-error"] = "An error occured while deleting the version file.";
-    languages["en"]["toast-creator-notified"] = "The creator of the record was notified by this modification.";
-    languages["en"]["toast-creator-notify-error"] = "An error occured while notifying the creator of the record.";
+    languages["en"]["toast-approvers-notified"] = "The approvers were notified by this modification.";
+    languages["en"]["toast-approvers-notify-error"] = "An error occured while notifying the approvers of the record.";
     languages["en"]["toast-assigned-to-notified"] = "The user assigned to the record was notified by this modification.";
     languages["en"]["toast-assigned-to-notify-error"] = "An error occured while notifying the user assigned to of the record.";
     languages["en"]["toast-record-saved"] = "Record saved successfully.";
@@ -431,8 +431,8 @@
     languages["fr"]["uploading"] = "Upload en cours...";
     languages["fr"]["toast-version-file-deleted"] = "Fichier supprimé avec succès.";
     languages["fr"]["toast-version-file-delete-error"] = "Une erreur a eu lieu lors de la suppression du fichier.";
-    languages["fr"]["toast-creator-notified"] = "Le créateur du record a été notifié de cette modification.";
-    languages["fr"]["toast-creator-notify-error"] = "Une erreur a eu lieu lors de la notification du créateur du record.";
+    languages["fr"]["toast-approvers-notified"] = "Les approbateurs ont été notifiés de cette modification.";
+    languages["fr"]["toast-approvers-notify-error"] = "Une erreur a eu lieu lors de la notification des approbateurs.";
     languages["fr"]["toast-assigned-to-notified"] = "L'utilisateur assigné à ce record a été notifié de cette modification.";
     languages["fr"]["toast-assigned-to-notify-error"] = "Une erreur a eu lieu lors de la notification de l'utilisateur assigné à ce record.";
     languages["fr"]["toast-record-saved"] = "Record sauvegardé avec succès.";
@@ -651,8 +651,8 @@
     languages["da"]["uploading"] = "Upload ...";
     languages["da"]["toast-version-file-deleted"] = "Versionsfil er slettet med succes.";
     languages["da"]["toast-version-file-delete-error"] = "Der opstod en fejl under sletning af versionfilen.";
-    languages["da"]["toast-creator-notified"] = "Opretteren af ​​posten blev underrettet af ændringen af ​​posten.";
-    languages["da"]["toast-creator-notify-error"] = "Der opstod en fejl under anmeldelse af skaberen af ​​posten.";
+    languages["da"]["toast-approvers-notified"] = "Godkendere er blevet underrettet om denne ændring.";
+    languages["da"]["toast-approvers-notify-error"] = "Der opstod en fejl under meddelelse af godkendere.";
     languages["da"]["toast-record-saved"] = "Optagelse gemt med succes.";
     languages["da"]["toast-record-save-error"] = "Der opstod en fejl under lagring af posten.";
     languages["da"]["toast-modifications-canceled"] = "Modifikationer annulleret med succes.";
