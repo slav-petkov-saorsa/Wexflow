@@ -2280,23 +2280,33 @@
 
         // diagram click
         document.getElementById("leftswitch").onclick = function () {
-            diag = true;
-            graph = false;
-            json = false;
-            xml = false;
 
-            leftcard.style.display = "block";
-            propwrap.style.display = "block";
-            wfclose.style.display = "block";
-            wfpropwrap.style.display = "block";
-            canvas.style.display = "block";
-            code.style.display = "none";
-            document.getElementById("blocklyArea").style.display = "none";
+            let self = this;
+            let openDiagView = function () {
+                diag = true;
+                graph = false;
+                json = false;
+                xml = false;
 
-            this.style.backgroundColor = "#F0F0F0";
-            document.getElementById("graphswitch").style.backgroundColor = "transparent";
-            document.getElementById("middleswitch").style.backgroundColor = "transparent";
-            document.getElementById("rightswitch").style.backgroundColor = "transparent";
+                leftcard.style.display = "block";
+                propwrap.style.display = "block";
+                wfclose.style.display = "block";
+                wfpropwrap.style.display = "block";
+                canvas.style.display = "block";
+                code.style.display = "none";
+                document.getElementById("blocklyArea").style.display = "none";
+
+                self.style.backgroundColor = "#F0F0F0";
+                document.getElementById("graphswitch").style.backgroundColor = "transparent";
+                document.getElementById("middleswitch").style.backgroundColor = "transparent";
+                document.getElementById("rightswitch").style.backgroundColor = "transparent";
+            };
+
+            saveChanges(function () {
+                openDiagView();
+            }, function () {
+                openDiagView();
+            }, true);
 
         };
 
@@ -2602,13 +2612,23 @@
         }
 
         document.getElementById("graphswitch").onclick = function () {
-            let wfid = document.getElementById("wfid").value;
-            if (isInt(wfid)) {
-                let workflowId = parseInt(wfid);
-                openGraph(workflowId);
-            } else {
-                Common.toastInfo(language.get("toast-workflow-id-error"));
-            }
+
+            let openInnerGraph = function () {
+                let wfid = document.getElementById("wfid").value;
+                if (isInt(wfid)) {
+                    let workflowId = parseInt(wfid);
+                    openGraph(workflowId);
+                } else {
+                    Common.toastInfo(language.get("toast-workflow-id-error"));
+                }
+            };
+
+            saveChanges(function () {
+                openInnerGraph();
+            }, function () {
+                openInnerGraph();
+            }, true);
+
         };
 
         // json click
@@ -2633,6 +2653,10 @@
             document.getElementById("leftswitch").style.backgroundColor = "transparent";
             document.getElementById("rightswitch").style.backgroundColor = "transparent";
 
+            if (editor) {
+                editor.destroy();
+                editor.container.parentNode.replaceChild(editor.container.cloneNode(true), editor.container);
+            }
             editor = ace.edit("code");
             editor.setOptions({
                 maxLines: Infinity,
@@ -2671,139 +2695,148 @@
 
         document.getElementById("middleswitch").onclick = function () {
 
-            let jsonVal = JSON.stringify(workflow, null, '\t');
+            let openJson = function () {
+                let jsonVal = JSON.stringify(workflow, null, '\t');
 
-            if (diag === true) {
-                let wfIdStr = document.getElementById("wfid").value;
-                if (isInt(wfIdStr)) {
-                    let workflowId = parseInt(wfIdStr);
+                if (diag === true) {
+                    let wfIdStr = document.getElementById("wfid").value;
+                    if (isInt(wfIdStr)) {
+                        let workflowId = parseInt(wfIdStr);
 
-                    if (checkId === true) {
-                        Common.get(uri + "/isWorkflowIdValid/" + workflowId,
-                            function (res) {
-                                if (res === true) {
-                                    if (document.getElementById("wfname").value === "") {
-                                        Common.toastInfo(language.get("toast-workflow-name"));
-                                    } else {
-                                        let lt = document.getElementById("wflaunchtype").value;
-                                        if (lt === "") {
-                                            Common.toastInfo(language.get("toast-workflow-launchType"));
+                        if (checkId === true) {
+                            Common.get(uri + "/isWorkflowIdValid/" + workflowId,
+                                function (res) {
+                                    if (res === true) {
+                                        if (document.getElementById("wfname").value === "") {
+                                            Common.toastInfo(language.get("toast-workflow-name"));
                                         } else {
-                                            if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
-                                                Common.toastInfo(language.get("toast-workflow-period"));
+                                            let lt = document.getElementById("wflaunchtype").value;
+                                            if (lt === "") {
+                                                Common.toastInfo(language.get("toast-workflow-launchType"));
                                             } else {
-                                                if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
-                                                    Common.toastInfo(language.get("toast-workflow-cron"));
+                                                if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
+                                                    Common.toastInfo(language.get("toast-workflow-period"));
                                                 } else {
-
-                                                    // Period validation
-                                                    if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
-                                                        let period = document.getElementById("wfperiod").value;
-                                                        Common.get(uri + "/isPeriodValid/" + period,
-                                                            function (res) {
-                                                                if (res === true) {
-                                                                    openJsonView(jsonVal);
-                                                                } else {
-                                                                    Common.toastInfo(language.get("toast-workflow-period-error"));
-                                                                }
-                                                            },
-                                                            function () { }, auth
-                                                        );
-                                                    } // Cron expression validation
-                                                    else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
-                                                        let expression = document.getElementById("wfcronexp").value;
-                                                        let expressionEncoded = encodeURIComponent(expression);
-
-                                                        Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
-                                                            function (res) {
-                                                                if (res === true) {
-                                                                    openJsonView(jsonVal);
-                                                                } else {
-                                                                    if (confirm(language.get("confirm-cron"))) {
-                                                                        openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
-                                                                    }
-                                                                }
-                                                            },
-                                                            function () { }, auth
-                                                        );
+                                                    if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
+                                                        Common.toastInfo(language.get("toast-workflow-cron"));
                                                     } else {
-                                                        openJsonView(jsonVal);
-                                                    }
 
+                                                        // Period validation
+                                                        if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
+                                                            let period = document.getElementById("wfperiod").value;
+                                                            Common.get(uri + "/isPeriodValid/" + period,
+                                                                function (res) {
+                                                                    if (res === true) {
+                                                                        openJsonView(jsonVal);
+                                                                    } else {
+                                                                        Common.toastInfo(language.get("toast-workflow-period-error"));
+                                                                    }
+                                                                },
+                                                                function () { }, auth
+                                                            );
+                                                        } // Cron expression validation
+                                                        else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
+                                                            let expression = document.getElementById("wfcronexp").value;
+                                                            let expressionEncoded = encodeURIComponent(expression);
+
+                                                            Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
+                                                                function (res) {
+                                                                    if (res === true) {
+                                                                        openJsonView(jsonVal);
+                                                                    } else {
+                                                                        if (confirm(language.get("confirm-cron"))) {
+                                                                            openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
+                                                                        }
+                                                                    }
+                                                                },
+                                                                function () { }, auth
+                                                            );
+                                                        } else {
+                                                            openJsonView(jsonVal);
+                                                        }
+
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                } else {
-                                    Common.toastInfo(language.get("toast-workflow-id"));
-                                }
-                            },
-                            function () { }, auth
-                        );
-                    } else {
-
-                        if (document.getElementById("wfname").value === "") {
-                            Common.toastInfo(language.get("toast-workflow-name"));
-                        } else {
-                            let lt = document.getElementById("wflaunchtype").value;
-                            if (lt === "") {
-                                Common.toastInfo(language.get("toast-workflow-launchType"));
-                            } else {
-                                if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
-                                    Common.toastInfo(language.get("toast-workflow-period"));
-                                } else {
-                                    if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
-                                        Common.toastInfo(language.get("toast-workflow-cron"));
                                     } else {
+                                        Common.toastInfo(language.get("toast-workflow-id"));
+                                    }
+                                },
+                                function () { }, auth
+                            );
+                        } else {
 
-                                        // Period validation
-                                        if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
-                                            let period = document.getElementById("wfperiod").value;
-                                            Common.get(uri + "/isPeriodValid/" + period,
-                                                function (res) {
-                                                    if (res === true) {
-                                                        openJsonView(jsonVal);
-                                                    } else {
-                                                        Common.toastInfo(language.get("toast-workflow-period-error"));
-                                                    }
-                                                },
-                                                function () { }, auth
-                                            );
-                                        } // Cron expression validation
-                                        else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
-                                            let expression = document.getElementById("wfcronexp").value;
-                                            let expressionEncoded = encodeURIComponent(expression);
-
-                                            Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
-                                                function (res) {
-                                                    if (res === true) {
-                                                        openJsonView(jsonVal);
-                                                    } else {
-                                                        if (confirm(language.get("confirm-cron"))) {
-                                                            openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
-                                                        }
-                                                    }
-                                                },
-                                                function () { }, auth
-                                            );
+                            if (document.getElementById("wfname").value === "") {
+                                Common.toastInfo(language.get("toast-workflow-name"));
+                            } else {
+                                let lt = document.getElementById("wflaunchtype").value;
+                                if (lt === "") {
+                                    Common.toastInfo(language.get("toast-workflow-launchType"));
+                                } else {
+                                    if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
+                                        Common.toastInfo(language.get("toast-workflow-period"));
+                                    } else {
+                                        if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
+                                            Common.toastInfo(language.get("toast-workflow-cron"));
                                         } else {
-                                            openJsonView(jsonVal);
-                                        }
 
+                                            // Period validation
+                                            if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
+                                                let period = document.getElementById("wfperiod").value;
+                                                Common.get(uri + "/isPeriodValid/" + period,
+                                                    function (res) {
+                                                        if (res === true) {
+                                                            openJsonView(jsonVal);
+                                                        } else {
+                                                            Common.toastInfo(language.get("toast-workflow-period-error"));
+                                                        }
+                                                    },
+                                                    function () { }, auth
+                                                );
+                                            } // Cron expression validation
+                                            else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
+                                                let expression = document.getElementById("wfcronexp").value;
+                                                let expressionEncoded = encodeURIComponent(expression);
+
+                                                Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
+                                                    function (res) {
+                                                        if (res === true) {
+                                                            openJsonView(jsonVal);
+                                                        } else {
+                                                            if (confirm(language.get("confirm-cron"))) {
+                                                                openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
+                                                            }
+                                                        }
+                                                    },
+                                                    function () { }, auth
+                                                );
+                                            } else {
+                                                openJsonView(jsonVal);
+                                            }
+
+                                        }
                                     }
                                 }
                             }
+
                         }
 
+                    } else {
+                        Common.toastInfo(language.get("toast-workflow-id-error"));
                     }
-
-                } else {
-                    Common.toastInfo(language.get("toast-workflow-id-error"));
                 }
-            }
-            else {
-                openJsonView(jsonVal);
-            }
+                else {
+                    openJsonView(jsonVal);
+                }
+            };
+
+            saveChanges(function () {
+                openJson();
+            }, function () {
+                openJson();
+            }, true);
+
         };
 
         // xml click
@@ -2829,6 +2862,10 @@
             document.getElementById("leftswitch").style.backgroundColor = "transparent";
             document.getElementById("middleswitch").style.backgroundColor = "transparent";
 
+            if (editor) {
+                editor.destroy();
+                editor.container.parentNode.replaceChild(editor.container.cloneNode(true), editor.container);
+            }
             editor = ace.edit("code");
             editor.setOptions({
                 maxLines: Infinity,
@@ -2866,183 +2903,198 @@
         };
 
         document.getElementById("rightswitch").onclick = function () {
-            Common.get(uri + "/graphXml/" + (workflow.WorkflowInfo.Id ? workflow.WorkflowInfo.Id : 0), function (val) {
-                function getXml() {
-                    let graph = val;
 
-                    let xmlVal = '<Workflow xmlns="urn:wexflow-schema" id="' + workflow.WorkflowInfo.Id + '" name="' + Common.escape(workflow.WorkflowInfo.Name) + '" description="' + Common.escape(workflow.WorkflowInfo.Description) + '">\r\n';
-                    xmlVal += '\t<Settings>\r\n\t\t<Setting name="launchType" value="' + launchType(workflow.WorkflowInfo.LaunchType) + '" />' + (workflow.WorkflowInfo.Period !== '' && workflow.WorkflowInfo.Period !== '00:00:00' ? ('\r\n\t\t<Setting name="period" value="' + workflow.WorkflowInfo.Period + '" />') : '') + (workflow.WorkflowInfo.CronExpression !== '' && workflow.WorkflowInfo.CronExpression !== null ? ('\r\n\t\t<Setting name="cronExpression" value="' + workflow.WorkflowInfo.CronExpression + '" />') : '') + '\r\n\t\t<Setting name="enabled" value="' + workflow.WorkflowInfo.IsEnabled + '" />\r\n\t\t<Setting name="approval" value="' + workflow.WorkflowInfo.IsApproval + '" />\r\n\t\t<Setting name="enableParallelJobs" value="' + workflow.WorkflowInfo.EnableParallelJobs + '" />\r\n\t</Settings>\r\n';
-                    if (workflow.WorkflowInfo.LocalVariables.length > 0) {
-                        xmlVal += '\t<LocalVariables>\r\n';
-                        for (let i = 0; i < workflow.WorkflowInfo.LocalVariables.length; i++) {
-                            if (workflow.WorkflowInfo.LocalVariables[i].Key !== "") {
-                                xmlVal += '\t\t<Variable name="' + Common.escape(workflow.WorkflowInfo.LocalVariables[i].Key) + '" value="' + Common.escape(workflow.WorkflowInfo.LocalVariables[i].Value) + '" />\r\n'
-                            }
-                        }
-                        xmlVal += '\t</LocalVariables>\r\n';
-                    } else {
-                        xmlVal += '\t<LocalVariables />\r\n';
-                    }
-                    if (workflow.Tasks.length > 0) {
-                        xmlVal += '\t<Tasks>\r\n';
-                        for (let i = 0; i < workflow.Tasks.length; i++) {
-                            let task = workflow.Tasks[i];
-                            xmlVal += '\t\t<Task id="' + task.Id + '" name="' + Common.escape(task.Name) + '" description="' + Common.escape(task.Description) + '" enabled="' + task.IsEnabled + '">\r\n';
-                            for (let j = 0; j < task.Settings.length; j++) {
-                                let setting = task.Settings[j];
-                                xmlVal += '\t\t\t<Setting name="' + Common.escape(setting.Name) + '"' + ((setting.Name === "selectFiles" || setting.Name === "selectAttachments") && setting.Value === "" ? " " : ' value="' + Common.escape(setting.Value) + '" ');
-                                for (let k = 0; k < setting.Attributes.length; k++) {
-                                    let attr = setting.Attributes[k];
-                                    xmlVal += attr.Name + '="' + Common.escape(attr.Value) + '" ';
+            let openXml = function () {
+                Common.get(uri + "/graphXml/" + (workflow.WorkflowInfo.Id ? workflow.WorkflowInfo.Id : 0), function (val) {
+                    function getXml() {
+                        let graph = val;
+
+                        let xmlVal = '<Workflow xmlns="urn:wexflow-schema" id="' + workflow.WorkflowInfo.Id + '" name="' + Common.escape(workflow.WorkflowInfo.Name) + '" description="' + Common.escape(workflow.WorkflowInfo.Description) + '">\r\n';
+                        xmlVal += '\t<Settings>\r\n\t\t<Setting name="launchType" value="' + launchType(workflow.WorkflowInfo.LaunchType) + '" />' + (workflow.WorkflowInfo.Period !== '' && workflow.WorkflowInfo.Period !== '00:00:00' ? ('\r\n\t\t<Setting name="period" value="' + workflow.WorkflowInfo.Period + '" />') : '') + (workflow.WorkflowInfo.CronExpression !== '' && workflow.WorkflowInfo.CronExpression !== null ? ('\r\n\t\t<Setting name="cronExpression" value="' + workflow.WorkflowInfo.CronExpression + '" />') : '') + '\r\n\t\t<Setting name="enabled" value="' + workflow.WorkflowInfo.IsEnabled + '" />\r\n\t\t<Setting name="approval" value="' + workflow.WorkflowInfo.IsApproval + '" />\r\n\t\t<Setting name="enableParallelJobs" value="' + workflow.WorkflowInfo.EnableParallelJobs + '" />\r\n\t</Settings>\r\n';
+                        if (workflow.WorkflowInfo.LocalVariables.length > 0) {
+                            xmlVal += '\t<LocalVariables>\r\n';
+                            for (let i = 0; i < workflow.WorkflowInfo.LocalVariables.length; i++) {
+                                if (workflow.WorkflowInfo.LocalVariables[i].Key !== "") {
+                                    xmlVal += '\t\t<Variable name="' + Common.escape(workflow.WorkflowInfo.LocalVariables[i].Key) + '" value="' + Common.escape(workflow.WorkflowInfo.LocalVariables[i].Value) + '" />\r\n'
                                 }
-                                xmlVal += '/>\r\n';
                             }
-                            xmlVal += '\t\t</Task>\r\n';
+                            xmlVal += '\t</LocalVariables>\r\n';
+                        } else {
+                            xmlVal += '\t<LocalVariables />\r\n';
                         }
-                        xmlVal += '\t</Tasks>\r\n';
-                    } else {
-                        xmlVal += '\t<Tasks />\r\n';
-                    }
-                    if (graph !== "<ExecutionGraph />") {
-                        xmlVal += graph + "\r\n";
-                    }
-                    xmlVal += '</Workflow>';
+                        if (workflow.Tasks.length > 0) {
+                            xmlVal += '\t<Tasks>\r\n';
+                            for (let i = 0; i < workflow.Tasks.length; i++) {
+                                let task = workflow.Tasks[i];
+                                xmlVal += '\t\t<Task id="' + task.Id + '" name="' + Common.escape(task.Name) + '" description="' + Common.escape(task.Description) + '" enabled="' + task.IsEnabled + '">\r\n';
+                                for (let j = 0; j < task.Settings.length; j++) {
+                                    let setting = task.Settings[j];
+                                    xmlVal += '\t\t\t<Setting name="' + Common.escape(setting.Name) + '"' + ((setting.Name === "selectFiles" || setting.Name === "selectAttachments") && setting.Value === "" ? " " : ' value="' + Common.escape(setting.Value) + '" ');
+                                    for (let k = 0; k < setting.Attributes.length; k++) {
+                                        let attr = setting.Attributes[k];
+                                        xmlVal += attr.Name + '="' + Common.escape(attr.Value) + '" ';
+                                    }
+                                    xmlVal += '/>\r\n';
+                                }
+                                xmlVal += '\t\t</Task>\r\n';
+                            }
+                            xmlVal += '\t</Tasks>\r\n';
+                        } else {
+                            xmlVal += '\t<Tasks />\r\n';
+                        }
+                        if (graph !== "<ExecutionGraph />") {
+                            xmlVal += graph + "\r\n";
+                        }
+                        xmlVal += '</Workflow>';
 
-                    return xmlVal;
-                }
+                        return xmlVal;
+                    }
 
-                if (diag === true) {
-                    let wfIdStr = document.getElementById("wfid").value;
-                    if (isInt(wfIdStr)) {
-                        let workflowId = parseInt(wfIdStr);
-                        if (checkId === true) {
-                            Common.get(uri + "/isWorkflowIdValid/" + workflowId,
-                                function (res) {
-                                    if (res === true) {
-                                        if (document.getElementById("wfname").value === "") {
-                                            Common.toastInfo(language.get("toast-workflow-name"));
-                                        } else {
-                                            let lt = document.getElementById("wflaunchtype").value;
-                                            if (lt === "") {
-                                                Common.toastInfo(language.get("toast-workflow-launchType"));
+                    if (diag === true) {
+                        let wfIdStr = document.getElementById("wfid").value;
+                        if (isInt(wfIdStr)) {
+                            let workflowId = parseInt(wfIdStr);
+                            if (checkId === true) {
+                                Common.get(uri + "/isWorkflowIdValid/" + workflowId,
+                                    function (res) {
+                                        if (res === true) {
+                                            if (document.getElementById("wfname").value === "") {
+                                                Common.toastInfo(language.get("toast-workflow-name"));
                                             } else {
-                                                if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
-                                                    Common.toastInfo(language.get("toast-workflow-period"));
+                                                let lt = document.getElementById("wflaunchtype").value;
+                                                if (lt === "") {
+                                                    Common.toastInfo(language.get("toast-workflow-launchType"));
                                                 } else {
-                                                    if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
-                                                        Common.toastInfo(language.get("toast-workflow-cron"));
+                                                    if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
+                                                        Common.toastInfo(language.get("toast-workflow-period"));
                                                     } else {
-
-                                                        // Period validation
-                                                        if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
-                                                            let period = document.getElementById("wfperiod").value;
-                                                            Common.get(uri + "/isPeriodValid/" + period,
-                                                                function (res) {
-                                                                    if (res === true) {
-                                                                        openXmlView(getXml());
-                                                                    } else {
-                                                                        Common.toastInfo(language.get("toast-workflow-period-error"));
-                                                                    }
-                                                                },
-                                                                function () { }, auth
-                                                            );
-                                                        } // Cron expression validation
-                                                        else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
-                                                            let expression = document.getElementById("wfcronexp").value;
-                                                            let expressionEncoded = encodeURIComponent(expression);
-
-                                                            Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
-                                                                function (res) {
-                                                                    if (res === true) {
-                                                                        openXmlView(getXml());
-                                                                    } else {
-                                                                        if (confirm(language.get("confirm-cron"))) {
-                                                                            openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
-                                                                        }
-                                                                    }
-                                                                },
-                                                                function () { }, auth
-                                                            );
+                                                        if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
+                                                            Common.toastInfo(language.get("toast-workflow-cron"));
                                                         } else {
-                                                            openXmlView(getXml());
-                                                        }
 
+                                                            // Period validation
+                                                            if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
+                                                                let period = document.getElementById("wfperiod").value;
+                                                                Common.get(uri + "/isPeriodValid/" + period,
+                                                                    function (res) {
+                                                                        if (res === true) {
+                                                                            openXmlView(getXml());
+                                                                        } else {
+                                                                            Common.toastInfo(language.get("toast-workflow-period-error"));
+                                                                        }
+                                                                    },
+                                                                    function () { }, auth
+                                                                );
+                                                            } // Cron expression validation
+                                                            else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
+                                                                let expression = document.getElementById("wfcronexp").value;
+                                                                let expressionEncoded = encodeURIComponent(expression);
+
+                                                                Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
+                                                                    function (res) {
+                                                                        if (res === true) {
+                                                                            openXmlView(getXml());
+                                                                        } else {
+                                                                            if (confirm(language.get("confirm-cron"))) {
+                                                                                openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    function () { }, auth
+                                                                );
+                                                            } else {
+                                                                openXmlView(getXml());
+                                                            }
+
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    } else {
-                                        Common.toastInfo(language.get("toast-workflow-id"));
-                                    }
-                                },
-                                function () { }, auth
-                            );
-                        } else {
-
-                            if (document.getElementById("wfname").value === "") {
-                                Common.toastInfo(language.get("toast-workflow-name"));
-                            } else {
-                                let lt = document.getElementById("wflaunchtype").value;
-                                if (lt === "") {
-                                    Common.toastInfo(language.get("toast-workflow-launchType"));
-                                } else {
-                                    if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
-                                        Common.toastInfo(language.get("toast-workflow-period"));
-                                    } else {
-                                        if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
-                                            Common.toastInfo(language.get("toast-workflow-cron"));
                                         } else {
+                                            Common.toastInfo(language.get("toast-workflow-id"));
+                                        }
+                                    },
+                                    function () { }, auth
+                                );
+                            } else {
 
-                                            // Period validation
-                                            if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
-                                                let period = document.getElementById("wfperiod").value;
-                                                Common.get(uri + "/isPeriodValid/" + period,
-                                                    function (res) {
-                                                        if (res === true) {
-                                                            openXmlView(getXml());
-                                                        } else {
-                                                            Common.toastInfo(language.get("toast-workflow-period-error"));
-                                                        }
-                                                    },
-                                                    function () { }, auth
-                                                );
-                                            } // Cron expression validation
-                                            else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
-                                                let expression = document.getElementById("wfcronexp").value;
-                                                let expressionEncoded = encodeURIComponent(expression);
-
-                                                Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
-                                                    function (res) {
-                                                        if (res === true) {
-                                                            openXmlView(getXml());
-                                                        } else {
-                                                            if (confirm(language.get("confirm-cron"))) {
-                                                                openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
-                                                            }
-                                                        }
-                                                    },
-                                                    function () { }, auth
-                                                );
+                                if (document.getElementById("wfname").value === "") {
+                                    Common.toastInfo(language.get("toast-workflow-name"));
+                                } else {
+                                    let lt = document.getElementById("wflaunchtype").value;
+                                    if (lt === "") {
+                                        Common.toastInfo(language.get("toast-workflow-launchType"));
+                                    } else {
+                                        if (lt === "periodic" && document.getElementById("wfperiod").value === "") {
+                                            Common.toastInfo(language.get("toast-workflow-period"));
+                                        } else {
+                                            if (lt === "cron" && document.getElementById("wfcronexp").value === "") {
+                                                Common.toastInfo(language.get("toast-workflow-cron"));
                                             } else {
-                                                openXmlView(getXml());
-                                            }
 
+                                                // Period validation
+                                                if (lt === "periodic" && document.getElementById("wfperiod").value !== "") {
+                                                    let period = document.getElementById("wfperiod").value;
+                                                    Common.get(uri + "/isPeriodValid/" + period,
+                                                        function (res) {
+                                                            if (res === true) {
+                                                                openXmlView(getXml());
+                                                            } else {
+                                                                Common.toastInfo(language.get("toast-workflow-period-error"));
+                                                            }
+                                                        },
+                                                        function () { }, auth
+                                                    );
+                                                } // Cron expression validation
+                                                else if (lt === "cron" && document.getElementById("wfcronexp").value !== "") {
+                                                    let expression = document.getElementById("wfcronexp").value;
+                                                    let expressionEncoded = encodeURIComponent(expression);
+
+                                                    Common.get(uri + "/isCronExpressionValid?e=" + expressionEncoded,
+                                                        function (res) {
+                                                            if (res === true) {
+                                                                openXmlView(getXml());
+                                                            } else {
+                                                                if (confirm(language.get("confirm-cron"))) {
+                                                                    openInNewTab("https://github.com/aelassas/Wexflow/wiki/Cron-scheduling");
+                                                                }
+                                                            }
+                                                        },
+                                                        function () { }, auth
+                                                    );
+                                                } else {
+                                                    openXmlView(getXml());
+                                                }
+
+                                            }
                                         }
                                     }
                                 }
+
                             }
 
+                        } else {
+                            Common.toastInfo(language.get("toast-workflow-id-error"));
                         }
-
-                    } else {
-                        Common.toastInfo(language.get("toast-workflow-id-error"));
                     }
-                }
-                else {
-                    openXmlView(getXml());
-                }
+                    else {
+                        openXmlView(getXml());
+                    }
+                }, function () {
+                }, auth);
+            };
+
+            saveChanges(function () {
+                // onSave getXml
+                let workflowId = parseInt(document.getElementById("wfid").value);
+                Common.get(uri + "/xml/" + workflowId, function (val) {
+                    openXmlView(val);
+                }, function () { }, auth);
             }, function () {
-            }, auth);
+                // onCancel
+                openXml();
+            }, true);
+
         };
 
         // Browse workflows
@@ -3632,17 +3684,31 @@
             }
         }
 
-        function saveChanges(onSave, onCancel) {
+        function saveChanges(onSave, onCancel, innerCall) {
             let selected = document.getElementsByClassName("selected");
 
             let id = (selected.length > 0 ? parseInt(selected[0].getElementsByClassName("wf-id")[0].innerHTML) : -1);
             let workflowChanged = _.isEqual(initialWorkflow, workflow) === false && initialWorkflow !== null;
 
+            if (innerCall === true && (graph === true && xmlEditorChanged === false && jsonEditorChanged === false) && workflowChanged == true) {
+                onCancel();
+                return;
+            }
+            if (innerCall === true && (diag === true && xmlEditorChanged === false && jsonEditorChanged === false) && workflowChanged == true) {
+                onCancel();
+                return;
+            }
+            if (innerCall === true && (xml === true && xmlEditorChanged === false) && workflowChanged == true) {
+                onCancel();
+                return;
+            }
+            if (innerCall === true && (json === true && jsonEditorChanged === false) && workflowChanged == true) {
+                onCancel();
+                return;
+            }
             if (openSavePopup === true || (workflowDeleted === false && workflowChanged === true) || (json === true && jsonEditorChanged === true) || (xml === true && xmlEditorChanged === true)) {
                 let res = confirm("Save changes?");
                 if (res === true) {
-                    let wfid = document.getElementById("wfid").value;
-
                     if (diag === true || graph === true) {
                         updateTasks();
 
@@ -3813,7 +3879,13 @@
                                             removeworkflow.style.display = "block";
                                             Common.toastSuccess(language.get("toast-save-workflow-json"));
                                         }, function () { }, auth);
+                                } else {
+                                    let wfId = parseInt(document.getElementById("wfid").value);
+                                    loadDiagram(wfId, res.FilePath);
+                                    removeworkflow.style.display = "block";
+                                    Common.toastSuccess(language.get("toast-save-workflow-json"));
                                 }
+
                                 if (onSave) {
                                     onSave();
                                 }
@@ -3831,6 +3903,7 @@
                         };
                         Common.post(uri + "/saveXml", function (res) {
                             if (res.Result === true) {
+                                let wfId = parseInt(document.getElementById("wfid").value);
                                 if (id > -1) {
                                     Common.get(uri + "/xml/" + id,
                                         function (val) {
@@ -3842,10 +3915,22 @@
                                             removeworkflow.style.display = "block";
                                             Common.toastSuccess(language.get("toast-save-workflow-xml"));
                                         }, function () { }, auth);
+                                } else {
+                                    loadDiagram(wfId, res.FilePath);
+                                    removeworkflow.style.display = "block";
+                                    Common.toastSuccess(language.get("toast-save-workflow-xml"));
                                 }
 
                                 if (onSave) {
-                                    onSave();
+                                    Common.get(uri + "/json/" + wfId,
+                                        function (val) {
+                                            if (val) {
+                                                workflow = val;
+                                                workflow.WorkflowInfo.FilePath = res.FilePath;
+                                                initialWorkflow = JSON.parse(JSON.stringify(val));
+                                                onSave();
+                                            }
+                                        }, function () { }, auth);
                                 }
                             } else {
                                 Common.toastError(language.get("toast-save-workflow-xml-error"));
