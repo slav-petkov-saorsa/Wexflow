@@ -17,7 +17,7 @@ You can find installation instructions [here](https://github.com/aelassas/Wexflo
 
 ## Deployment
 
-You can deploy Wexflow using Docker containers on Windows, Linux or macOS distributions.
+You can deploy Wexflow using Docker containers on Windows, Linux and macOS distributions.
 
 You can find deployment instructions [here](https://github.com/aelassas/Wexflow/wiki/Docker).
 
