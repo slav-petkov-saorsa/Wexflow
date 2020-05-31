@@ -4,7 +4,11 @@
 [![Nuget](https://img.shields.io/nuget/v/Wexflow)](https://www.nuget.org/packages/Wexflow)
 [![Docker](https://img.shields.io/badge/docker-v5.7-blue)](https://hub.docker.com/r/aelassas/wexflow)
 
-Wexflow is an open-source and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy. Wexflow also helps in making the long-running processes straightforward. The communication between systems or applications becomes easy through this powerful workflow engine and automation platform.
+## Wexflow
+
+Wexflow is an open-source and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy.
+
+Wexflow provides sequential workflows, flowchart workflows, and approval workflows on generic business objects such as documents, invoices, purchase orders, vacation requests, time sheets, etc. Wexflow also provides a powerful backend for designing, managing and tracking workflows. Wexflow supports [10 database systems](https://github.com/aelassas/Wexflow/wiki/Databases) and allows to create custom integration with other solutions through [custom activities](https://github.com/aelassas/Wexflow/wiki/Custom-tasks) and [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
 
 ## Download
 
@@ -25,40 +29,6 @@ You can find deployment instructions [here](https://github.com/aelassas/Wexflow/
 ## Documentation
 
 You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
-<!--
-## What's New?
-
-Check out the new [version 5.7](https://github.com/aelassas/Wexflow/releases/tag/v5.7). This version includes [all must approve](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#all-must-approve) feature, multiple approvers for the same record, a reminder feature in approval workfows for notifying the approver and the user assigned to the record N days before due date, records hot folder, an [automated import flow](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#automated-import-flow) for importing and approving records, files Drag & Drop to records tab, bug fixes, performance enhancements, and under the hood updates.
-
-## Wexflow
-
-Wexflow is a free, open-source, high-performance, extensible, modular and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy. Wexflow also helps in making the long-running processes straightforward. The communication between systems or applications becomes easy through this powerful workflow engine and automation platform.
-
-Wexflow comes with a cross-platform workflow server and a powerful backend. The workflow server exposes a [RESTful API](https://github.com/aelassas/Wexflow/wiki/RESTful-API) that allows Wexflow to be embeddable anywhere.
-
-Wexflow makes use of [.NET Core](https://www.microsoft.com/net/download), a cross-platform version of .NET for building websites, services, and console apps. Thus, Wexflow provides a cross-platform workflow server and a powerful backend for managing, designing and tracking workflows with ease and flexibility. Wexflow runs on Windows, Linux and macOS.
-
-Wexflow also makes use of [Quartz.NET](https://www.quartz-scheduler.net/) open-source job scheduling system that is used in large scale enterprise systems. Thus, Wexflow offers flexibility in planning jobs such as [cron jobs](https://github.com/aelassas/Wexflow/wiki/Cron-scheduling).
-
-Since workflows are typically long running processes, they will need to be persisted to storage between tasks. There are several persistence providers available. Wexflow provides [LiteDB](http://www.litedb.org/), [MongoDB](https://github.com/aelassas/Wexflow/wiki/MongoDB), [RavenDB](https://github.com/aelassas/Wexflow/wiki/RavenDB), [PostgreSQL](https://github.com/aelassas/Wexflow/wiki/PostgreSQL), [SQL Server](https://github.com/aelassas/Wexflow/wiki/SQL-Server), [MySQL](https://github.com/aelassas/Wexflow/wiki/MySQL), [SQLite](https://github.com/aelassas/Wexflow/wiki/SQLite), [Firebird](https://github.com/aelassas/Wexflow/wiki/Firebird), [Oracle](https://github.com/aelassas/Wexflow/wiki/Oracle) and [MariaDB](https://github.com/aelassas/Wexflow/wiki/MariaDB) persistence providers which enhance and improve the performance of this automation platform. The user can choose the persistence provider of his choice at the installation.
-
-Wexflow comes with a powerful backend, so you can search and filter among all your workflows, have real-time stats on your workflows, manage your workflows with ease, design your workflows with ease, and track your workflows with ease:
-
-![Dashboard](https://aelassas.github.io/wexflow/images/wbo-dashboard-5.8.png)
-
-Just to give you an idea of what Wexflow does, this is a screenshot from the [designer](https://github.com/aelassas/Wexflow/wiki/Usage#designer). Using the designer, we get a nice visual overview of the dependency graph of the workflow. Each node represents a task which has to be run:
-
-![Designer](https://aelassas.github.io/wexflow/images/wbo-designer-5.4.png)
-
-The graph view gives you a nice overview of the dependency graph of the workflow too:
-
-![Designer](https://aelassas.github.io/wexflow/images/wbo-designer-5.4-graph.png)
-
-The history allows you to track your workflow jobs in the system and have detailed information about each job:
-
-![History](https://aelassas.github.io/wexflow/images/wbo-history-5.3.png)
-
-Moreover, you can create custom integration with any other SaaS product in the cloud through [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
 
 ## Why Wexflow?
 
@@ -81,9 +51,7 @@ Moreover, you can create custom integration with any other SaaS product in the c
 - [Extensive logging and incident reporting](https://github.com/aelassas/Wexflow/wiki/Logging)
 - [Real-time stats](https://github.com/aelassas/Wexflow/wiki/Usage#dashboard)
 - [RESTful API](https://github.com/aelassas/Wexflow/wiki/RESTful-API)
-- [Extensible](https://github.com/aelassas/Wexflow/wiki/Extensible)	
-
-Discover more [features](https://github.com/aelassas/Wexflow/wiki#why-wexflow).
+- [Extensible](https://github.com/aelassas/Wexflow/wiki/Extensible)
 
 ## Examples
 
@@ -110,7 +78,7 @@ Discover more [features](https://github.com/aelassas/Wexflow/wiki#why-wexflow).
 - [Optimizing PDF files](https://blogs.datalogics.com/2018/11/26/wexflow-automating-datalogics-pdf-tools/)
 
 Check out the available [built-in tasks](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for more examples.
--->
+
 ## Continuous Integration
 
 |  Server | Platform | Status |
@@ -121,44 +89,3 @@ Check out the available [built-in tasks](https://github.com/aelassas/Wexflow/wik
 |Bitrise (Android)|Linux| [![Build Status](https://app.bitrise.io/app/0fb832132f6afa6d/status.svg?token=j49g0Gx7rNWkl4s41xM_kA)](https://app.bitrise.io/app/0fb832132f6afa6d)|
 |Bitrise (iOS)|macOS | [![Build Status](https://app.bitrise.io/app/f8006552bdd4ee80/status.svg?token=Yd_71TrG-cqFvEC1oV5teQ)](https://app.bitrise.io/app/f8006552bdd4ee80)|
 |FOSSA| Linux | [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Faelassas%2FWexflow.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Faelassas%2FWexflow?ref=badge_shield)|
-<!--
-## Supporters
-
-![JetBrains](https://aelassas.github.io/wexflow/images/Jetbrains_logo.png)
-
-[JetBrains](https://www.jetbrains.com/?from=Wexflow) is a software development company whose tools are targeted towards software developers and project managers.
-
-![YourKit](https://aelassas.github.io/wexflow/images/yk_logo.png)
-
-[YourKit](https://www.yourkit.com) supports open-source projects with innovative and intelligent tools for monitoring and profiling Java and .NET applications. YourKit is the creator of [YourKit Java Profiler](https://www.yourkit.com/java/profiler/), [YourKit .NET Profiler](https://www.yourkit.com/.net/profiler/), and [YourKit YouMonitor](https://www.yourkit.com/youmonitor/).
-
-## Contributors
-
-### Code Contributors
-
-This project exists thanks to all the people who contribute. [[Contribute](https://github.com/aelassas/Wexflow/blob/master/.github/CONTRIBUTING.md)].
-<a href="https://github.com/aelassas/Wexflow/graphs/contributors"><img src="https://opencollective.com/Wexflow/contributors.svg?width=890&button=false" /></a>
-
-### Financial Contributors
-
-Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/Wexflow/contribute)]
-
-#### Individuals
-
-<a href="https://opencollective.com/Wexflow"><img src="https://opencollective.com/Wexflow/individuals.svg?width=890"></a>
-
-#### Organizations
-
-Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/Wexflow/contribute)]
-
-<a href="https://opencollective.com/Wexflow/organization/0/website"><img src="https://opencollective.com/Wexflow/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/1/website"><img src="https://opencollective.com/Wexflow/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/2/website"><img src="https://opencollective.com/Wexflow/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/3/website"><img src="https://opencollective.com/Wexflow/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/4/website"><img src="https://opencollective.com/Wexflow/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/5/website"><img src="https://opencollective.com/Wexflow/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/6/website"><img src="https://opencollective.com/Wexflow/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/7/website"><img src="https://opencollective.com/Wexflow/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/8/website"><img src="https://opencollective.com/Wexflow/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/Wexflow/organization/9/website"><img src="https://opencollective.com/Wexflow/organization/9/avatar.svg"></a>
--->
