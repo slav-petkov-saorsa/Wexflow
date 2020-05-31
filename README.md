@@ -4,6 +4,7 @@
 [![Nuget](https://img.shields.io/nuget/v/Wexflow)](https://www.nuget.org/packages/Wexflow)
 [![Docker](https://img.shields.io/badge/docker-v5.7-blue)](https://hub.docker.com/r/aelassas/wexflow)
 
+Wexflow is an open-source and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy. Wexflow also helps in making the long-running processes straightforward. The communication between systems or applications becomes easy through this powerful workflow engine and automation platform.
 
 ## Download
 
