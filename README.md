@@ -11,7 +11,7 @@ You can download the latest release from [here](https://github.com/aelassas/Wexf
 
 ## Installation
 
-You can install Wexflow on Windows, Linux or macOS distributions.
+You can install Wexflow on Windows, Linux and macOS distributions.
 
 You can find installation instructions [here](https://github.com/aelassas/Wexflow/wiki/Installation).
 
@@ -24,7 +24,7 @@ You can find deployment instructions [here](https://github.com/aelassas/Wexflow/
 ## Documentation
 
 You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
-
+<!--
 ## What's New?
 
 Check out the new [version 5.7](https://github.com/aelassas/Wexflow/releases/tag/v5.7). This version includes [all must approve](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#all-must-approve) feature, multiple approvers for the same record, a reminder feature in approval workfows for notifying the approver and the user assigned to the record N days before due date, records hot folder, an [automated import flow](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#automated-import-flow) for importing and approving records, files Drag & Drop to records tab, bug fixes, performance enhancements, and under the hood updates.
@@ -109,7 +109,7 @@ Discover more [features](https://github.com/aelassas/Wexflow/wiki#why-wexflow).
 - [Optimizing PDF files](https://blogs.datalogics.com/2018/11/26/wexflow-automating-datalogics-pdf-tools/)
 
 Check out the available [built-in tasks](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for more examples.
-
+-->
 ## Continuous Integration
 
 |  Server | Platform | Status |
@@ -120,7 +120,7 @@ Check out the available [built-in tasks](https://github.com/aelassas/Wexflow/wik
 |Bitrise (Android)|Linux| [![Build Status](https://app.bitrise.io/app/0fb832132f6afa6d/status.svg?token=j49g0Gx7rNWkl4s41xM_kA)](https://app.bitrise.io/app/0fb832132f6afa6d)|
 |Bitrise (iOS)|macOS | [![Build Status](https://app.bitrise.io/app/f8006552bdd4ee80/status.svg?token=Yd_71TrG-cqFvEC1oV5teQ)](https://app.bitrise.io/app/f8006552bdd4ee80)|
 |FOSSA| Linux | [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Faelassas%2FWexflow.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Faelassas%2FWexflow?ref=badge_shield)|
-
+<!--
 ## Supporters
 
 ![JetBrains](https://aelassas.github.io/wexflow/images/Jetbrains_logo.png)
@@ -160,3 +160,4 @@ Support this project with your organization. Your logo will show up here with a 
 <a href="https://opencollective.com/Wexflow/organization/7/website"><img src="https://opencollective.com/Wexflow/organization/7/avatar.svg"></a>
 <a href="https://opencollective.com/Wexflow/organization/8/website"><img src="https://opencollective.com/Wexflow/organization/8/avatar.svg"></a>
 <a href="https://opencollective.com/Wexflow/organization/9/website"><img src="https://opencollective.com/Wexflow/organization/9/avatar.svg"></a>
+-->
