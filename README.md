@@ -4,6 +4,12 @@
 [![Nuget](https://img.shields.io/nuget/v/Wexflow)](https://www.nuget.org/packages/Wexflow)
 [![Docker](https://img.shields.io/badge/docker-v5.7-blue)](https://hub.docker.com/r/aelassas/wexflow)
 
+## Wexflow
+
+Wexflow is an open-source and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy.
+
+Wexflow provides sequential workflows, flowchart workflows, and approval workflows on generic business objects such as documents, invoices, purchase orders, vacation requests, time sheets, etc. Wexflow also provides a powerful backend for designing, managing and tracking workflows. Wexflow supports [10 database systems](https://github.com/aelassas/Wexflow/wiki/Databases) and allows to create custom integration with other solutions through [custom activities](https://github.com/aelassas/Wexflow/wiki/Custom-tasks) and [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
+
 ## Download
 
 You can download the latest release from [here](https://github.com/aelassas/Wexflow/releases/latest).
@@ -23,10 +29,6 @@ You can find deployment instructions [here](https://github.com/aelassas/Wexflow/
 ## Documentation
 
 You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
-
-## Wexflow
-
-Wexflow is an open-source and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy. Wexflow also helps in making the long-running processes straightforward. The communication between systems or applications becomes easy through this powerful workflow engine and automation platform.
 
 ## Why Wexflow?
 
