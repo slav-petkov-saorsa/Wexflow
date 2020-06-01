@@ -12,7 +12,7 @@ Wexflow comes with a cross-platform workflow server and a powerful backend for d
 
 Wexflow provides sequential workflows, flowchart workflows, and approval workflows on generic business objects such as documents, invoices, purchase orders, vacation requests, time sheets, etc.
 
-Wexflow provides [100+ built-in tasks](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for different kind of jobs. Wexflow provides file system tasks, network tasks, reporting tasks, database tasks, emailing tasks, SMS tasks, etc.
+Wexflow provides [100+ activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for different kind of jobs. Wexflow provides file system activities, network activities, reporting activities, database activities, emailing activities, SMS activities, etc.
 
 Wexflow supports [10 database systems](https://github.com/aelassas/Wexflow/wiki/Databases) and allows to create custom integration with other solutions through [custom activities](https://github.com/aelassas/Wexflow/wiki/Custom-tasks) and [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
 
@@ -48,7 +48,7 @@ You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
 - [Sequential workflows](https://github.com/aelassas/Wexflow/wiki/Samples#sequential-workflows)
 - [Flowchart workflows](https://github.com/aelassas/Wexflow/wiki/Samples#flowchart-workflows)
 - [Approval workflows](https://github.com/aelassas/Wexflow/wiki/Approval-workflows)
-- [100+ built-in tasks](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation)
+- [100+ activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation)
 - [User-driven](https://github.com/aelassas/Wexflow/wiki/User-driven)
 - [Cron scheduling](https://github.com/aelassas/Wexflow/wiki/Cron-scheduling)
 - [LiteDB, MongoDB and RavenDB support](https://github.com/aelassas/Wexflow/wiki/Databases)
@@ -81,9 +81,9 @@ You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
 - Batch uploading files over FTP/FTPS/SFTP
 - Database administration and maintenance
 - Synchronizing the content of local or remote directories
-- [Optimizing PDF files](https://blogs.datalogics.com/2018/11/26/wexflow-automating-datalogics-pdf-tools/)
+- Optimizing PDF files
 
-Check out the available [built-in tasks](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for more examples.
+Check out the available [built-in activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for more examples.
 
 ## Continuous Integration
 
