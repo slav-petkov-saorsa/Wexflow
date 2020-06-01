@@ -1,10 +1,12 @@
+<!--
 ![Logo](https://aelassas.github.io/wexflow/images/wd-logo-4.jpg)
-
+-->
+[![Build Status](https://aelassas.visualstudio.com/Wexflow/_apis/build/status/aelassas.Wexflow?branchName=master)](https://aelassas.visualstudio.com/Wexflow/_build/latest?definitionId=1&branchName=master)
 [![Downloads](https://img.shields.io/github/downloads/aelassas/Wexflow/total.svg)](https://wexflow.github.io/stats)
 [![Nuget](https://img.shields.io/nuget/v/Wexflow)](https://www.nuget.org/packages/Wexflow)
 [![Docker](https://img.shields.io/badge/docker-v5.7-blue)](https://hub.docker.com/r/aelassas/wexflow)
 
-## Wexflow
+## What is Wexflow?
 
 Wexflow is an open-source and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy.
 
@@ -15,26 +17,6 @@ Wexflow provides sequential workflows, flowchart workflows, and approval workflo
 Wexflow provides [100+ activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for different kind of jobs. Wexflow provides file system activities, network activities, reporting activities, database activities, emailing activities, SMS activities, etc.
 
 Wexflow supports [10 database systems](https://github.com/aelassas/Wexflow/wiki/Databases) and allows to create custom integration with other solutions through [custom activities](https://github.com/aelassas/Wexflow/wiki/Custom-tasks) and [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
-
-## Download
-
-You can download the latest release from [here](https://github.com/aelassas/Wexflow/releases/latest).
-
-## Installation
-
-You can install Wexflow on Windows, Linux and macOS distributions.
-
-You can find installation instructions [here](https://github.com/aelassas/Wexflow/wiki/Installation).
-
-## Deployment
-
-You can deploy Wexflow using Docker containers on Windows, Linux and macOS distributions.
-
-You can find deployment instructions [here](https://github.com/aelassas/Wexflow/wiki/Docker).
-
-## Documentation
-
-You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
 
 ## Why Wexflow?
 
@@ -59,32 +41,27 @@ You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
 - [RESTful API](https://github.com/aelassas/Wexflow/wiki/RESTful-API)
 - [Extensible](https://github.com/aelassas/Wexflow/wiki/Extensible)
 
-## Examples
+## Download
 
-- Orchestration engine
-- Form submission approval process
-- Batch recording live video feeds
-- Batch transcoding audio and video files
-- Batch uploading videos and their metadata to YouTube SFTP dropbox
-- Automatically upload videos to YouTube
-- Automatically upload videos to Vimeo
-- Automatically upload images and videos to Instagram
-- Automatically send tweets
-- Automatically send posts and links to Reddit
-- Automatically send messages to Slack channels
-- Automatically send SMS messages
-- Batch encrypting and decrypting large files
-- Batch converting, resizing and cropping images
-- Creating and sending reports and invoices by email
-- Connecting systems and applications via watch folders
-- Batch downloading files over FTP/FTPS/SFTP/HTTP/HTTPS/Torrent
-- Batch uploading files over FTP/FTPS/SFTP
-- Database administration and maintenance
-- Synchronizing the content of local or remote directories
-- Optimizing PDF files
+You can download the latest release from [here](https://github.com/aelassas/Wexflow/releases/latest).
 
-Check out the available [built-in activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for more examples.
+## Installation
 
+You can install Wexflow on Windows, Linux and macOS distributions.
+
+You can find installation instructions [here](https://github.com/aelassas/Wexflow/wiki/Installation).
+
+## Deployment
+
+You can deploy Wexflow using Docker containers on Windows, Linux and macOS distributions.
+
+You can find deployment instructions [here](https://github.com/aelassas/Wexflow/wiki/Docker).
+
+## Documentation
+
+You can find the documentation [here](https://github.com/aelassas/Wexflow/wiki).
+
+<!--
 ## Continuous Integration
 
 |  Server | Platform | Status |
@@ -95,3 +72,4 @@ Check out the available [built-in activities](https://github.com/aelassas/Wexflo
 |Bitrise (Android)|Linux| [![Build Status](https://app.bitrise.io/app/0fb832132f6afa6d/status.svg?token=j49g0Gx7rNWkl4s41xM_kA)](https://app.bitrise.io/app/0fb832132f6afa6d)|
 |Bitrise (iOS)|macOS | [![Build Status](https://app.bitrise.io/app/f8006552bdd4ee80/status.svg?token=Yd_71TrG-cqFvEC1oV5teQ)](https://app.bitrise.io/app/f8006552bdd4ee80)|
 |FOSSA| Linux | [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Faelassas%2FWexflow.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Faelassas%2FWexflow?ref=badge_shield)|
+-->
