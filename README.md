@@ -1,6 +1,5 @@
-<!--
 ![Logo](https://aelassas.github.io/wexflow/images/wd-logo-4.jpg)
--->
+
 [![Build Status](https://aelassas.visualstudio.com/Wexflow/_apis/build/status/aelassas.Wexflow?branchName=master)](https://aelassas.visualstudio.com/Wexflow/_build/latest?definitionId=1&branchName=master)
 <!--
 [![Downloads](https://img.shields.io/github/downloads/aelassas/Wexflow/total.svg)](https://wexflow.github.io/stats)
