@@ -43,13 +43,13 @@ Wexflow supports [10 database systems](https://github.com/aelassas/Wexflow/wiki/
 
 You can download the latest release from [here](https://github.com/aelassas/Wexflow/releases/latest).
 
-## Installation
+## Install
 
 You can install Wexflow on Windows, Linux and macOS distributions.
 
 You can find installation instructions [here](https://github.com/aelassas/Wexflow/wiki/Installation).
 
-## Deployment
+## Deploy
 
 You can deploy Wexflow using Docker containers on Windows, Linux and macOS distributions.
 
