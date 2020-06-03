@@ -11,13 +11,9 @@
 
 Wexflow is an open-source and cross-platform workflow engine and automation platform. The goal of Wexflow is to automate recurring tasks. With the help of Wexflow, building automation and workflow processes become easy.
 
-Wexflow comes with a cross-platform workflow server and a powerful backend for designing, managing and tracking workflows with ease.
+Wexflow provides a cross-platform workflow server, a backend for designing, managing and tracking workflows, sequential workflows, flowchart workflows, and approval workflows on generic business objects called [records](https://github.com/aelassas/Wexflow/wiki/Approval-workflows#create-a-record).
 
-Wexflow provides sequential workflows, flowchart workflows, and approval workflows on generic business objects such as documents, invoices, purchase orders, vacation requests, time sheets, etc.
-
-Wexflow provides [100+ activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation) for different kind of jobs. Wexflow provides file system activities, network activities, reporting activities, database activities, emailing activities, SMS activities, etc.
-
-Wexflow supports [10 database systems](https://github.com/aelassas/Wexflow/wiki/Databases) and allows to create custom integration with other solutions through [custom activities](https://github.com/aelassas/Wexflow/wiki/Custom-tasks) and [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
+Wexflow provides [100+ activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation), supports [10 database systems](https://github.com/aelassas/Wexflow/wiki/Databases), and allows to create custom integration with other solutions through [custom activities](https://github.com/aelassas/Wexflow/wiki/Custom-tasks) and [Wexflow API](https://github.com/aelassas/Wexflow/wiki/RESTful-API).
 
 ## Why Wexflow?
 
