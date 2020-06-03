@@ -18,6 +18,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
         public static string OnFileCreated { get; private set; }
         public static string OnFileChanged { get; private set; }
         public static string OnFileDeleted { get; private set; }
+        public static bool ContinueDoTasksOnlyOnNotOpenFiles { get; private set; }
         public static List<string> CurrentLogs { get; private set; }
 
         public FileSystemWatcher(XElement xe, Workflow wf) : base(xe, wf)
@@ -29,6 +30,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
             OnFileCreated = GetSetting("onFileCreated");
             OnFileChanged = GetSetting("onFileChanged");
             OnFileDeleted = GetSetting("onFileDeleted");
+            ContinueDoTasksOnlyOnNotOpenFiles = bool.Parse(GetSetting("ContinueDoTasksOnlyOnNotOpenFiles", "true"));
             CurrentLogs = new List<string>();
         }
 
@@ -52,6 +54,10 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     InfoFormat("FileSystemWatcher.OnFound started for {0}", file);
                     try
                     {
+                        if (ContinueDoTasksOnlyOnNotOpenFiles && FileChange.IsFileLocked(file))
+                        {
+                            continue;
+                        }
                         ClearFiles();
                         Files.Add(new FileInf(file, Id));
                         var tasks = GetTasks(OnFileFound);
@@ -71,8 +77,10 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     {
                         ErrorFormat("An error while triggering FileSystemWatcher.OnFound on the file {0}. Message: {1}", file, ex.Message);
                     }
-                    Info("FileSystemWatcher.OnFound finished.");
-
+                    finally
+                    {
+                        Info("FileSystemWatcher.OnFound finished.");
+                    }
                     try
                     {
                         var entry = Workflow.Database.GetEntry(Workflow.Id, Workflow.InstanceId);
@@ -82,7 +90,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     catch (Exception ex)
                     {
                         ErrorFormat("An error while updating FileSystemWatcher.OnCreated database entry.", ex);
-                    }
+                    }                
                 }
                 Info("Checking existing files finished.");
 
@@ -134,6 +142,10 @@ namespace Wexflow.Tasks.FileSystemWatcher
             foreach (var change in e.Changes)
             {
                 var path = Path.Combine(change.Directory, change.Name);
+                if (ContinueDoTasksOnlyOnNotOpenFiles && change.FileLocked)
+                {
+                    continue;
+                }
                 switch (change.ChangeType)
                 {
                     case WatcherChangeTypes.Created:
