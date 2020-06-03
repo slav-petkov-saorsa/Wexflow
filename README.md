@@ -33,6 +33,7 @@ Wexflow provides [100+ activities](https://github.com/aelassas/Wexflow/wiki/Task
 - [Extensive logging and incident reporting](https://github.com/aelassas/Wexflow/wiki/Logging)
 - [Real-time stats](https://github.com/aelassas/Wexflow/wiki/Usage#dashboard)
 - [RESTful API](https://github.com/aelassas/Wexflow/wiki/RESTful-API)
+- [Supports 10 database systems](https://github.com/aelassas/Wexflow/wiki/Databases)
 - [Extensible](https://github.com/aelassas/Wexflow/wiki/Extensible)
 
 ## Download
