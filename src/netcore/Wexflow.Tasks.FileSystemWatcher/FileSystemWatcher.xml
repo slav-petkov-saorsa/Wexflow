@@ -18,14 +18,7 @@
     <Setting name="onFileChanged" value="$string" />
     <!-- onFileDeleted event. List of tasks to trigger on file deleted. Example: 7 -->
     <Setting name="onFileDeleted" value="$string" />
-
-    <!-- Optional. Samba computer name. -->
-    <Setting name="smbComputerName" value="$string" />
-    <!-- Optional. Samba domain name. -->
-    <Setting name="smbDomain" value="$string" />
-    <!-- Optional. Samba username. -->
-    <Setting name="smbUsername" value="$string" />
-    <!-- Optional. Samba password. -->
-    <Setting name="smbPassword" value="$string" />
+    <!-- Optional and defaults to true. Bypass file locks. -->
+    <Setting name="safeMode" value="bool" />
   </Task>
 </Tasks>

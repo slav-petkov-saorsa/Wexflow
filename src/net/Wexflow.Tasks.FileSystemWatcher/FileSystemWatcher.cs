@@ -19,7 +19,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
         public static string OnFileCreated { get; private set; }
         public static string OnFileChanged { get; private set; }
         public static string OnFileDeleted { get; private set; }
-        public static bool ContinueDoTasksOnlyOnNotOpenFiles { get; private set; }
+        public static bool SafeMode { get; private set; }
         public string SmbComputerName { get; private set; }
         public string SmbDomain { get; private set; }
         public string SmbUsername { get; private set; }
@@ -35,7 +35,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
             OnFileCreated = GetSetting("onFileCreated");
             OnFileChanged = GetSetting("onFileChanged");
             OnFileDeleted = GetSetting("onFileDeleted");
-            ContinueDoTasksOnlyOnNotOpenFiles = bool.Parse(GetSetting("ContinueDoTasksOnlyOnNotOpenFiles", "true"));
+            SafeMode = bool.Parse(GetSetting("safeMode", "true"));
             SmbComputerName = GetSetting("smbComputerName");
             SmbDomain = GetSetting("smbDomain");
             SmbUsername = GetSetting("smbUsername");
@@ -96,35 +96,52 @@ namespace Wexflow.Tasks.FileSystemWatcher
             return new TaskStatus(Status.Success);
         }
 
-        public static bool IsFileLocked(string FilePath)
+        private static bool IsFileLocked(string filePath)
         {
+            FileStream stream = null;
+
             try
             {
-                using (Stream stream = new FileStream(FilePath, FileMode.Open))
-                {
-                    stream.Close();
-                    return false;
-                }
+                stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None);
             }
-            catch
+            catch (IOException)
             {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
                 return true;
             }
+            finally
+            {
+                if (stream != null)
+                {
+                    stream.Close();
+                }
+            }
+
+            //file is not locked
+            return false;
         }
+
         private void InitFileSystemWatcher()
         {
             Info("Checking existing files...");
             var files = GetFiles();
 
             foreach (var file in files)
-            {                
+            {
                 InfoFormat("FileSystemWatcher.OnFound started for {0}", file);
-                if (ContinueDoTasksOnlyOnNotOpenFiles && IsFileLocked(file))
-                {
-                    continue;
-                }
                 try
                 {
+                    if (SafeMode && IsFileLocked(file))
+                    {
+                        Info($"File lock detected on file {file}");
+                        while (IsFileLocked(file))
+                        {
+                            Thread.Sleep(1000);
+                        }
+                    }
                     ClearFiles();
                     Files.Add(new FileInf(file, Id));
                     var tasks = GetTasks(OnFileFound);
@@ -196,11 +213,16 @@ namespace Wexflow.Tasks.FileSystemWatcher
 
                 if (File.Exists(e.FullPath) && !IsDirectory(e.FullPath))
                 {
-                    if (ContinueDoTasksOnlyOnNotOpenFiles && IsFileLocked(e.FullPath))
-                    {
-                        return;
-                    }
                     Info("FileSystemWatcher.OnCreated started.");
+                    if (SafeMode && IsFileLocked(e.FullPath))
+                    {
+                        Info($"File lock detected on file {e.FullPath}");
+
+                        while (IsFileLocked(e.FullPath))
+                        {
+                            Thread.Sleep(1000);
+                        }
+                    }
                     try
                     {
                         ClearFiles();
@@ -254,11 +276,16 @@ namespace Wexflow.Tasks.FileSystemWatcher
 
                 if (File.Exists(e.FullPath) && !IsDirectory(e.FullPath))
                 {
-                    if (ContinueDoTasksOnlyOnNotOpenFiles && IsFileLocked(e.FullPath))
-                    {
-                        return;
-                    }
                     Info("FileSystemWatcher.OnChanged started.");
+                    if (SafeMode && IsFileLocked(e.FullPath))
+                    {
+                        Info($"File lock detected on file {e.FullPath}");
+
+                        while (IsFileLocked(e.FullPath))
+                        {
+                            Thread.Sleep(1000);
+                        }
+                    }
                     try
                     {
                         ClearFiles();
@@ -309,10 +336,6 @@ namespace Wexflow.Tasks.FileSystemWatcher
             Info("FileSystemWatcher.OnDeleted started.");
             try
             {
-                if (ContinueDoTasksOnlyOnNotOpenFiles && IsFileLocked(e.FullPath))
-                {
-                    return;
-                }
                 ClearFiles();
                 Files.Add(new FileInf(e.FullPath, Id));
                 var tasks = GetTasks(OnFileDeleted);

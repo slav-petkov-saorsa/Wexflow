@@ -18,7 +18,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
         public static string OnFileCreated { get; private set; }
         public static string OnFileChanged { get; private set; }
         public static string OnFileDeleted { get; private set; }
-        public static bool ContinueDoTasksOnlyOnNotOpenFiles { get; private set; }
+        public static bool SafeMode { get; private set; }
         public static List<string> CurrentLogs { get; private set; }
 
         public FileSystemWatcher(XElement xe, Workflow wf) : base(xe, wf)
@@ -30,7 +30,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
             OnFileCreated = GetSetting("onFileCreated");
             OnFileChanged = GetSetting("onFileChanged");
             OnFileDeleted = GetSetting("onFileDeleted");
-            ContinueDoTasksOnlyOnNotOpenFiles = bool.Parse(GetSetting("ContinueDoTasksOnlyOnNotOpenFiles", "true"));
+            SafeMode = bool.Parse(GetSetting("safeMode", "true"));
             CurrentLogs = new List<string>();
         }
 
@@ -54,9 +54,13 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     InfoFormat("FileSystemWatcher.OnFound started for {0}", file);
                     try
                     {
-                        if (ContinueDoTasksOnlyOnNotOpenFiles && FileChange.IsFileLocked(file))
+                        if (SafeMode && FileChange.IsFileLocked(file))
                         {
-                            continue;
+                            Info($"File lock detected on file {file}");
+                            while (FileChange.IsFileLocked(file))
+                            {
+                                Thread.Sleep(1000);
+                            }
                         }
                         ClearFiles();
                         Files.Add(new FileInf(file, Id));
@@ -90,7 +94,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     catch (Exception ex)
                     {
                         ErrorFormat("An error while updating FileSystemWatcher.OnCreated database entry.", ex);
-                    }                
+                    }
                 }
                 Info("Checking existing files finished.");
 
@@ -115,14 +119,6 @@ namespace Wexflow.Tasks.FileSystemWatcher
                 }
                 Watcher.Dispose();
             }
-            catch (ThreadAbortException)
-            {
-                if (Watcher != null)
-                {
-                    Watcher.Dispose();
-                }
-                throw;
-            }
             catch (Exception e)
             {
                 if (Watcher != null)
@@ -142,16 +138,20 @@ namespace Wexflow.Tasks.FileSystemWatcher
             foreach (var change in e.Changes)
             {
                 var path = Path.Combine(change.Directory, change.Name);
-                if (ContinueDoTasksOnlyOnNotOpenFiles && change.FileLocked)
-                {
-                    continue;
-                }
                 switch (change.ChangeType)
                 {
                     case WatcherChangeTypes.Created:
                         Info("PollingFileSystemWatcher.OnCreated started.");
                         try
                         {
+                            if (SafeMode && FileChange.IsFileLocked(path))
+                            {
+                                Info($"File lock detected on file {path}");
+                                while (FileChange.IsFileLocked(path))
+                                {
+                                    Thread.Sleep(1000);
+                                }
+                            }
                             ClearFiles();
                             Files.Add(new FileInf(path, Id));
                             var tasks = GetTasks(OnFileCreated);
@@ -188,6 +188,14 @@ namespace Wexflow.Tasks.FileSystemWatcher
                         Info("PollingFileSystemWatcher.OnChanged started.");
                         try
                         {
+                            if (SafeMode && FileChange.IsFileLocked(path))
+                            {
+                                Info($"File lock detected on file {path}");
+                                while (FileChange.IsFileLocked(path))
+                                {
+                                    Thread.Sleep(1000);
+                                }
+                            }
                             ClearFiles();
                             Files.Add(new FileInf(path, Id));
                             var tasks = GetTasks(OnFileChanged);
