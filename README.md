@@ -22,7 +22,7 @@ Wexflow provides [100+ activities](https://github.com/aelassas/Wexflow/wiki/Task
 - [Approval workflows](https://github.com/aelassas/Wexflow/wiki/Approval-workflows)
 - [Android and iOS apps](https://github.com/aelassas/Wexflow/wiki/Usage#android-manager)
 - [100+ activities](https://github.com/aelassas/Wexflow/wiki/Tasks-documentation)
-- [10+ database systems supported](https://github.com/aelassas/Wexflow/wiki/Databases)
+- [10+ databases supported](https://github.com/aelassas/Wexflow/wiki/Databases)
 - [Cron scheduling](https://github.com/aelassas/Wexflow/wiki/Cron-scheduling)
 - [Extensive logging](https://github.com/aelassas/Wexflow/wiki/Logging)
 - [Real-time stats](https://github.com/aelassas/Wexflow/wiki/Usage#dashboard)
