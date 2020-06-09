@@ -14,8 +14,8 @@ namespace Wexflow.Tasks.MailsSender
         public string[] To { get; }
         public string[] Cc { get; }
         public string[] Bcc { get; }
-        public string Subject { get; }
-        public string Body { get; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
         public FileInf[] Attachments { get; }
 
         public Mail(string from, string[] to, string[] cc, string[] bcc, string subject, string body, FileInf[] attachments)
@@ -75,7 +75,7 @@ namespace Wexflow.Tasks.MailsSender
 
             string[] cc = { };
             var ccElement = xe.XPathSelectElement("Cc");
-            if(ccElement != null) cc = ccElement.Value.Split(',');
+            if (ccElement != null) cc = ccElement.Value.Split(',');
 
             string[] bcc = { };
             var bccElement = xe.XPathSelectElement("Bcc");

@@ -5,6 +5,8 @@ using Wexflow.Core;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Threading;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Wexflow.Tasks.MailsSender
 {
@@ -100,6 +102,8 @@ namespace Wexflow.Tasks.MailsSender
                         try
                         {
                             mail = Mail.Parse(xMail, attachments);
+                            mail.Subject = ParseVariables(mail.Subject);
+                            mail.Body = ParseVariables(mail.Body);
                         }
                         catch (ThreadAbortException)
                         {
@@ -143,6 +147,62 @@ namespace Wexflow.Tasks.MailsSender
                 success = false;
             }
             return success;
+        }
+
+        private string ParseVariables(string src)
+        {
+            //
+            // Parse local variables.
+            //
+            var res = string.Empty;
+            using (StringReader sr = new StringReader(src))
+            using (StringWriter sw = new StringWriter())
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string pattern = @"{.*?}";
+                    Match m = Regex.Match(line, pattern, RegexOptions.IgnoreCase);
+                    if (m.Success)
+                    {
+                        if (m.Value.StartsWith("{date:"))
+                        {
+                            var replaceValue = DateTime.Now.ToString(m.Value.Remove(m.Value.Length - 1).Remove(0, 6));
+                            line = Regex.Replace(line, pattern, replaceValue);
+                        }
+                    }
+                    foreach (var variable in Workflow.LocalVariables)
+                    {
+                        line = line.Replace("$" + variable.Key, variable.Value);
+                    }
+                    sw.WriteLine(line);
+                }
+                res = sw.ToString();
+            }
+
+            //
+            // Parse Rest variables.
+            //
+            var res2 = string.Empty;
+            using (StringReader sr = new StringReader(res))
+            using (StringWriter sw = new StringWriter())
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    foreach (var variable in Workflow.RestVariables)
+                    {
+                        if (variable != null)
+                        {
+                            line = line.Replace("$" + variable.Key, variable.Value);
+                        }
+                    }
+                    sw.WriteLine(line);
+                }
+                res2 = sw.ToString();
+            }
+
+            return res2.Trim('\r', '\n');
         }
 
         private FileInf[] SelectAttachments()
