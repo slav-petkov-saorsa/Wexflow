@@ -1072,7 +1072,7 @@ namespace Wexflow.Core
                     {
                         switch (status)
                         {
-                            case Status.Success:
+                            case WorkflowStatus.Success:
                                 if (ExecutionGraph.OnSuccess != null)
                                 {
                                     var successTasks = NodesToTasks(ExecutionGraph.OnSuccess.Nodes);
@@ -1087,7 +1087,7 @@ namespace Wexflow.Core
                                 _historyEntry.Status = Db.Status.Done;
                                 resultSuccess = true;
                                 break;
-                            case Status.Warning:
+                            case WorkflowStatus.Warning:
                                 if (ExecutionGraph.OnWarning != null)
                                 {
                                     var warningTasks = NodesToTasks(ExecutionGraph.OnWarning.Nodes);
@@ -1102,7 +1102,7 @@ namespace Wexflow.Core
                                 _historyEntry.Status = Db.Status.Warning;
                                 resultWarning = true;
                                 break;
-                            case Status.Error:
+                            case WorkflowStatus.Error:
                                 if (ExecutionGraph.OnError != null)
                                 {
                                     var errorTasks = NodesToTasks(ExecutionGraph.OnError.Nodes);
@@ -1117,7 +1117,7 @@ namespace Wexflow.Core
                                 _historyEntry.Status = Db.Status.Failed;
                                 resultSuccess = false;
                                 break;
-                            case Status.Rejected:
+                            case WorkflowStatus.Rejected:
                                 if (ExecutionGraph.OnRejected != null)
                                 {
                                     var rejectedTasks = NodesToTasks(ExecutionGraph.OnRejected.Nodes);
@@ -1258,7 +1258,7 @@ namespace Wexflow.Core
             return tasks.ToArray();
         }
 
-        private Status RunTasks(Node[] nodes, Task[] tasks, bool force)
+        private WorkflowStatus RunTasks(Node[] nodes, Task[] tasks, bool force)
         {
             var success = true;
             var warning = false;
@@ -1290,20 +1290,20 @@ namespace Wexflow.Core
 
             if (IsRejected)
             {
-                return Status.Rejected;
+                return WorkflowStatus.Rejected;
             }
 
             if (success)
             {
-                return Status.Success;
+                return WorkflowStatus.Success;
             }
 
             if (atLeastOneSucceed || warning)
             {
-                return Status.Warning;
+                return WorkflowStatus.Warning;
             }
 
-            return Status.Error;
+            return WorkflowStatus.Error;
         }
 
         private void RunSequentialTasks(IEnumerable<Task> tasks, ref bool success, ref bool warning, ref bool error)
@@ -1320,10 +1320,10 @@ namespace Wexflow.Core
                 }
                 var status = task.Run();
                 Logs.AddRange(task.Logs);
-                success &= status.Status == Status.Success;
-                warning |= status.Status == Status.Warning;
-                error &= status.Status == Status.Error;
-                if (!atLeastOneSucceed && status.Status == Status.Success) atLeastOneSucceed = true;
+                success &= status.Status == WorkflowStatus.Success;
+                warning |= status.Status == WorkflowStatus.Warning;
+                error &= status.Status == WorkflowStatus.Error;
+                if (!atLeastOneSucceed && status.Status == WorkflowStatus.Success) atLeastOneSucceed = true;
             }
 
             if (tasks.Count() > 0 && !success && atLeastOneSucceed)
@@ -1365,9 +1365,9 @@ namespace Wexflow.Core
                             var status = task.Run();
                             Logs.AddRange(task.Logs);
 
-                            success &= status.Status == Status.Success;
-                            warning |= status.Status == Status.Warning;
-                            if (!atLeastOneSucceed && status.Status == Status.Success) atLeastOneSucceed = true;
+                            success &= status.Status == WorkflowStatus.Success;
+                            warning |= status.Status == WorkflowStatus.Warning;
+                            if (!atLeastOneSucceed && status.Status == WorkflowStatus.Success) atLeastOneSucceed = true;
 
                             var childNode = nodes.FirstOrDefault(n => n.ParentId == node.Id);
 
@@ -1399,9 +1399,9 @@ namespace Wexflow.Core
                                             var childStatus = childTask.Run();
                                             Logs.AddRange(childTask.Logs);
 
-                                            success &= childStatus.Status == Status.Success;
-                                            warning |= childStatus.Status == Status.Warning;
-                                            if (!atLeastOneSucceed && status.Status == Status.Success) atLeastOneSucceed = true;
+                                            success &= childStatus.Status == WorkflowStatus.Success;
+                                            warning |= childStatus.Status == WorkflowStatus.Warning;
+                                            if (!atLeastOneSucceed && status.Status == WorkflowStatus.Success) atLeastOneSucceed = true;
 
                                             // Recusive call
                                             var ccNode = nodes.FirstOrDefault(n => n.ParentId == childNode.Id);
@@ -1455,11 +1455,11 @@ namespace Wexflow.Core
                     var status = ifTask.Run();
                     Logs.AddRange(ifTask.Logs);
 
-                    success &= status.Status == Status.Success;
-                    warning |= status.Status == Status.Warning;
-                    if (!atLeastOneSucceed && status.Status == Status.Success) atLeastOneSucceed = true;
+                    success &= status.Status == WorkflowStatus.Success;
+                    warning |= status.Status == WorkflowStatus.Warning;
+                    if (!atLeastOneSucceed && status.Status == WorkflowStatus.Success) atLeastOneSucceed = true;
 
-                    if (status.Status == Status.Success && status.Condition)
+                    if (status.Status == WorkflowStatus.Success && status.Condition)
                     {
                         if (@if.DoNodes.Length > 0)
                         {
@@ -1517,11 +1517,11 @@ namespace Wexflow.Core
                         var status = whileTask.Run();
                         Logs.AddRange(whileTask.Logs);
 
-                        success &= status.Status == Status.Success;
-                        warning |= status.Status == Status.Warning;
-                        if (!atLeastOneSucceed && status.Status == Status.Success) atLeastOneSucceed = true;
+                        success &= status.Status == WorkflowStatus.Success;
+                        warning |= status.Status == WorkflowStatus.Warning;
+                        if (!atLeastOneSucceed && status.Status == WorkflowStatus.Success) atLeastOneSucceed = true;
 
-                        if (status.Status == Status.Success && status.Condition)
+                        if (status.Status == WorkflowStatus.Success && status.Condition)
                         {
                             if (@while.Nodes.Length > 0)
                             {
@@ -1566,11 +1566,11 @@ namespace Wexflow.Core
                     var status = switchTask.Run();
                     Logs.AddRange(switchTask.Logs);
 
-                    success &= status.Status == Status.Success;
-                    warning |= status.Status == Status.Warning;
-                    if (!atLeastOneSucceed && status.Status == Status.Success) atLeastOneSucceed = true;
+                    success &= status.Status == WorkflowStatus.Success;
+                    warning |= status.Status == WorkflowStatus.Warning;
+                    if (!atLeastOneSucceed && status.Status == WorkflowStatus.Success) atLeastOneSucceed = true;
 
-                    if (status.Status == Status.Success)
+                    if (status.Status == WorkflowStatus.Success)
                     {
                         bool aCaseHasBeenExecuted = false;
                         foreach (var @case in @switch.Cases)

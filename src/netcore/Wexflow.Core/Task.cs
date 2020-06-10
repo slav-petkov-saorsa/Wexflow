@@ -49,6 +49,7 @@ namespace Wexflow.Core
         /// Log messages.
         /// </summary>
         public bool IsStopped { get; private set; }
+        public TaskState State { get; set; }
         /// <summary>
         /// Task files.
         /// </summary>

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Wexflow.Core.Common.Extensions;
 using Wexflow.Core.Db;
 
 namespace Wexflow.Core
@@ -446,7 +447,8 @@ namespace Wexflow.Core
                             Logger.ErrorFormat("An error occured while saving the workflow {0}:", e, xml);
                             return "-1";
                         }
-                        string dbId = Database.InsertWorkflow(new Db.Workflow { Xml = xml });
+                        var modifiedXml = xml.MarkTasksNotStarted();
+                        string dbId = Database.InsertWorkflow(new Db.Workflow { Xml = modifiedXml });
 
                         if (userProfile == UserProfile.Administrator)
                         {

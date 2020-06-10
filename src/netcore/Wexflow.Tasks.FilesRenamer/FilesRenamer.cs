@@ -74,15 +74,15 @@ namespace Wexflow.Tasks.FilesRenamer
                 }
             }
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success && atLeastOneSucceed)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

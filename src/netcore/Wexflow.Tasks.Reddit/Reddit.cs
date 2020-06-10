@@ -43,7 +43,7 @@ namespace Wexflow.Tasks.Reddit
                 catch (Exception e)
                 {
                     ErrorFormat("Authentication failed: {0}", e.Message);
-                    return new TaskStatus(Status.Error);
+                    return new TaskStatus(WorkflowStatus.Error);
                 }
 
                 foreach (FileInf file in files)
@@ -112,15 +112,15 @@ namespace Wexflow.Tasks.Reddit
                 }
             }
 
-            var tstatus = Status.Success;
+            var tstatus = WorkflowStatus.Success;
 
             if (!success && atLeastOneSucceed)
             {
-                tstatus = Status.Warning;
+                tstatus = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                tstatus = Status.Error;
+                tstatus = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

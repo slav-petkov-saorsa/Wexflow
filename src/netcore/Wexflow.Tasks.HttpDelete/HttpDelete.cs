@@ -25,7 +25,7 @@ namespace Wexflow.Tasks.HttpDelete
         public override TaskStatus Run()
         {
             Info("Executing DELETE request...");
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
             try
             {
                 var deleteTask = Delete(Url, AuthorizationScheme, AuthorizationParameter);
@@ -43,7 +43,7 @@ namespace Wexflow.Tasks.HttpDelete
             catch (Exception e)
             {
                 ErrorFormat("An error occured while executing the DELETE request {0}: {1}", Url, e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
             Info("Task finished.");
             return new TaskStatus(status);

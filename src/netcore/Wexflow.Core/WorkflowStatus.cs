@@ -3,7 +3,7 @@
     /// <summary>
     /// Status.
     /// </summary>
-    public enum Status
+    public enum WorkflowStatus
     {
         /// <summary>
         /// Success.

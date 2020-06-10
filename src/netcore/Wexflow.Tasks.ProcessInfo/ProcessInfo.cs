@@ -52,12 +52,12 @@ namespace Wexflow.Tasks.ProcessInfo
                 xdoc.Save(destPath);
                 Files.Add(new FileInf(destPath, Id));
                 Info("Task finished.");
-                return new TaskStatus(Status.Success);
+                return new TaskStatus(WorkflowStatus.Success);
             }
             catch (Exception e)
             {
                 Logger.ErrorFormat("An error occured while killing the process {0}.", e, ProcessName);
-                return new TaskStatus(Status.Error);
+                return new TaskStatus(WorkflowStatus.Error);
             }
         }
     }

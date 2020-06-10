@@ -98,15 +98,15 @@ namespace Wexflow.Tasks.MailsSender
                 success = false;
             }
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success && atLeastOneSucceed)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

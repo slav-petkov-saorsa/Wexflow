@@ -27,7 +27,7 @@ namespace Wexflow.Tasks.YouTubeSearch
         public override TaskStatus Run()
         {
             Info("Searching for content...");
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
             try
             {
                 Search().Wait();
@@ -38,7 +38,7 @@ namespace Wexflow.Tasks.YouTubeSearch
             }
             catch (Exception e)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
                 ErrorFormat("An error occured while searching for content: {1}", e.Message);
             }
 

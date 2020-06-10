@@ -34,15 +34,15 @@ namespace Wexflow.Tasks.UglifyJs
                 success = false;
             }
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success && atLeastOneSuccess)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

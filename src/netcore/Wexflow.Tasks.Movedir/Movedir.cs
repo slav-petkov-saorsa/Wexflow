@@ -58,7 +58,7 @@ namespace Wexflow.Tasks.Movedir
             }
 
             Info("Task finished.");
-            return new TaskStatus(succeeded ? Status.Success : Status.Error, false);
+            return new TaskStatus(succeeded ? WorkflowStatus.Success : WorkflowStatus.Error, false);
         }
 
         private void DeleteRec(string dir)

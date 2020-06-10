@@ -25,7 +25,7 @@ namespace Wexflow.Tasks.RedditListPosts
         {
             Info("Retrieving post history...");
 
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
 
             RedditClient reddit;
             try
@@ -42,7 +42,7 @@ namespace Wexflow.Tasks.RedditListPosts
             catch (Exception e)
             {
                 ErrorFormat("Authentication failed: {0}", e.Message);
-                return new TaskStatus(Status.Error);
+                return new TaskStatus(WorkflowStatus.Error);
             }
 
 
@@ -74,7 +74,7 @@ namespace Wexflow.Tasks.RedditListPosts
             catch (Exception e)
             {
                 ErrorFormat("An error occured while retrieving post history: {0}", e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

@@ -54,7 +54,7 @@ namespace Wexflow.Tasks.SshCmd
                 if (result == null)
                 {
                     Error($"Timeout {Timeout} seconds reached while connecting.");
-                    return new TaskStatus(Status.Error);
+                    return new TaskStatus(WorkflowStatus.Error);
                 }
 
                 foreach (var line in result.GetLines())
@@ -80,11 +80,11 @@ namespace Wexflow.Tasks.SshCmd
                     stream.Close();
                 }
             }
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

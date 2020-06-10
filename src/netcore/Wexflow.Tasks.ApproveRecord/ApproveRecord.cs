@@ -43,7 +43,7 @@ namespace Wexflow.Tasks.ApproveRecord
         {
             Info($"Approval process starting on the reocrd {RecordId} ...");
 
-            var status = Core.Status.Success;
+            var status = Core.WorkflowStatus.Success;
 
             try
             {
@@ -54,12 +54,12 @@ namespace Wexflow.Tasks.ApproveRecord
                     if (string.IsNullOrEmpty(RecordId))
                     {
                         Error("The record id setting is empty.");
-                        status = Core.Status.Error;
+                        status = Core.WorkflowStatus.Error;
                     }
                     else if (string.IsNullOrEmpty(AssignedTo))
                     {
                         Error("The assignedTo id setting is empty.");
-                        status = Core.Status.Error;
+                        status = Core.WorkflowStatus.Error;
                     }
                     else
                     {
@@ -69,7 +69,7 @@ namespace Wexflow.Tasks.ApproveRecord
                         if (record == null)
                         {
                             Error($"Record {RecordId} does not exist in the database.");
-                            status = Core.Status.Error;
+                            status = Core.WorkflowStatus.Error;
                         }
                         else
                         {
@@ -79,7 +79,7 @@ namespace Wexflow.Tasks.ApproveRecord
                             if (assignedTo == null)
                             {
                                 Error($"The user {AssignedTo} does not exist in the database.");
-                                status = Core.Status.Error;
+                                status = Core.WorkflowStatus.Error;
                             }
                             else
                             {
@@ -153,7 +153,7 @@ namespace Wexflow.Tasks.ApproveRecord
                                     if (!approverUpserted)
                                     {
                                         Error($"An error occured while inserting the approver {approverUser.Username}.");
-                                        status = Core.Status.Error;
+                                        status = Core.WorkflowStatus.Error;
                                     }
                                     else
                                     {
@@ -611,7 +611,7 @@ namespace Wexflow.Tasks.ApproveRecord
                                 else
                                 {
                                     Error($"An error occured while deleting approved approvers of the record {record.GetDbId()} - {record.Name}.");
-                                    status = Core.Status.Error;
+                                    status = Core.WorkflowStatus.Error;
                                 }
                                 IsWaitingForApproval = false;
                                 Workflow.IsWaitingForApproval = false;
@@ -635,7 +635,7 @@ namespace Wexflow.Tasks.ApproveRecord
                 else
                 {
                     Error("This workflow is not an approval workflow. Mark this workflow as an approval workflow to use this task.");
-                    status = Core.Status.Error;
+                    status = Core.WorkflowStatus.Error;
                 }
             }
             catch (ThreadAbortException)
@@ -700,7 +700,7 @@ namespace Wexflow.Tasks.ApproveRecord
             catch (Exception e)
             {
                 Error("An error occured during approval process.", e);
-                status = Core.Status.Error;
+                status = Core.WorkflowStatus.Error;
             }
 
             Info("Approval process finished.");

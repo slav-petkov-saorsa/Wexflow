@@ -41,12 +41,12 @@ namespace Wexflow.Tasks.FileExists
             catch (Exception e)
             {
                 ErrorFormat("An error occured while checking file {0}. Error: {1}", File, e.Message);
-                return new TaskStatus(Status.Error, false);
+                return new TaskStatus(WorkflowStatus.Error, false);
             }
 
             Info("Task finished");
 
-            return new TaskStatus(Status.Success, success);
+            return new TaskStatus(WorkflowStatus.Success, success);
         }
     }
 }

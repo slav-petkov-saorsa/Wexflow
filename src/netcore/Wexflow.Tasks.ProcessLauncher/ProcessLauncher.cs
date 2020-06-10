@@ -38,7 +38,7 @@ namespace Wexflow.Tasks.ProcessLauncher
             if (GeneratesFiles && !(ProcessCmd.Contains(VarFileName) && (ProcessCmd.Contains(VarOutput) && (ProcessCmd.Contains(VarFileName) || ProcessCmd.Contains(VarFileNameWithoutExtension)))))
             {
                 Error("Error in process command. Please read the documentation.");
-                return new TaskStatus(Status.Error, false);
+                return new TaskStatus(WorkflowStatus.Error, false);
             }
 
             bool success = true;
@@ -82,7 +82,7 @@ namespace Wexflow.Tasks.ProcessLauncher
 					else
 					{
 						Error("Error in process command. Please read the documentation.");
-						return new TaskStatus(Status.Error, false);
+						return new TaskStatus(WorkflowStatus.Error, false);
 					}
 				}
 				catch (ThreadAbortException)
@@ -92,10 +92,10 @@ namespace Wexflow.Tasks.ProcessLauncher
 				catch (Exception e)
 				{
 					ErrorFormat("Error in process command. Please read the documentation. Error: {0}", e.Message);
-					return new TaskStatus(Status.Error, false);
+					return new TaskStatus(WorkflowStatus.Error, false);
 				}
 
-				if (StartProcess(ProcessPath, cmd, HideGui).Status == Status.Success)
+				if (StartProcess(ProcessPath, cmd, HideGui).Status == WorkflowStatus.Success)
 				{
 					Files.Add(new FileInf(outputFilePath, Id));
 
@@ -120,15 +120,15 @@ namespace Wexflow.Tasks.ProcessLauncher
 				}
 			}
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success && atLeastOneSucceed)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");
@@ -155,7 +155,7 @@ namespace Wexflow.Tasks.ProcessLauncher
                 process.BeginErrorReadLine();
                 process.WaitForExit();
                
-                return new TaskStatus(Status.Success, false);
+                return new TaskStatus(WorkflowStatus.Success, false);
             }
             catch (ThreadAbortException)
             {
@@ -164,7 +164,7 @@ namespace Wexflow.Tasks.ProcessLauncher
             catch (Exception e)
             {
                 ErrorFormat("An error occured while launching the process {0}", e, processPath);
-                return new TaskStatus(Status.Error, false);
+                return new TaskStatus(WorkflowStatus.Error, false);
             }
         }
 

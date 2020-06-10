@@ -36,7 +36,7 @@ namespace Wexflow.Tasks.EnvironmentVariable
             }
 
             Info("Task finished.");
-            return new TaskStatus(succeeded ? Status.Success : Status.Error, value);
+            return new TaskStatus(succeeded ? WorkflowStatus.Success : WorkflowStatus.Error, value);
         }
     }
 }

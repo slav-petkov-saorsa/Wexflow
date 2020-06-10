@@ -34,7 +34,7 @@ namespace Wexflow.Tasks.HttpPatch
         public override TaskStatus Run()
         {
             Info("Executing PATCH request...");
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
             try
             {
                 using (var client = new WebClient())
@@ -57,7 +57,7 @@ namespace Wexflow.Tasks.HttpPatch
             catch (Exception e)
             {
                 ErrorFormat("An error occured while executing the PATCH request {0}: {1}", Url, e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
             Info("Task finished.");
             return new TaskStatus(status);

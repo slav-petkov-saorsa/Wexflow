@@ -24,7 +24,7 @@ namespace Wexflow.Tasks.HttpGet
         public override TaskStatus Run()
         {
             Info("Executing GET request...");
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
             try
             {
                 var getTask = Post(Url, AuthorizationScheme, AuthorizationParameter);
@@ -42,7 +42,7 @@ namespace Wexflow.Tasks.HttpGet
             catch (Exception e)
             {
                 ErrorFormat("An error occured while executing the GET request {0}: {1}", Url, e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
             Info("Task finished.");
             return new TaskStatus(status);

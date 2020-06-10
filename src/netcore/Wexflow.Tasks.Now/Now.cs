@@ -37,7 +37,7 @@ namespace Wexflow.Tasks.Now
                 ErrorFormat("An error occured while retrieving current date. Error: {0}", e.Message);
             }
             Info("Task finished.");
-            return new TaskStatus(succeeded ? Status.Success : Status.Error, value);
+            return new TaskStatus(succeeded ? WorkflowStatus.Success : WorkflowStatus.Error, value);
         }
     }
 }

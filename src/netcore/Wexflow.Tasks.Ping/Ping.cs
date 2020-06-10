@@ -42,12 +42,12 @@ namespace Wexflow.Tasks.Ping
             catch (Exception e)
             {
                 ErrorFormat("An error occured while pinging the server {0}: {1}", Server, e.Message);
-                return new TaskStatus(Status.Error, false);
+                return new TaskStatus(WorkflowStatus.Error, false);
             }
 
             Info("Task finished");
 
-            return new TaskStatus(Status.Success, success);
+            return new TaskStatus(WorkflowStatus.Success, success);
         }
 
         private bool PingHost(string server)

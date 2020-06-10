@@ -18,7 +18,7 @@ namespace Wexflow.Tasks.ImagesConcat
         public override TaskStatus Run()
         {
             Info("Concatenating images...");
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
 
             try
             {
@@ -34,7 +34,7 @@ namespace Wexflow.Tasks.ImagesConcat
                     var res = ConcatImages(imageFiles, destPath);
                     if (!res)
                     {
-                        status = Status.Error;
+                        status = WorkflowStatus.Error;
                     }
                 }
                 else if (imageFiles.Length == 1)
@@ -49,7 +49,7 @@ namespace Wexflow.Tasks.ImagesConcat
             catch (Exception e)
             {
                 ErrorFormat("An error occured while concatenating images: {0}", e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished");

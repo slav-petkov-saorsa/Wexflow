@@ -16,7 +16,7 @@ namespace Wexflow.Tasks.Approval
         {
             Info("Approval process starting...");
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             try
             {
@@ -51,7 +51,7 @@ namespace Wexflow.Tasks.Approval
                 else
                 {
                     Error("This workflow is not an approval workflow. Mark this workflow as an approval workflow to use this task.");
-                    status = Status.Error;
+                    status = WorkflowStatus.Error;
                 }
             }
             catch (ThreadAbortException)
@@ -61,7 +61,7 @@ namespace Wexflow.Tasks.Approval
             catch (Exception e)
             {
                 Error("An error occured during approval process.", e);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Approval process finished.");

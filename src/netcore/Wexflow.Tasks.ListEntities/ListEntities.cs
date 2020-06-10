@@ -24,7 +24,7 @@ namespace Wexflow.Tasks.ListEntities
             }
 
             Info("Task finished.");
-            return new TaskStatus(Status.Success, false);
+            return new TaskStatus(WorkflowStatus.Success, false);
         }
     }
 }

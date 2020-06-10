@@ -24,7 +24,7 @@ namespace Wexflow.Tasks.ImagesResizer
         public override TaskStatus Run()
         {
             Info("Resizing images...");
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
             bool succeeded = true;
             bool atLeastOneSuccess = false;
 
@@ -40,11 +40,11 @@ namespace Wexflow.Tasks.ImagesResizer
 
                 if (!succeeded && atLeastOneSuccess)
                 {
-                    status = Status.Warning;
+                    status = WorkflowStatus.Warning;
                 }
                 else if (!succeeded)
                 {
-                    status = Status.Error;
+                    status = WorkflowStatus.Error;
                 }
             }
             catch (ThreadAbortException)
@@ -54,7 +54,7 @@ namespace Wexflow.Tasks.ImagesResizer
             catch (Exception e)
             {
                 ErrorFormat("An error occured while resizing images: {0}", e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished");

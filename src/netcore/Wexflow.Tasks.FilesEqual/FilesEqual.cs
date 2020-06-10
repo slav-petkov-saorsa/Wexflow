@@ -29,13 +29,13 @@ namespace Wexflow.Tasks.FilesEqual
                 if (!File.Exists(File1))
                 {
                     Logger.ErrorFormat("The file {0} does not exist.", File1);
-                    return new TaskStatus(Status.Error, false);
+                    return new TaskStatus(WorkflowStatus.Error, false);
                 }
 
                 if (!File.Exists(File2))
                 {
                     Logger.ErrorFormat("The file {0} does not exist.", File2);
-                    return new TaskStatus(Status.Error, false);
+                    return new TaskStatus(WorkflowStatus.Error, false);
                 }
 
                 var xmlPath = Path.Combine(Workflow.WorkflowTempFolder,
@@ -73,11 +73,11 @@ namespace Wexflow.Tasks.FilesEqual
                 success = false;
             }
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

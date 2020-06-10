@@ -29,7 +29,7 @@ namespace Wexflow.Tasks.HttpPut
         public override TaskStatus Run()
         {
             Info("Executing PUT request...");
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
             try
             {
                 var putTask = Put(Url, AuthorizationScheme, AuthorizationParameter, Payload);
@@ -47,7 +47,7 @@ namespace Wexflow.Tasks.HttpPut
             catch (Exception e)
             {
                 ErrorFormat("An error occured while executing the PUT request {0}: {1}", Url, e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
             Info("Task finished.");
             return new TaskStatus(status);

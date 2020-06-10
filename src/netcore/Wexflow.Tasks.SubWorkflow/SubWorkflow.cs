@@ -116,15 +116,15 @@ namespace Wexflow.Tasks.SubWorkflow
                 success = false;
             }
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
             else if (warning)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
 
             Info("Task finished.");

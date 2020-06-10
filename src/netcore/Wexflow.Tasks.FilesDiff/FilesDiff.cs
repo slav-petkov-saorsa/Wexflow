@@ -28,7 +28,7 @@ namespace Wexflow.Tasks.FilesDiff
             try
             {
                 CheckFiles();
-                ts = new TaskStatus(Status.Success);
+                ts = new TaskStatus(WorkflowStatus.Success);
             }
             catch (ThreadAbortException)
             {
@@ -37,7 +37,7 @@ namespace Wexflow.Tasks.FilesDiff
             catch (Exception e)
             {
                 ErrorFormat("An error occured while checking the files: {0}", e.Message);
-                ts = new TaskStatus(Status.Error);
+                ts = new TaskStatus(WorkflowStatus.Error);
             }
 
             Info("Task finished.");

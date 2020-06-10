@@ -23,7 +23,7 @@ namespace Wexflow.Tasks.VimeoListUploads
         {
             Info("Listing uploads...");
 
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
 
             try
             {
@@ -60,7 +60,7 @@ namespace Wexflow.Tasks.VimeoListUploads
             catch (Exception e)
             {
                 ErrorFormat("An error occured while listing uploads: {0}", e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

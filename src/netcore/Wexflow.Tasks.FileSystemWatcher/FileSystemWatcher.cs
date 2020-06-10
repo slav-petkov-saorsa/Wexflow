@@ -43,7 +43,7 @@ namespace Wexflow.Tasks.FileSystemWatcher
                 if (!Directory.Exists(FolderToWatch))
                 {
                     ErrorFormat("The folder {0} does not exist.", FolderToWatch);
-                    return new TaskStatus(Status.Error);
+                    return new TaskStatus(WorkflowStatus.Error);
                 }
 
                 Info("Checking existing files...");
@@ -126,11 +126,11 @@ namespace Wexflow.Tasks.FileSystemWatcher
                     Watcher.Dispose();
                 }
                 ErrorFormat("An error occured while watching the folder {0}. Error: {1}", FolderToWatch, e.Message);
-                return new TaskStatus(Status.Error, false);
+                return new TaskStatus(WorkflowStatus.Error, false);
             }
 
             Info("Task finished");
-            return new TaskStatus(Status.Success);
+            return new TaskStatus(WorkflowStatus.Success);
         }
 
         private void OnChanged(object source, PollingFileSystemEventArgs e)

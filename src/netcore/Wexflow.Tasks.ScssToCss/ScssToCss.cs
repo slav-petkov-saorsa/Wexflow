@@ -18,7 +18,7 @@ namespace Wexflow.Tasks.ScssToCss
             Info("Converting SCSS files to CSS files...");
 
             bool success;
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
             var atLeastOneSuccess = false;
             try
             {
@@ -36,11 +36,11 @@ namespace Wexflow.Tasks.ScssToCss
 
             if (!success && atLeastOneSuccess)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

@@ -87,12 +87,12 @@ namespace Wexflow.Tasks.FileContentMatch
             catch (Exception e)
             {
                 ErrorFormat("An error occured while checking thes files. Error: {0}", e.Message);
-                return new TaskStatus(Status.Error, false);
+                return new TaskStatus(WorkflowStatus.Error, false);
             }
 
             Info("Task finished");
 
-            return new TaskStatus(Status.Success, success);
+            return new TaskStatus(WorkflowStatus.Success, success);
         }
     }
 }

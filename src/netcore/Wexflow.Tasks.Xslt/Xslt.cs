@@ -51,13 +51,13 @@ namespace Wexflow.Tasks.Xslt
                             break;
                         case "2.0":
                             Error("XSLT 2.0 is not supported on this platform.");
-                            return new TaskStatus(Status.Error, false);
+                            return new TaskStatus(WorkflowStatus.Error, false);
                         case "3.0":
                             Error("XSLT 3.0 is not supported on this platform.");
-                            return new TaskStatus(Status.Error, false);
+                            return new TaskStatus(WorkflowStatus.Error, false);
                         default:
                             Error("Error in version option. Available options: 1.0");
-                            return new TaskStatus(Status.Error, false);
+                            return new TaskStatus(WorkflowStatus.Error, false);
                     }
 
                     // Set renameTo and tags from /*//<WexflowProcessing>//<File> nodes
@@ -125,15 +125,15 @@ namespace Wexflow.Tasks.Xslt
                 }
             }
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!success && atLeastOneSucceed)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

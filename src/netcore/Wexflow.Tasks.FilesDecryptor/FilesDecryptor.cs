@@ -18,7 +18,7 @@ namespace Wexflow.Tasks.FilesDecryptor
         public override TaskStatus Run()
         {
             Info("Decrypting files...");
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
             bool succeeded = true;
             bool atLeastOneSuccess = false;
 
@@ -34,11 +34,11 @@ namespace Wexflow.Tasks.FilesDecryptor
 
                 if (!succeeded && atLeastOneSuccess)
                 {
-                    status = Status.Warning;
+                    status = WorkflowStatus.Warning;
                 }
                 else if (!succeeded)
                 {
-                    status = Status.Error;
+                    status = WorkflowStatus.Error;
                 }
             }
             catch (ThreadAbortException)
@@ -48,7 +48,7 @@ namespace Wexflow.Tasks.FilesDecryptor
             catch (Exception e)
             {
                 ErrorFormat("An error occured while decrypting files: {0}", e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished");

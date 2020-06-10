@@ -18,7 +18,7 @@ namespace Wexflow.Tasks.Template
             {
                 // Task logic goes here
 
-                return new TaskStatus(Status.Success);
+                return new TaskStatus(WorkflowStatus.Success);
             }
             catch (ThreadAbortException)
             {

@@ -41,12 +41,12 @@ namespace Wexflow.Tasks.FolderExists
             catch (Exception e)
             {
                 ErrorFormat("An error occured while checking the folder {0}. Error: {1}", Folder, e.Message);
-                return new TaskStatus(Status.Error, false);
+                return new TaskStatus(WorkflowStatus.Error, false);
             }
 
             Info("Task finished");
 
-            return new TaskStatus(Status.Success, success);
+            return new TaskStatus(WorkflowStatus.Success, success);
         }
     }
 }

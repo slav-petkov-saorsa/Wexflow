@@ -8,7 +8,7 @@
         /// <summary>
         /// Status.
         /// </summary>
-        public Status Status { get; set; }
+        public WorkflowStatus Status { get; set; }
         /// <summary>
         /// If and While condition.
         /// </summary>
@@ -22,7 +22,7 @@
         /// Creates a new TaskStatus. This constructor is designed for sequential tasks.
         /// </summary>
         /// <param name="status">Status.</param>
-        public TaskStatus(Status status)
+        public TaskStatus(WorkflowStatus status)
         {
             Status = status;
         }
@@ -32,7 +32,7 @@
         /// </summary>
         /// <param name="status">Status.</param>
         /// <param name="condition">Condition value.</param>
-        public TaskStatus(Status status, bool condition) : this(status)
+        public TaskStatus(WorkflowStatus status, bool condition) : this(status)
         {
             Condition = condition;
         }
@@ -42,7 +42,7 @@
         /// </summary>
         /// <param name="status">Status.</param>
         /// <param name="switchValue">Switch value.</param>
-        public TaskStatus(Status status, string switchValue) : this(status)
+        public TaskStatus(WorkflowStatus status, string switchValue) : this(status)
         {
             SwitchValue = switchValue;
         }
@@ -53,7 +53,7 @@
         /// <param name="status">Status.</param>
         /// <param name="condition">Condition value.</param>
         /// <param name="switchValue">Switch value.</param>
-        public TaskStatus(Status status, bool condition, string switchValue) : this(status)
+        public TaskStatus(WorkflowStatus status, bool condition, string switchValue) : this(status)
         {
             Condition = condition;
             SwitchValue = switchValue;

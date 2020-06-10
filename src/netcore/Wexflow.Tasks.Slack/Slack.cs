@@ -72,15 +72,15 @@ namespace Wexflow.Tasks.Slack
                 }
             }
 
-            var tstatus = Status.Success;
+            var tstatus = WorkflowStatus.Success;
 
             if (!success && atLeastOneSucceed)
             {
-                tstatus = Status.Warning;
+                tstatus = WorkflowStatus.Warning;
             }
             else if (!success)
             {
-                tstatus = Status.Error;
+                tstatus = WorkflowStatus.Error;
             }
 
             Info("Task finished.");

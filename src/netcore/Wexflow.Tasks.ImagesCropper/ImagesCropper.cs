@@ -26,7 +26,7 @@ namespace Wexflow.Tasks.ImagesCropper
         public override TaskStatus Run()
         {
             Info("Cropping images...");
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
             bool succeeded = true;
             bool atLeastOneSuccess = false;
 
@@ -42,11 +42,11 @@ namespace Wexflow.Tasks.ImagesCropper
 
                 if (!succeeded && atLeastOneSuccess)
                 {
-                    status = Status.Warning;
+                    status = WorkflowStatus.Warning;
                 }
                 else if (!succeeded)
                 {
-                    status = Status.Error;
+                    status = WorkflowStatus.Error;
                 }
             }
             catch (ThreadAbortException)
@@ -56,7 +56,7 @@ namespace Wexflow.Tasks.ImagesCropper
             catch (Exception e)
             {
                 ErrorFormat("An error occured while cropping images: {0}", e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished");

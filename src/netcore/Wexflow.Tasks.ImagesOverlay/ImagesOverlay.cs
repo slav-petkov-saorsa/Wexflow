@@ -18,7 +18,7 @@ namespace Wexflow.Tasks.ImagesOverlay
         public override TaskStatus Run()
         {
             Info("Overlaying images...");
-            Status status = Status.Success;
+            WorkflowStatus status = WorkflowStatus.Success;
 
             try
             {
@@ -34,7 +34,7 @@ namespace Wexflow.Tasks.ImagesOverlay
                     var res = OverlayImages(imageFiles, destPath);
                     if (!res)
                     {
-                        status = Status.Error;
+                        status = WorkflowStatus.Error;
                     }
                 }
                 else if (imageFiles.Length == 1)
@@ -49,7 +49,7 @@ namespace Wexflow.Tasks.ImagesOverlay
             catch (Exception e)
             {
                 ErrorFormat("An error occured while overlaying images: {0}", e.Message);
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished");

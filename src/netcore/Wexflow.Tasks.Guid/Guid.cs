@@ -34,7 +34,7 @@ namespace Wexflow.Tasks.Guid
             Files.Add(new FileInf(guidPath, Id));
 
             Info("Task finished.");
-            return new TaskStatus(Status.Success, false);
+            return new TaskStatus(WorkflowStatus.Success, false);
         }
     }
 }

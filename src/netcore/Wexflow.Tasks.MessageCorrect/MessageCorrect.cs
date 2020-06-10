@@ -22,7 +22,7 @@ namespace Wexflow.Tasks.MessageCorrect
                 bool result = message.IndexOf(CheckString) >= 0;
                 Info("The result is " + result);
 
-                return new TaskStatus(result ? Status.Success : Status.Error, result, message);
+                return new TaskStatus(result ? WorkflowStatus.Success : WorkflowStatus.Error, result, message);
             }
             catch (ThreadAbortException)
             {

@@ -39,7 +39,7 @@ namespace Wexflow.Tasks.InstagramUploadVideo
                 if (authTask.Result == null)
                 {
                     Error("An error occured while authenticating.");
-                    return new TaskStatus(Status.Error);
+                    return new TaskStatus(WorkflowStatus.Error);
                 }
                 else
                 {
@@ -86,18 +86,18 @@ namespace Wexflow.Tasks.InstagramUploadVideo
             catch (Exception e)
             {
                 ErrorFormat("An error occured while uploading videos: {0}", e.Message);
-                return new TaskStatus(Status.Error);
+                return new TaskStatus(WorkflowStatus.Error);
             }
 
-            var status = Status.Success;
+            var status = WorkflowStatus.Success;
 
             if (!succeeded && atLeastOneSucceed)
             {
-                status = Status.Warning;
+                status = WorkflowStatus.Warning;
             }
             else if (!succeeded)
             {
-                status = Status.Error;
+                status = WorkflowStatus.Error;
             }
 
             Info("Task finished.");
