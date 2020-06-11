@@ -409,6 +409,7 @@ namespace Wexflow.Core
         {
             try
             {
+                xml = xml.MarkTasksNotStarted();
                 using (var xmlReader = XmlReader.Create(new StringReader(xml)))
                 {
                     XmlNamespaceManager xmlNamespaceManager = null;
@@ -447,8 +448,7 @@ namespace Wexflow.Core
                             Logger.ErrorFormat("An error occured while saving the workflow {0}:", e, xml);
                             return "-1";
                         }
-                        var modifiedXml = xml.MarkTasksNotStarted();
-                        string dbId = Database.InsertWorkflow(new Db.Workflow { Xml = modifiedXml });
+                        string dbId = Database.InsertWorkflow(new Db.Workflow { Xml = xml });
 
                         if (userProfile == UserProfile.Administrator)
                         {

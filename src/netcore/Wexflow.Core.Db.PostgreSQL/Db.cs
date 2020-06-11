@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Wexflow.Core.Db.PostgreSQL
@@ -49,6 +50,7 @@ namespace Wexflow.Core.Db.PostgreSQL
             var helper = new Helper(connectionString);
             helper.CreateDatabaseIfNotExists(server, userId, password, database);
             helper.CreateTableIfNotExists(Core.Db.Entry.DocumentName, Entry.TableStruct);
+            helper.CreateTableIfNotExists(Core.Db.EntryTask.DocumentName, EntryTask.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.HistoryEntry.DocumentName, HistoryEntry.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.StatusCount.DocumentName, StatusCount.TableStruct);
             helper.CreateTableIfNotExists(Core.Db.User.DocumentName, User.TableStruct);
@@ -1525,8 +1527,7 @@ namespace Wexflow.Core.Db.PostgreSQL
                 using (var conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    using (var command = new NpgsqlCommand("INSERT INTO " + Core.Db.Entry.DocumentName + "("
+                    using (var insertEntryCommand = new NpgsqlCommand("INSERT INTO " + Core.Db.Entry.DocumentName + "("
                         + Entry.ColumnName_Name + ", "
                         + Entry.ColumnName_Description + ", "
                         + Entry.ColumnName_LaunchType + ", "
@@ -1545,9 +1546,25 @@ namespace Wexflow.Core.Db.PostgreSQL
                         + "'" + (entry.Logs ?? "").Replace("'", "''") + "'" + ");"
                         , conn))
                     {
-
-                        command.ExecuteNonQuery();
+                        var rowsAffected = insertEntryCommand.ExecuteNonQuery();
                     }
+
+                    var insertedEntry = GetEntry(entry.WorkflowId, Guid.Parse(entry.JobId));
+                    var valuesPart = string.Join(",", entry.Tasks.Select(task => $"({insertedEntry.Id}, {task.TaskId}, {task.State})"));
+                    try
+                    {
+                        using (var insertTasksCommand = new NpgsqlCommand($"INSERT INTO {Core.Db.EntryTask.DocumentName} (" +
+                        $"{EntryTask.ColumnName_EntryId}, {EntryTask.ColumnName_TaskId}, {EntryTask.ColumnName_State}) VALUES" +
+                        $"{valuesPart}", conn))
+                        {
+                            insertTasksCommand.ExecuteNonQuery();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.DeleteEntry(insertedEntry.Id);
+                        throw;
+                    }   
                 }
             }
         }
@@ -1681,6 +1698,24 @@ namespace Wexflow.Core.Db.PostgreSQL
                     {
 
                         command.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        public override void DeleteEntry(int entryId)
+        {
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var deleteCommand = new NpgsqlCommand($"DELETE FROM {Entry.DocumentName} WHERE {Entry.ColumnName_Id} = @ID", conn);
+                    deleteCommand.Parameters.AddWithValue("@ID", entryId);
+                    
+                    using (deleteCommand)
+                    {
+                        deleteCommand.ExecuteNonQuery();
                     }
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Wexflow.Core.Db
 {
@@ -26,6 +27,7 @@ namespace Wexflow.Core.Db
     {
         public static readonly string DocumentName = "entries";
 
+        public int Id { get; set; }
         public int WorkflowId { get; set; }
         public string JobId { get; set; }
         public string Name { get; set; }
@@ -34,6 +36,8 @@ namespace Wexflow.Core.Db
         public Status Status { get; set; }
         public DateTime StatusDate { get; set; }
         public string Logs { get; set; }
+
+        public IEnumerable<EntryTask> Tasks { get; set; }
 
         public virtual string GetDbId()
         {

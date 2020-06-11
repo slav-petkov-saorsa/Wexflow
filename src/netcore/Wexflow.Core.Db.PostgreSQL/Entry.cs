@@ -14,8 +14,6 @@
 
         public static readonly string TableStruct = "(" + ColumnName_Id + " SERIAL PRIMARY KEY, " + ColumnName_Name + " VARCHAR(255), " + ColumnName_Description + " VARCHAR(255), " + ColumnName_LaunchType + " INT, " + ColumnName_StatusDate + " TIMESTAMP, " + ColumnName_Status + " INT, " + ColumnName_WorkflowId + " INT, " + ColumnName_JobId + " VARCHAR(255), " + ColumnName_Logs + " VARCHAR)";
 
-        public int Id { get; set; }
-
         public override string GetDbId()
         {
             return Id.ToString();

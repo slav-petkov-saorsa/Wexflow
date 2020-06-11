@@ -975,7 +975,12 @@ namespace Wexflow.Core
                     Description = Description,
                     Status = Db.Status.Running,
                     StatusDate = DateTime.Now,
-                    Logs = string.Join("\r\n", Logs)
+                    Logs = string.Join("\r\n", Logs),
+                    Tasks = this.Tasks.Select(workflowTask => new EntryTask
+                    {
+                        TaskId = workflowTask.Id,
+                        State = (int)TaskState.NotStarted
+                    })
                 };
                 Database.InsertEntry(newEntry);
             }
