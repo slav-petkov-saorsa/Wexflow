@@ -1469,7 +1469,7 @@ namespace Wexflow.Core.Db.Firebird
             DecrementStatusCountColumn(StatusCount.ColumnName_RunningCount);
         }
 
-        public override void InsertEntry(Core.Db.Entry entry)
+        public override void InsertWorkflowInstance(Core.Db.Entry entry)
         {
             lock (padlock)
             {

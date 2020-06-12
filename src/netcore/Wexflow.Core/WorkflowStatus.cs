@@ -5,6 +5,7 @@
     /// </summary>
     public enum WorkflowStatus
     {
+        Undefined = -1,
         /// <summary>
         /// Success.
         /// </summary>

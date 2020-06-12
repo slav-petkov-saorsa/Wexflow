@@ -335,7 +335,7 @@ namespace Wexflow.Core.Db.LiteDB
             }
         }
 
-        public override void InsertEntry(Core.Db.Entry entry)
+        public override void InsertWorkflowInstance(Core.Db.Entry entry)
         {
             lock (padlock)
             {

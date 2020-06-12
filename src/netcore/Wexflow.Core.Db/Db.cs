@@ -87,9 +87,13 @@ namespace Wexflow.Core.Db
         public abstract DateTime GetEntryStatusDateMax();
         public abstract Entry GetEntry(int workflowId);
         public abstract Entry GetEntry(int workflowId, Guid jobId);
-        public abstract void InsertEntry(Entry entry);
+        public abstract void InsertWorkflowInstance(Entry entry);
         public abstract void UpdateEntry(string id, Entry entry);
         public virtual void DeleteEntry(int entryId)
+        {
+
+        }
+        public virtual void UpdateWorkflowInstanceTaskState(int entryId, int taskId, int newState)
         {
 
         }

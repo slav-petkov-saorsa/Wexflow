@@ -697,7 +697,7 @@ namespace Wexflow.Core.Db.MongoDB
             }
         }
 
-        public override void InsertEntry(Core.Db.Entry entry)
+        public override void InsertWorkflowInstance(Core.Db.Entry entry)
         {
             lock (padlock)
             {

@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
@@ -157,11 +158,28 @@ namespace Wexflow.Core.Db.PostgreSQL
                 using (var conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    using (var command = new NpgsqlCommand("DELETE FROM " + Core.Db.Entry.DocumentName + ";", conn))
+                    using (var clearEntriesTransaction = conn.BeginTransaction())
                     {
+                        try
+                        {
+                            using (var removeTasksCommand = new NpgsqlCommand($"DELETE FROM {EntryTask.DocumentName};", conn, clearEntriesTransaction))
+                            {
+                                removeTasksCommand.ExecuteNonQuery();
+                            }
+                            
+                            using (var removeEntriesCOmmand = new NpgsqlCommand($"DELETE FROM {Entry.DocumentName};", conn, clearEntriesTransaction))
+                            {
 
-                        command.ExecuteNonQuery();
+                                removeEntriesCOmmand.ExecuteNonQuery();
+                            }
+
+                            clearEntriesTransaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            clearEntriesTransaction.Rollback();
+                            throw;
+                        }
                     }
                 }
             }
@@ -1520,7 +1538,7 @@ namespace Wexflow.Core.Db.PostgreSQL
             DecrementStatusCountColumn(StatusCount.ColumnName_RunningCount);
         }
 
-        public override void InsertEntry(Core.Db.Entry entry)
+        public override void InsertWorkflowInstance(Core.Db.Entry entry)
         {
             lock (padlock)
             {
@@ -1710,12 +1728,54 @@ namespace Wexflow.Core.Db.PostgreSQL
                 using (var conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-                    var deleteCommand = new NpgsqlCommand($"DELETE FROM {Entry.DocumentName} WHERE {Entry.ColumnName_Id} = @ID", conn);
-                    deleteCommand.Parameters.AddWithValue("@ID", entryId);
-                    
-                    using (deleteCommand)
+                    using (var clearEntriesTransaction = conn.BeginTransaction())
                     {
-                        deleteCommand.ExecuteNonQuery();
+                        try
+                        {
+                            using (var removeTasksCommand = new NpgsqlCommand($"DELETE FROM {EntryTask.DocumentName}" +
+                                $"WHERE {EntryTask.ColumnName_EntryId}=@entryId", conn, clearEntriesTransaction))
+                            {
+                                removeTasksCommand.Parameters.Add(new NpgsqlParameter("@entryId", entryId));
+                                removeTasksCommand.ExecuteNonQuery();
+                            }
+
+                            using (var removeEntriesCommand = new NpgsqlCommand($"DELETE FROM {Entry.DocumentName}" +
+                                $"WHERE {Entry.ColumnName_Id}=@entryId", conn, clearEntriesTransaction))
+                            {
+                                removeEntriesCommand.Parameters.Add(new NpgsqlParameter("@entryId", entryId));
+                                removeEntriesCommand.ExecuteNonQuery();
+                            }
+
+                            clearEntriesTransaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            clearEntriesTransaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void UpdateWorkflowInstanceTaskState(int entryId, int taskId, int newState)
+        {
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (var setStateCommand = new NpgsqlCommand($"UPDATE {EntryTask.DocumentName} " +
+                        $"SET {EntryTask.ColumnName_State}=@state " +
+                        $"WHERE {EntryTask.ColumnName_EntryId}=@entryId AND {EntryTask.ColumnName_TaskId}=@taskId", conn))
+                    {
+                        setStateCommand.Parameters.AddRange(new[]
+                        {
+                            new NpgsqlParameter("@state", newState),
+                            new NpgsqlParameter("@entryId", entryId),
+                            new NpgsqlParameter("@taskId", taskId)
+                        });
+                        setStateCommand.ExecuteNonQuery();
                     }
                 }
             }

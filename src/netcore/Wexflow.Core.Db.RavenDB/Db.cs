@@ -1265,7 +1265,7 @@ namespace Wexflow.Core.Db.RavenDB
             }
         }
 
-        public override void InsertEntry(Core.Db.Entry entry)
+        public override void InsertWorkflowInstance(Core.Db.Entry entry)
         {
             lock (padlock)
             {

@@ -5,6 +5,14 @@
     /// </summary>
     public class TaskStatus
     {
+        public static readonly TaskStatus NotDefined = new TaskStatus(WorkflowStatus.Undefined, false);
+        public static readonly TaskStatus Completed = new TaskStatus(TaskState.Completed);
+        public static readonly TaskStatus Failed = new TaskStatus(TaskState.Failed);
+
+        /// <summary>
+        /// State of the task 
+        /// </summary>
+        public TaskState State { get; set; }
         /// <summary>
         /// Status.
         /// </summary>
@@ -57,6 +65,11 @@
         {
             Condition = condition;
             SwitchValue = switchValue;
+        }
+
+        private TaskStatus(TaskState state)
+        {
+            this.State = state;
         }
     }
 }

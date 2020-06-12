@@ -146,7 +146,28 @@ namespace Wexflow.Core
         /// </summary>
         /// <returns>Task status.</returns>
         public abstract TaskStatus Run();
-
+        /// <summary>
+        /// Starts the task and executes actions after it's started and after it's finished
+        /// </summary>
+        /// <returns></returns>
+        public TaskStatus Run(Action<Task> onStarted, Action<Task> onSuccess, Action<Task> onFailed)
+        {
+            this.State = TaskState.Running;
+            onStarted(this);
+            var status = this.Run();
+            if (status.State == TaskState.Failed)
+            {
+                this.State = TaskState.Failed;
+                onFailed(this);
+            }
+            else if (status.State == TaskState.Completed)
+            {
+                this.State = TaskState.Completed;
+                onSuccess(this);
+            }
+            
+            return status;
+        }
         /// <summary>
         /// Stops the task.
         /// </summary>
