@@ -37,15 +37,13 @@ namespace Wexflow.Tasks.Wait
                 success = false;
             }
 
-            var status = WorkflowStatus.Success;
-
             if (!success)
             {
-                status = WorkflowStatus.Error;
+                return TaskStatus.Failed;
             }
 
             Info("Task finished.");
-            return new TaskStatus(status);
+            return TaskStatus.Completed;
         }
 
         public override void Stop()
