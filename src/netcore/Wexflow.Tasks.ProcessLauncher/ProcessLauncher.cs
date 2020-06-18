@@ -11,7 +11,7 @@ namespace Wexflow.Tasks.ProcessLauncher
     public class ProcessLauncher:Task
     {
         public string ProcessPath { get; set; }
-        public string ProcessCmd { get; set; }
+        public string ProcessArguments { get; set; }
         public bool HideGui { get; set; }
         public bool GeneratesFiles { get; set; }
         public bool LoadAllFiles { get; set; }
@@ -25,7 +25,7 @@ namespace Wexflow.Tasks.ProcessLauncher
             : base(xe, wf)
         {
             ProcessPath = GetSetting("processPath");
-            ProcessCmd = GetSetting("processCmd");
+            ProcessArguments = GetSetting("processArguments");
             HideGui = bool.Parse(GetSetting("hideGui"));
             GeneratesFiles = bool.Parse(GetSetting("generatesFiles"));
             LoadAllFiles = bool.Parse(GetSetting("loadAllFiles", "false"));
@@ -35,18 +35,16 @@ namespace Wexflow.Tasks.ProcessLauncher
         {
             Info("Launching process...");
 
-            if (GeneratesFiles && !(ProcessCmd.Contains(VarFileName) && (ProcessCmd.Contains(VarOutput) && (ProcessCmd.Contains(VarFileName) || ProcessCmd.Contains(VarFileNameWithoutExtension)))))
+            if (GeneratesFiles && !(ProcessArguments.Contains(VarFileName) && (ProcessArguments.Contains(VarOutput) && (ProcessArguments.Contains(VarFileName) || ProcessArguments.Contains(VarFileNameWithoutExtension)))))
             {
                 Error("Error in process command. Please read the documentation.");
-                return new TaskStatus(WorkflowStatus.Error, false);
+                return TaskStatus.Failed;
             }
-
-            bool success = true;
-            bool atLeastOneSucceed = false;
 
             if (!GeneratesFiles)
             {
-                return StartProcess(ProcessPath, ProcessCmd, HideGui);
+                var startSuccessful = StartProcess(ProcessPath, ProcessArguments, HideGui);
+                return startSuccessful ? TaskStatus.Completed : TaskStatus.Failed;
             }
             
 			foreach (FileInf file in SelectFiles())
@@ -56,7 +54,7 @@ namespace Wexflow.Tasks.ProcessLauncher
 
 				try
 				{
-					cmd = ProcessCmd.Replace(string.Format("{{{0}}}", VarFilePath), string.Format("\"{0}\"", file.Path));
+					cmd = ProcessArguments.Replace(string.Format("{{{0}}}", VarFilePath), string.Format("\"{0}\"", file.Path));
 
 					const string outputRegexPattern = @"{\$output:(?:\$fileNameWithoutExtension|\$fileName)(?:[a-zA-Z0-9._-]*})";
 					var outputRegex = new Regex(outputRegexPattern);
@@ -82,7 +80,7 @@ namespace Wexflow.Tasks.ProcessLauncher
 					else
 					{
 						Error("Error in process command. Please read the documentation.");
-						return new TaskStatus(WorkflowStatus.Error, false);
+                        return TaskStatus.Failed;
 					}
 				}
 				catch (ThreadAbortException)
@@ -92,10 +90,10 @@ namespace Wexflow.Tasks.ProcessLauncher
 				catch (Exception e)
 				{
 					ErrorFormat("Error in process command. Please read the documentation. Error: {0}", e.Message);
-					return new TaskStatus(WorkflowStatus.Error, false);
+                    return TaskStatus.Failed;
 				}
 
-				if (StartProcess(ProcessPath, cmd, HideGui).Status == WorkflowStatus.Success)
+				if (StartProcess(ProcessPath, cmd, HideGui))
 				{
 					Files.Add(new FileInf(outputFilePath, Id));
 
@@ -111,35 +109,19 @@ namespace Wexflow.Tasks.ProcessLauncher
                             }
                         }
                     }
-
-                    if (!atLeastOneSucceed) atLeastOneSucceed = true;
-				}
-				else
-				{
-					success = false;
 				}
 			}
 
-            var status = WorkflowStatus.Success;
-
-            if (!success && atLeastOneSucceed)
-            {
-                status = WorkflowStatus.Warning;
-            }
-            else if (!success)
-            {
-                status = WorkflowStatus.Error;
-            }
-
             Info("Task finished.");
-            return new TaskStatus(status, false);
+            
+            return TaskStatus.Completed;
         }
 
-        private TaskStatus StartProcess(string processPath, string processCmd, bool hideGui)
+        private bool StartProcess(string processPath, string processArguments, bool hideGui)
         {
             try
             {
-                var startInfo = new ProcessStartInfo(processPath, processCmd)
+                var startInfo = new ProcessStartInfo(processPath, processArguments)
                 {
                     CreateNoWindow = hideGui,
                     UseShellExecute = false,
@@ -150,12 +132,12 @@ namespace Wexflow.Tasks.ProcessLauncher
                 var process = new Process {StartInfo = startInfo};
                 process.OutputDataReceived += OutputHandler;
                 process.ErrorDataReceived += ErrorHandler;
-                process.Start();
+                var startSuccessful = process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
-                process.WaitForExit();
-               
-                return new TaskStatus(WorkflowStatus.Success, false);
+                                process.WaitForExit();
+                
+                return startSuccessful;
             }
             catch (ThreadAbortException)
             {
@@ -164,17 +146,21 @@ namespace Wexflow.Tasks.ProcessLauncher
             catch (Exception e)
             {
                 ErrorFormat("An error occured while launching the process {0}", e, processPath);
-                return new TaskStatus(WorkflowStatus.Error, false);
+                return false;
             }
         }
 
         private void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
         {
+            if (string.IsNullOrWhiteSpace(outLine.Data)) return;
+
             InfoFormat("{0}", outLine.Data);
         }
 
         private void ErrorHandler(object sendingProcess, DataReceivedEventArgs outLine)
         {
+            if (string.IsNullOrWhiteSpace(outLine.Data)) return;
+
             ErrorFormat("{0}", outLine.Data);
         }
     }
