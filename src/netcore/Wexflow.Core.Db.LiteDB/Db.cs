@@ -385,7 +385,7 @@ namespace Wexflow.Core.Db.LiteDB
             }
         }
 
-        public void DeleteEntry(int workflowId)
+        public override void DeleteEntry(int workflowId)
         {
             lock (padlock)
             {

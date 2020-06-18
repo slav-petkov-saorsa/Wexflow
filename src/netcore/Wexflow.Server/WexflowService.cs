@@ -180,7 +180,7 @@ namespace Wexflow.Server
                                     || wf.Id.ToString().Contains(keywordToUpper))
                             .Select(wf => new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath,
                                 (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description, wf.IsRunning, wf.IsPaused,
-                                wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
+                                wf.CronExpression,
                                 wf.IsExecutionGraphEmpty
                                , wf.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                                , wf.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])))
@@ -196,7 +196,7 @@ namespace Wexflow.Server
                                                     || wf.Id.ToString().Contains(keywordToUpper))
                                                 .Select(wf => new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath,
                                                     (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description, wf.IsRunning, wf.IsPaused,
-                                                    wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
+                                                    wf.CronExpression,
                                                     wf.IsExecutionGraphEmpty
                                                    , wf.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                                                    , wf.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])))
@@ -245,7 +245,7 @@ namespace Wexflow.Server
                                 || wf.Id.ToString().Contains(keywordToUpper)))
                             .Select(wf => new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath,
                                 (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description, wf.IsRunning, wf.IsPaused,
-                                wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
+                                wf.CronExpression,
                                 wf.IsExecutionGraphEmpty
                                , wf.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                                , wf.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])))
@@ -262,7 +262,7 @@ namespace Wexflow.Server
                                                     || wf.Id.ToString().Contains(keywordToUpper)))
                                                 .Select(wf => new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath,
                                                     (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description, wf.IsRunning, wf.IsPaused,
-                                                    wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
+                                                    wf.CronExpression,
                                                     wf.IsExecutionGraphEmpty
                                                    , wf.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                                                    , wf.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])))
@@ -298,7 +298,7 @@ namespace Wexflow.Server
                 if (wf != null)
                 {
                     var workflow = new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath, (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description,
-                        wf.IsRunning, wf.IsPaused, wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
+                        wf.IsRunning, wf.IsPaused, wf.CronExpression,
                         wf.IsExecutionGraphEmpty
                         , wf.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                         , wf.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])
@@ -370,7 +370,7 @@ namespace Wexflow.Server
                     if (wf != null)
                     {
                         var workflow = new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath, (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description,
-                            wf.IsRunning, wf.IsPaused, wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
+                            wf.IsRunning, wf.IsPaused, wf.CronExpression,
                             wf.IsExecutionGraphEmpty
                             , wf.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                             , wf.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])
@@ -436,7 +436,7 @@ namespace Wexflow.Server
                 {
                     var jobs = wf.Jobs.Select(j => j.Value).Select(
                         w => new WorkflowInfo(w.DbId, w.Id, w.InstanceId, w.Name, w.FilePath, (LaunchType)w.LaunchType, w.IsEnabled, w.IsApproval, w.EnableParallelJobs, w.IsWaitingForApproval, w.Description,
-                            w.IsRunning, w.IsPaused, w.Period.ToString(@"dd\.hh\:mm\:ss"), w.CronExpression,
+                            w.IsRunning, w.IsPaused, w.CronExpression,
                             w.IsExecutionGraphEmpty
                             , w.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                             , w.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])
@@ -1004,7 +1004,6 @@ namespace Wexflow.Server
                             Name = wf.Name,
                             FilePath = wf.FilePath,
                             LaunchType = (int)wf.LaunchType,
-                            Period = wf.Period.ToString(),
                             CronExpression = wf.CronExpression,
                             IsEnabled = wf.IsEnabled,
                             IsApproval = wf.IsApproval,
@@ -1950,25 +1949,10 @@ namespace Wexflow.Server
                         , new XElement(xn + "Setting"
                         , new XAttribute("name", "enableParallelJobs")
                         , new XAttribute("value", enableParallelJobs.ToString().ToLower()))
-                    //, new XElement(xn + "Setting"
-                    //    , new XAttribute("name", "period")
-                    //    , new XAttribute("value", workflowPeriod.ToString(@"dd\.hh\:mm\:ss")))
-                    //, new XElement(xn + "Setting"
-                    //    , new XAttribute("name", "cronExpression")
-                    //    , new XAttribute("value", cronExpression))
                     )
                     , xLocalVariables
                     , xtasks
                 );
-
-                if (workflowLaunchType == LaunchType.Periodic)
-                {
-                    xwf.Element(xn + "Settings").Add(
-                         new XElement(xn + "Setting"
-                            , new XAttribute("name", "period")
-                            , new XAttribute("value", workflowPeriod.ToString(@"dd\.hh\:mm\:ss")))
-                        );
-                }
 
                 if (workflowLaunchType == LaunchType.Cron)
                 {
@@ -2074,29 +2058,6 @@ namespace Wexflow.Server
                     {
                         xwfEnableParallelJobs.Attribute("value").Value = enableParallelJobs.ToString().ToLower();
                     }
-
-                    var xwfPeriod = xdoc.Root.XPathSelectElement("wf:Settings/wf:Setting[@name='period']",
-                        wf.XmlNamespaceManager);
-                    if (workflowLaunchType == LaunchType.Periodic)
-                    {
-                        if (xwfPeriod != null)
-                        {
-                            xwfPeriod.Attribute("value").Value = workflowPeriod.ToString(@"dd\.hh\:mm\:ss");
-                        }
-                        else
-                        {
-                            xdoc.Root.XPathSelectElement("wf:Settings", wf.XmlNamespaceManager)
-                                .Add(new XElement(wf.XNamespaceWf + "Setting", new XAttribute("name", "period"),
-                                    new XAttribute("value", workflowPeriod.ToString())));
-                        }
-                    }
-                    //else
-                    //{
-                    //    if (xwfPeriod != null)
-                    //    {
-                    //        xwfPeriod.Remove();
-                    //    }
-                    //}
 
                     var xwfCronExpression = xdoc.Root.XPathSelectElement(
                         "wf:Settings/wf:Setting[@name='cronExpression']",
@@ -3301,7 +3262,7 @@ namespace Wexflow.Server
                             .ToList()
                             .Select(wf => new WorkflowInfo(wf.DbId, wf.Id, wf.InstanceId, wf.Name, wf.FilePath,
                             (LaunchType)wf.LaunchType, wf.IsEnabled, wf.IsApproval, wf.EnableParallelJobs, wf.IsWaitingForApproval, wf.Description, wf.IsRunning, wf.IsPaused,
-                            wf.Period.ToString(@"dd\.hh\:mm\:ss"), wf.CronExpression,
+                            wf.CronExpression,
                             wf.IsExecutionGraphEmpty
                            , wf.LocalVariables.Select(v => new Contracts.Variable { Key = v.Key, Value = v.Value }).ToArray()
                            , wf.StartedOn.ToString(WexflowServer.Config["DateTimeFormat"])))

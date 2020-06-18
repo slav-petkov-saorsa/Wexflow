@@ -783,38 +783,7 @@ namespace Wexflow.Core
             {
                 if (wf.IsEnabled)
                 {
-                    if (wf.LaunchType == LaunchType.Startup)
-                    {
-                        wf.StartAsync(SuperAdminUsername);
-                    }
-                    else if (wf.LaunchType == LaunchType.Periodic)
-                    {
-                        IDictionary<string, object> map = new Dictionary<string, object>();
-                        map.Add("workflow", wf);
-
-                        string jobIdentity = "Workflow Job " + wf.Id;
-                        IJobDetail jobDetail = JobBuilder.Create<WorkflowJob>()
-                            .WithIdentity(jobIdentity)
-                            .SetJobData(new JobDataMap(map))
-                            .Build();
-
-                        ITrigger trigger = TriggerBuilder.Create()
-                            .ForJob(jobDetail)
-                            .WithSimpleSchedule(x => x.WithInterval(wf.Period).RepeatForever())
-                            .WithIdentity("Workflow Trigger " + wf.Id)
-                            .StartNow()
-                            .Build();
-
-                        var jobKey = new JobKey(jobIdentity);
-                        if (QuartzScheduler.CheckExists(jobKey).Result)
-                        {
-                            QuartzScheduler.DeleteJob(jobKey);
-                        }
-
-                        QuartzScheduler.ScheduleJob(jobDetail, trigger).Wait();
-
-                    }
-                    else if (wf.LaunchType == LaunchType.Cron)
+                    if (wf.LaunchType == LaunchType.Cron)
                     {
                         IDictionary<string, object> map = new Dictionary<string, object>();
                         map.Add("workflow", wf);

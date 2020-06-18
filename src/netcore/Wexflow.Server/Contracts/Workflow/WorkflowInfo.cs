@@ -10,9 +10,7 @@
         public bool IsApproval { get; set; }
         public bool EnableParallelJobs { get; set; }
         public string Description { get; set; }
-        public string Period { get; set; }
         public string CronExpression { get; set; }
         public Variable[] LocalVariables { get; set; }
-
     }
 }

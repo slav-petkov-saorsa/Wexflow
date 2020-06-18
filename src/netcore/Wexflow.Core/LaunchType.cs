@@ -6,20 +6,12 @@
     public enum LaunchType
     {
         /// <summary>
-        /// The workflow starts when Wexflow engine starts.
-        /// </summary>
-        Startup,
-        /// <summary>
         /// The workflow must be triggered manually to start.
         /// </summary>
-        Trigger,
-        /// <summary>
-        /// The workflow starts periodically.
-        /// </summary>
-        Periodic,
+        Trigger = 1,
         /// <summary>
         /// The workflow starts depending on the cron scheduling expression
         /// </summary>
-        Cron
+        Cron = 3
     }
 }

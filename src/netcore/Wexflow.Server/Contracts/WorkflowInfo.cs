@@ -4,10 +4,8 @@ namespace Wexflow.Server.Contracts
 {
     public enum LaunchType
     {
-        Startup,
-        Trigger,
-        Periodic,
-        Cron
+        Trigger = 1,
+        Cron = 3
     }
 
     public class WorkflowInfo : IComparable
@@ -38,8 +36,6 @@ namespace Wexflow.Server.Contracts
 
         public bool IsPaused { get; set; }
 
-        public string Period { get; set; }
-
         public string CronExpression { get; set; }
 
         public bool IsExecutionGraphEmpty { get; set; }
@@ -48,7 +44,7 @@ namespace Wexflow.Server.Contracts
 
         public string StartedOn { get; set; }
 
-        public WorkflowInfo(string dbId, int id, Guid instanceId, string name, string filePath, LaunchType launchType, bool isEnabled, bool isApproval, bool enableParallelJobs, bool isWaitingForApproval, string desc, bool isRunning, bool isPaused, string period, string cronExpression, bool isExecutionGraphEmpty, Variable[] localVariables, string startedOn)
+        public WorkflowInfo(string dbId, int id, Guid instanceId, string name, string filePath, LaunchType launchType, bool isEnabled, bool isApproval, bool enableParallelJobs, bool isWaitingForApproval, string desc, bool isRunning, bool isPaused, string cronExpression, bool isExecutionGraphEmpty, Variable[] localVariables, string startedOn)
         {
             DbId = dbId;
             Id = id;
@@ -63,7 +59,6 @@ namespace Wexflow.Server.Contracts
             Description = desc;
             IsRunning = isRunning;
             IsPaused = isPaused;
-            Period = period;
             CronExpression = cronExpression;
             IsExecutionGraphEmpty = isExecutionGraphEmpty;
             LocalVariables = localVariables;

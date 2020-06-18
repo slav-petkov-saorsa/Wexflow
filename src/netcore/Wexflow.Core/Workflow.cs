@@ -107,10 +107,6 @@ namespace Wexflow.Core
         /// </summary>
         public LaunchType LaunchType { get; private set; }
         /// <summary>
-        /// Workflow period.
-        /// </summary>
-        public TimeSpan Period { get; private set; }
-        /// <summary>
         /// Cron expression
         /// </summary>
         public string CronExpression { get; private set; }
@@ -491,12 +487,6 @@ namespace Wexflow.Core
                 Name = GetWorkflowAttribute(xdoc, "name");
                 Description = GetWorkflowAttribute(xdoc, "description");
                 LaunchType = (LaunchType)Enum.Parse(typeof(LaunchType), GetWorkflowSetting(xdoc, "launchType", true), true);
-
-                string period = GetWorkflowSetting(xdoc, "period", false);
-                if (LaunchType == LaunchType.Periodic || !string.IsNullOrEmpty(period))
-                {
-                    Period = TimeSpan.Parse(period);
-                }
 
                 string cronexp = GetWorkflowSetting(xdoc, "cronExpression", false);
                 if (LaunchType == LaunchType.Cron || !string.IsNullOrEmpty(cronexp))
