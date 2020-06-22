@@ -1840,8 +1840,6 @@ namespace Wexflow.Server
                 int workflowId = (int)wi.SelectToken("Id");
                 string workflowName = (string)wi.SelectToken("Name");
                 LaunchType workflowLaunchType = (LaunchType)((int)wi.SelectToken("LaunchType"));
-                string p = (string)wi.SelectToken("Period");
-                TimeSpan workflowPeriod = TimeSpan.Parse(string.IsNullOrEmpty(p) ? "00.00:00:00" : p);
                 string cronExpression = (string)wi.SelectToken("CronExpression");
 
                 if (workflowLaunchType == LaunchType.Cron && !WexflowEngine.IsCronExpressionValid(cronExpression))
@@ -1926,6 +1924,14 @@ namespace Wexflow.Server
                         {
                             xtask.Add(xsetting);
                         }
+                    }
+
+                    var prerequisites = task.SelectToken("Prerequisites") ?? JToken.Parse("[]");
+                    foreach (var prerequisite in prerequisites)
+                    {
+                        var xPrerequisite = new XElement(xn + "Prerequisite",
+                            new XAttribute("taskId", prerequisite["TaskId"]));
+                        xtask.Add(xPrerequisite);
                     }
 
                     xtasks.Add(xtask);

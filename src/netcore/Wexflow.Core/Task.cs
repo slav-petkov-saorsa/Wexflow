@@ -38,6 +38,10 @@ namespace Wexflow.Core
         /// </summary>
         public Setting[] Settings { get; private set; }
         /// <summary>
+        /// A collection of tasks which must complete successfully before the current task can start
+        /// </summary>
+        public TaskPrerequisite[] Prerequisites { get; private set; }
+        /// <summary>
         /// Workflow.
         /// </summary>
         public Workflow Workflow { get; private set; }
@@ -139,6 +143,10 @@ namespace Wexflow.Core
             }
 
             Settings = settings.ToArray();
+
+            Prerequisites = xe.XPathSelectElements("wf:Prerequisite", Workflow.XmlNamespaceManager)
+                .Select(TaskPrerequisite.FromElement)
+                .ToArray();
         }
 
         /// <summary>

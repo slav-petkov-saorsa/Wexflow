@@ -12,6 +12,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.XPath;
+using Wexflow.Core.Common.Extensions;
 using Wexflow.Core.Db;
 using Wexflow.Core.ExecutionGraph;
 using Wexflow.Core.ExecutionGraph.Flowchart;
@@ -1250,6 +1251,15 @@ namespace Wexflow.Core
                     Logs.AddRange(task.Logs);
                     continue;
                 }
+                
+                
+                if (task.HasUnsatisfiedPrecondition())
+                {
+                    var message = $"Task {task.Name} has unsatisfied prerequisites. Stopping workflow execution.";
+                    Logger.Error(message);
+                    Logs.Add(message);
+                    return WorkflowStatus.Error;
+                }
                 var status = task.Run(
                     t => Database.UpdateWorkflowInstanceTaskState(entryId, task.Id, (int)TaskState.Running),
                     t =>
@@ -1262,10 +1272,6 @@ namespace Wexflow.Core
                         Database.UpdateWorkflowInstanceTaskState(entryId, task.Id, (int)TaskState.Failed);
                         Logs.AddRange(task.Logs);
                     });
-                if (status.State == TaskState.Failed)
-                {
-                    return WorkflowStatus.Error;
-                }
             }
 
             return WorkflowStatus.Success;
