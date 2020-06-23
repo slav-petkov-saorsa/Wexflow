@@ -1874,12 +1874,14 @@ namespace Wexflow.Server
                 foreach (var task in tasks)
                 {
                     int taskId = (int)task.SelectToken("Id");
+                    string taskType = (string)task.SelectToken("Type");
                     string taskName = (string)task.SelectToken("Name");
                     string taskDesc = (string)task.SelectToken("Description");
                     bool isTaskEnabled = (bool)task.SelectToken("IsEnabled");
 
                     var xtask = new XElement(xn + "Task"
                         , new XAttribute("id", taskId)
+                        , new XAttribute("type", taskType)
                         , new XAttribute("name", taskName)
                         , new XAttribute("description", taskDesc)
                         , new XAttribute("enabled", isTaskEnabled.ToString().ToLower())

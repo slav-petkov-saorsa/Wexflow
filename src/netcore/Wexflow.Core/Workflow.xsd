@@ -58,6 +58,7 @@
    </xsd:sequence>
    <xsd:attribute name="id" type="xsd:integer"/>
    <xsd:attribute name="name" type="xsd:string"/>
+   <xsd:attribute name="type" type="xsd:string"/>
    <xsd:attribute name="description" type="xsd:string"/>
    <xsd:attribute name="enabled" type="xsd:boolean"/>
    <xsd:attribute name="status" type="xsd:int" />

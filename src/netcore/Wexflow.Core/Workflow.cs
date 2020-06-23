@@ -515,14 +515,14 @@ namespace Wexflow.Core
                 var tasks = new List<Task>();
                 foreach (var xTask in xdoc.XPathSelectElements("/wf:Workflow/wf:Tasks/wf:Task", XmlNamespaceManager))
                 {
-                    var xAttribute = xTask.Attribute("name");
+                    var xAttribute = xTask.Attribute("type");
                     if (xAttribute != null)
                     {
                         Type type = null;
-                        var name = xAttribute.Value;
-                        var assemblyName = "Wexflow.Tasks." + name;
-                        var typeFullName = "Wexflow.Tasks." + name + "." + name;
-                        var typeName = "Wexflow.Tasks." + name + "." + name + ", " + assemblyName;
+                        var taskType = xAttribute.Value;
+                        var assemblyName = "Wexflow.Tasks." + taskType;
+                        var typeFullName = "Wexflow.Tasks." + taskType + "." + taskType;
+                        var typeName = "Wexflow.Tasks." + taskType + "." + taskType + ", " + assemblyName;
 
                         // Try to load from root
                         type = Type.GetType(typeName);
@@ -554,7 +554,7 @@ namespace Wexflow.Core
                         }
                         else
                         {
-                            throw new Exception("The type of the task " + name + " could not be loaded.");
+                            throw new Exception("The type of the task " + taskType + " could not be loaded.");
                         }
                     }
                     else

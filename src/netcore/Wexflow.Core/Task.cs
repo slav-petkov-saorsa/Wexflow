@@ -22,6 +22,10 @@ namespace Wexflow.Core
         /// </summary>
         public string Name { get; private set; }
         /// <summary>
+        /// Task type
+        /// </summary>
+        public string TaskType { get; set; }
+        /// <summary>
         /// Task description.
         /// </summary>
         public string Description { get; private set; }
@@ -103,6 +107,9 @@ namespace Wexflow.Core
             var xName = xe.Attribute("name");
             if (xName == null) throw new Exception("Task name attribute not found.");
             Name = xName.Value;
+            var xType = xe.Attribute("type");
+            if (xType == null) throw new Exception("Task type attribute not found.");
+            TaskType = xType.Value;
             var xDesc = xe.Attribute("description");
             if (xDesc == null) throw new Exception("Task description attribute not found.");
             Description = xDesc.Value;
@@ -400,7 +407,7 @@ namespace Wexflow.Core
 
         private string BuildLogMsg(string msg)
         {
-            return string.Format("{0} [{1}] {2}", Workflow.LogTag, GetType().Name, msg);
+            return string.Format("{0} [{1}] {2}", Workflow.LogTag, this.Name, msg);
         }
 
         /// <summary>
