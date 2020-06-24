@@ -829,6 +829,23 @@ namespace Wexflow.Core
         }
 
         /// <summary>
+        /// Gets all workflows that are started but aren't completed yet
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Workflow> GetRunningWorkflows()
+        {
+            var databaseWorkflowInstances = this.Database.GetRunningWorkflows();
+
+            return databaseWorkflowInstances.Select(workflowInstance =>
+            {
+                var workflowWithInstanceInformation = LoadWorkflowFromDatabase(workflowInstance);
+                workflowWithInstanceInformation.InstanceId = workflowInstance.InstanceId;
+
+                return workflowWithInstanceInformation;
+            });
+        }
+        
+        /// <summary>
         /// Gets a workflow.
         /// </summary>
         /// <param name="workflowId">Workflow Id.</param>

@@ -214,7 +214,7 @@ namespace Wexflow.Core
         /// <summary>
         /// Instance Id.
         /// </summary>
-        public Guid InstanceId { get; private set; }
+        public Guid InstanceId { get; internal set; }
         /// <summary>
         /// Log messages.
         /// </summary>

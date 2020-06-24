@@ -6,10 +6,5 @@
         public static readonly string ColumnName_Xml = "XML";
 
         public static readonly string TableStruct = "(" + ColumnName_Id + " SERIAL PRIMARY KEY, " + ColumnName_Xml + " XML)";
-
-        public override string GetDbId()
-        {
-            return Id.ToString();
-        }
     }
 }

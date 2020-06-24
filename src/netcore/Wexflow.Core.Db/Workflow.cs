@@ -9,9 +9,9 @@ namespace Wexflow.Core.Db
         public int Id { get; set; }
         public string Xml { get; set; }
 
-        public virtual string GetDbId()
+        public string GetDbId()
         {
-            return "-1";
+            return this.Id.ToString();
         }
     }
 }

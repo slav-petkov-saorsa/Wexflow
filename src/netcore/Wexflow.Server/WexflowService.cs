@@ -25,6 +25,7 @@ using LaunchType = Wexflow.Server.Contracts.LaunchType;
 using StatusCount = Wexflow.Server.Contracts.StatusCount;
 using User = Wexflow.Server.Contracts.User;
 using UserProfile = Wexflow.Server.Contracts.UserProfile;
+using ActiveWorkflowInstance = Wexflow.Server.Contracts.Workflow.ActiveWorkflowInstance;
 
 namespace Wexflow.Server
 {
@@ -150,6 +151,8 @@ namespace Wexflow.Server
             SearchNotifications();
             Notify();
             NotifyApprovers();
+
+            ListActiveWorkflows();
         }
 
         /// <summary>
@@ -2925,6 +2928,34 @@ namespace Wexflow.Server
             return nodes.FirstOrDefault(n => n.ParentId == Core.Workflow.StartId);
         }
 
+        /// <summary>
+        /// Returns a list of currently active workflows
+        /// </summary>
+        private void ListActiveWorkflows()
+        {
+            Get(Root + "workflows/listActive", args =>
+            {
+                var activeWorkflows = WexflowServer.WexflowEngine.GetRunningWorkflows();
+
+                var activeWorkflowResources = activeWorkflows.Select(workflow => new ActiveWorkflowInstance
+                {
+                    Id = workflow.Id,
+                    Name = workflow.Name,
+                    InstanceId = workflow.InstanceId
+                });
+
+                var serializedResponseContent = JsonConvert.SerializeObject(activeWorkflowResources);
+                var serializedBytes = Encoding.UTF8.GetBytes(serializedResponseContent);
+
+                return new Response
+                {
+                    StatusCode = Nancy.HttpStatusCode.OK,
+                    ContentType = "application/json",
+                    Contents = s => s.Write(serializedBytes, 0, serializedBytes.Length)
+                };
+            });
+        }
+        
         /// <summary>
         /// Returns status count.
         /// </summary>

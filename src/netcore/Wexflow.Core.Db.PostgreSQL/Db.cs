@@ -1496,6 +1496,42 @@ namespace Wexflow.Core.Db.PostgreSQL
             }
         }
 
+        public override IEnumerable<Core.Db.WorkflowInstance> GetRunningWorkflows()
+        {
+            lock(padlock)
+            {
+                var activeWorkflows = new List<Core.Db.WorkflowInstance>();
+
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (var command = new NpgsqlCommand($"SELECT {Workflow.DocumentName}.{Workflow.ColumnName_Id}, {Workflow.DocumentName}.{Workflow.ColumnName_Xml}, {Entry.DocumentName}.{Entry.ColumnName_JobId} " +
+                        $"FROM {Workflow.DocumentName} " +
+                        $"INNER JOIN {Entry.DocumentName} ON {Workflow.DocumentName}.{Workflow.ColumnName_Id} = {Entry.DocumentName}.{Entry.ColumnName_WorkflowId} " +
+                        $"WHERE {Entry.ColumnName_Status} = @activeStatus", conn))
+                    {
+                        command.Parameters.AddWithValue("activeStatus", (int)Status.Running);
+                        
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var workflow = new Core.Db.WorkflowInstance
+                                {
+                                    Id = (int)reader[Workflow.ColumnName_Id],
+                                    Xml = (string)reader[Workflow.ColumnName_Xml],
+                                    InstanceId = Guid.Parse((string)reader[Entry.ColumnName_JobId])
+                                };
+                                activeWorkflows.Add(workflow);
+                            }
+                        }
+                    }
+                }
+
+                return activeWorkflows;
+            }
+        }
+
         private void IncrementStatusCountColumn(string statusCountColumnName)
         {
             lock (padlock)

@@ -46,6 +46,7 @@ namespace Wexflow.Core.Db
 
         public abstract void Init();
         public abstract IEnumerable<Workflow> GetWorkflows();
+        public abstract IEnumerable<WorkflowInstance> GetRunningWorkflows();
         public abstract string InsertWorkflow(Workflow workflow);
         public abstract Workflow GetWorkflow(string id);
         public abstract void UpdateWorkflow(string dbId, Workflow workflow);
