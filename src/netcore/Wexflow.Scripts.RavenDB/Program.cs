@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using Wexflow.Core.Db.RavenDB;
 using Wexflow.Scripts.Core;
 
 namespace Wexflow.Scripts.RavenDB
@@ -14,12 +13,6 @@ namespace Wexflow.Scripts.RavenDB
                 IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
-
-                var workflowsFolder = config["workflowsFolder"];
-                Db db = new Db(config["connectionString"]);
-                Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-                Helper.InsertRecords(db, "ravendb", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
-                db.Dispose();
             }
             catch (Exception e)
             {

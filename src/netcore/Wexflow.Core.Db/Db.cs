@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -78,6 +79,10 @@ namespace Wexflow.Core.Db
         public abstract IEnumerable<HistoryEntry> GetHistoryEntries(string keyword, int page, int entriesCount);
         public abstract IEnumerable<HistoryEntry> GetHistoryEntries(string keyword, DateTime from, DateTime to, int page, int entriesCount, EntryOrderBy heo);
         public abstract IEnumerable<Entry> GetEntries(string keyword, DateTime from, DateTime to, int page, int entriesCount, EntryOrderBy eo);
+        public virtual long GetNotSatisfiedPrerequisitesCount(int workflowId, int workflowInstanceId, IEnumerable<int> taskIds)
+        {
+            return -1;
+        }
         public abstract long GetHistoryEntriesCount(string keyword);
         public abstract long GetHistoryEntriesCount(string keyword, DateTime from, DateTime to);
         public abstract long GetEntriesCount(string keyword, DateTime from, DateTime to);

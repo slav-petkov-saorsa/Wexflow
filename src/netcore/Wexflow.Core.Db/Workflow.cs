@@ -6,6 +6,7 @@ namespace Wexflow.Core.Db
     {
         public static readonly string DocumentName = "workflows";
 
+        public int Id { get; set; }
         public string Xml { get; set; }
 
         public virtual string GetDbId()

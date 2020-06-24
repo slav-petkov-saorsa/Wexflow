@@ -1829,15 +1829,14 @@ namespace Wexflow.Server
         {
             var o = JObject.Parse(json);
             var wi = o.SelectToken("WorkflowInfo");
-            int currentWorkflowId = (int)wi.SelectToken("Id");
-            var isNew = !WexflowServer.WexflowEngine.Workflows.Any(w => w.Id == currentWorkflowId);
+            var currentWorkflowIdToken = wi.SelectToken("Id");
+            int currentWorkflowId = currentWorkflowIdToken != null ? (int)currentWorkflowIdToken : 0;
             var path = string.Empty;
 
-            if (isNew)
+            if (currentWorkflowId == 0)
             {
                 var xdoc = new XDocument();
 
-                int workflowId = (int)wi.SelectToken("Id");
                 string workflowName = (string)wi.SelectToken("Name");
                 LaunchType workflowLaunchType = (LaunchType)((int)wi.SelectToken("LaunchType"));
                 string cronExpression = (string)wi.SelectToken("CronExpression");
@@ -1914,7 +1913,7 @@ namespace Wexflow.Server
                             xsetting.SetAttributeValue("value", settingValue);
                         }
 
-                        var attributes = setting.SelectToken("Attributes");
+                        var attributes = setting.SelectToken("Attributes") ?? JToken.Parse("[]");
                         foreach (var attribute in attributes)
                         {
                             string attributeName = (string)attribute.SelectToken("Name");
@@ -1941,7 +1940,6 @@ namespace Wexflow.Server
 
                 // root
                 var xwf = new XElement(xn + "Workflow"
-                    , new XAttribute("id", workflowId)
                     , new XAttribute("name", workflowName)
                     , new XAttribute("description", workflowDesc)
                     , new XElement(xn + "Settings"
@@ -1992,8 +1990,8 @@ namespace Wexflow.Server
                     path = (string)wi.SelectToken("FilePath");
                     if (string.IsNullOrEmpty(path))
                     {
-                        path = Path.Combine(WexflowServer.WexflowEngine.WorkflowsFolder, "Workflow_" + workflowId.ToString() + ".xml");
-                        WexflowServer.WexflowEngine.GetWorkflow(workflowId).FilePath = path;
+                        path = Path.Combine(WexflowServer.WexflowEngine.WorkflowsFolder, "Workflow_" + id + ".xml");
+                        WexflowServer.WexflowEngine.GetWorkflow(Convert.ToInt32(id)).FilePath = path;
                     }
                     xdoc.Save(path);
                 }
@@ -2009,11 +2007,8 @@ namespace Wexflow.Server
                 {
                     var xdoc = wf.XDoc;
 
-                    int workflowId = (int)wi.SelectToken("Id");
                     string workflowName = (string)wi.SelectToken("Name");
                     LaunchType workflowLaunchType = (LaunchType)((int)wi.SelectToken("LaunchType"));
-                    string p = (string)wi.SelectToken("Period");
-                    TimeSpan workflowPeriod = TimeSpan.Parse(string.IsNullOrEmpty(p) ? "00.00:00:00" : p);
                     string cronExpression = (string)wi.SelectToken("CronExpression");
 
                     if (workflowLaunchType == LaunchType.Cron &&
@@ -2028,7 +2023,6 @@ namespace Wexflow.Server
                     string workflowDesc = (string)wi.SelectToken("Description");
 
                     //if(xdoc.Root == null) throw new Exception("Root is null");
-                    xdoc.Root.Attribute("id").Value = workflowId.ToString();
                     xdoc.Root.Attribute("name").Value = workflowName;
                     xdoc.Root.Attribute("description").Value = workflowDesc;
 
@@ -2206,21 +2200,6 @@ namespace Wexflow.Server
                     {
                         return new SaveResult { FilePath = path, Result = false };
                     }
-
-                    if (WexflowServer.WexflowEngine.EnableWorkflowsHotFolder)
-                    {
-                        path = (string)wi.SelectToken("FilePath");
-                        if (string.IsNullOrEmpty(path))
-                        {
-                            path = Path.Combine(WexflowServer.WexflowEngine.WorkflowsFolder, "Workflow_" + workflowId.ToString() + ".xml");
-                            WexflowServer.WexflowEngine.GetWorkflow(workflowId).FilePath = path;
-                        }
-                        xdoc.Save(path);
-                    }
-                    else
-                    {
-                        path = null;
-                    }
                 }
             }
 
@@ -2240,8 +2219,9 @@ namespace Wexflow.Server
 
                     JObject o = JObject.Parse(json);
                     var wi = o.SelectToken("WorkflowInfo");
-                    int currentWorkflowId = (int)wi.SelectToken("Id");
-                    var isNew = !WexflowServer.WexflowEngine.Workflows.Any(w => w.Id == currentWorkflowId);
+                    var currentWorkflowIdToken = wi.SelectToken("Id");
+                    int currentWorkflowId = currentWorkflowIdToken != null ? (int)currentWorkflowIdToken : 0;
+                    var isNew = currentWorkflowId == 0;
 
                     var auth = GetAuth(Request);
                     var username = auth.Username;

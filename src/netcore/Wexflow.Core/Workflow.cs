@@ -264,6 +264,7 @@ namespace Wexflow.Core
             _jobsQueue = new Queue<Job>();
             _thread = null;
             DbId = dbId;
+            Id = dbId == "-1" ? 0 : int.Parse(dbId);
             Xml = xml;
             WexflowTempFolder = wexflowTempFolder;
             TasksFolder = tasksFolder;
@@ -484,9 +485,8 @@ namespace Wexflow.Core
                 XDoc = xdoc;
                 XNamespaceWf = "urn:wexflow-schema";
 
-                Id = int.Parse(GetWorkflowAttribute(xdoc, "id"));
-                Name = GetWorkflowAttribute(xdoc, "name");
-                Description = GetWorkflowAttribute(xdoc, "description");
+                Name = GetWorkflowAttribute(xdoc, "name", true);
+                Description = GetWorkflowAttribute(xdoc, "description", true);
                 LaunchType = (LaunchType)Enum.Parse(typeof(LaunchType), GetWorkflowSetting(xdoc, "launchType", true), true);
 
                 string cronexp = GetWorkflowSetting(xdoc, "cronExpression", false);
@@ -845,7 +845,7 @@ namespace Wexflow.Core
             return false;
         }
 
-        private string GetWorkflowAttribute(XDocument xdoc, string attr)
+        private string GetWorkflowAttribute(XDocument xdoc, string attr, bool required)
         {
             var xAttribute = xdoc.XPathSelectElement("/wf:Workflow", XmlNamespaceManager).Attribute(attr);
             if (xAttribute != null)
@@ -853,16 +853,23 @@ namespace Wexflow.Core
                 return xAttribute.Value;
             }
 
-            throw new Exception("Workflow attribute " + attr + "not found.");
+            if (required)
+            {
+                throw new Exception($"Workflow attribute {attr} not found.");
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         private string GetWorkflowSetting(XDocument xdoc, string name, bool throwExceptionIfNotFound)
         {
-            var xSetting = xdoc
+            XElement xSetting = xdoc
                 .XPathSelectElement(
-                    string.Format("/wf:Workflow[@id='{0}']/wf:Settings/wf:Setting[@name='{1}']", Id, name),
+                    string.Format("/wf:Workflow/wf:Settings/wf:Setting[@name='{0}']", name),
                     XmlNamespaceManager);
-
+            
             if (xSetting != null)
             {
                 var xAttribute = xSetting.Attribute("value");
@@ -1251,9 +1258,10 @@ namespace Wexflow.Core
                     Logs.AddRange(task.Logs);
                     continue;
                 }
-                
-                
-                if (task.HasUnsatisfiedPrecondition())
+
+                var prerequisiteTasksIds = task.Prerequisites.Select(prerequisite => prerequisite.TaskId);
+                var unsatisfiedPrerequisitesCount = this.Database.GetNotSatisfiedPrerequisitesCount(this.Id, entryId, prerequisiteTasksIds);
+                if (unsatisfiedPrerequisitesCount > 0)
                 {
                     var message = $"Task {task.Name} has unsatisfied prerequisites. Stopping workflow execution.";
                     Logger.Error(message);

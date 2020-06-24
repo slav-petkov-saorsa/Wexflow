@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Wexflow.Core.Db.PostgreSQL
 {
@@ -525,6 +526,45 @@ namespace Wexflow.Core.Db.PostgreSQL
                         }
 
                         return entries;
+                    }
+                }
+            }
+        }
+
+        public override long GetNotSatisfiedPrerequisitesCount(int workflowId, int workflowInstanceId, IEnumerable<int> taskIds)
+        {
+            if (taskIds.Count() == 0)
+            {
+                return 0;
+            }
+
+            var taskIdParameters = taskIds.ToDictionary(
+                key => $"taskId{key}",
+                value => value);
+            var inClauseParameterNames = string.Join(",", taskIdParameters.Keys.Select(name => $"@{name}"));
+            
+            lock (padlock)
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (var command = new NpgsqlCommand($"SELECT COUNT(*) FROM {EntryTask.DocumentName} " +
+                        $"INNER JOIN {Entry.DocumentName} ON {EntryTask.DocumentName}.{EntryTask.ColumnName_EntryId} = {Entry.DocumentName}.{Entry.ColumnName_Id} " +
+                        $"INNER JOIN {Workflow.DocumentName} ON {Entry.DocumentName}.{Entry.ColumnName_WorkflowId} = {Workflow.DocumentName}.{Workflow.ColumnName_Id} " +
+                        $"WHERE {Workflow.DocumentName}.{Workflow.ColumnName_Id} = @workflowId " +
+                        $"AND {Entry.DocumentName}.{Entry.ColumnName_Id} = @workflowInstanceId " +
+                        $"AND {EntryTask.DocumentName}.{EntryTask.ColumnName_State} <> @completedState " + 
+                        $"AND {EntryTask.DocumentName}.{EntryTask.ColumnName_TaskId} IN ({inClauseParameterNames})", conn))
+                    {
+                        command.Parameters.AddWithValue("workflowId", workflowId);
+                        command.Parameters.AddWithValue("workflowInstanceId", workflowInstanceId);
+                        command.Parameters.AddWithValue("completedState", 2);
+                        foreach (var taskIdParameter in taskIdParameters)
+                        {
+                            command.Parameters.AddWithValue(taskIdParameter.Key, taskIdParameter.Value);
+                        }
+
+                        return (long)command.ExecuteScalar();
                     }
                 }
             }

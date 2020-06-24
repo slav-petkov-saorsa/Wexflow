@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using Wexflow.Core.Db.MySQL;
 
 namespace Wexflow.Scripts.MySQL
 {
@@ -13,12 +12,6 @@ namespace Wexflow.Scripts.MySQL
                 IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
-
-                var workflowsFolder = config["workflowsFolder"];
-                Db db = new Db(config["connectionString"]);
-                Core.Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-                Core.Helper.InsertRecords(db, "mysql", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
-                db.Dispose();
             }
             catch (Exception e)
             {

@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Wexflow.Core.Db\Wexflow.Core.Db.csproj" />
-    <ProjectReference Include="..\Wexflow.Core.Db.Oracle\Wexflow.Core.Db.Oracle.csproj" />
     <ProjectReference Include="..\Wexflow.Scripts.Core\Wexflow.Scripts.Core.csproj" />
   </ItemGroup>
 

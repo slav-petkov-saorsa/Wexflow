@@ -57,7 +57,6 @@ namespace Wexflow.Core
         /// Log messages.
         /// </summary>
         public bool IsStopped { get; private set; }
-        public TaskState State { get; set; }
         /// <summary>
         /// Task files.
         /// </summary>
@@ -167,17 +166,14 @@ namespace Wexflow.Core
         /// <returns></returns>
         public TaskStatus Run(Action<Task> onStarted, Action<Task> onSuccess, Action<Task> onFailed)
         {
-            this.State = TaskState.Running;
             onStarted(this);
             var status = this.Run();
             if (status.State == TaskState.Failed)
             {
-                this.State = TaskState.Failed;
                 onFailed(this);
             }
             else if (status.State == TaskState.Completed)
             {
-                this.State = TaskState.Completed;
                 onSuccess(this);
             }
             

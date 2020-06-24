@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using Wexflow.Core.Db.SQLite;
 
 namespace Wexflow.Scripts.SQLite
 {
@@ -15,10 +14,10 @@ namespace Wexflow.Scripts.SQLite
                 .Build();
 
                 var workflowsFolder = config["workflowsFolder"];
-                var db = new Db(config["connectionString"]);
-                Core.Helper.InsertWorkflowsAndUser(db, workflowsFolder);
-                Core.Helper.InsertRecords(db, "sqlite", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
-                db.Dispose();
+                //var db = new Db(config["connectionString"]);
+                //Core.Helper.InsertWorkflowsAndUser(db, workflowsFolder);
+                //Core.Helper.InsertRecords(db, "sqlite", config["recordsFolder"], config["documentFile"], config["invoiceFile"], config["timesheetFile"]);
+                //db.Dispose();
             }
             catch (Exception e)
             {

@@ -233,35 +233,8 @@ namespace Wexflow.Core
 
             switch (DbType)
             {
-                case DbType.LiteDB:
-                    Database = new Db.LiteDB.Db(ConnectionString);
-                    break;
-                case DbType.MongoDB:
-                    Database = new Db.MongoDB.Db(ConnectionString);
-                    break;
-                case DbType.RavenDB:
-                    Database = new Db.RavenDB.Db(ConnectionString);
-                    break;
                 case DbType.PostgreSQL:
                     Database = new Db.PostgreSQL.Db(ConnectionString);
-                    break;
-                case DbType.SQLServer:
-                    Database = new Db.SQLServer.Db(ConnectionString);
-                    break;
-                case DbType.MySQL:
-                    Database = new Db.MySQL.Db(ConnectionString);
-                    break;
-                case DbType.SQLite:
-                    Database = new Db.SQLite.Db(ConnectionString);
-                    break;
-                case DbType.Firebird:
-                    Database = new Db.Firebird.Db(ConnectionString);
-                    break;
-                case DbType.Oracle:
-                    Database = new Db.Oracle.Db(ConnectionString);
-                    break;
-                case DbType.MariaDB:
-                    Database = new Db.MariaDB.Db(ConnectionString);
                     break;
             }
 
@@ -421,7 +394,8 @@ namespace Wexflow.Core
                     }
 
                     var xdoc = XDocument.Parse(xml);
-                    var id = int.Parse(xdoc.XPathSelectElement("/wf:Workflow", xmlNamespaceManager).Attribute("id").Value);
+                    var idAttribute = xdoc.XPathSelectElement("/wf:Workflow", xmlNamespaceManager).Attribute("id");
+                    var id = idAttribute != null ? int.Parse(idAttribute.Value) : 0;
                     var workflow = Workflows.FirstOrDefault(w => w.Id == id);
 
                     if (workflow == null) // insert
