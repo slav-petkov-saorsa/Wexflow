@@ -4,8 +4,8 @@ namespace Wexflow.Server.Contracts
 {
     public enum LaunchType
     {
-        Trigger = 1,
-        Cron = 3
+        Trigger,
+        Cron
     }
 
     public class WorkflowInfo : IComparable

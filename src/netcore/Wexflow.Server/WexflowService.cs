@@ -1832,8 +1832,8 @@ namespace Wexflow.Server
         {
             var o = JObject.Parse(json);
             var wi = o.SelectToken("WorkflowInfo");
-            var currentWorkflowIdToken = wi.SelectToken("Id");
-            int currentWorkflowId = currentWorkflowIdToken != null ? (int)currentWorkflowIdToken : 0;
+            var currentWorkflowIdStringValue = wi.Value<string>("Id");
+            int currentWorkflowId = !string.IsNullOrWhiteSpace(currentWorkflowIdStringValue) ? int.Parse(currentWorkflowIdStringValue) : 0;
             var path = string.Empty;
 
             if (currentWorkflowId == 0)
@@ -1872,7 +1872,7 @@ namespace Wexflow.Server
 
                 // tasks
                 var xtasks = new XElement(xn + "Tasks");
-                var tasks = o.SelectToken("Tasks");
+                var tasks = o.SelectToken("Tasks") ?? JToken.Parse("[]");
                 foreach (var task in tasks)
                 {
                     int taskId = (int)task.SelectToken("Id");
@@ -2222,8 +2222,8 @@ namespace Wexflow.Server
 
                     JObject o = JObject.Parse(json);
                     var wi = o.SelectToken("WorkflowInfo");
-                    var currentWorkflowIdToken = wi.SelectToken("Id");
-                    int currentWorkflowId = currentWorkflowIdToken != null ? (int)currentWorkflowIdToken : 0;
+                    var currentWorkflowIdStringValue = wi?.Value<string>("Id");
+                    int currentWorkflowId = !string.IsNullOrWhiteSpace(currentWorkflowIdStringValue) ? int.Parse(currentWorkflowIdStringValue) : 0;
                     var isNew = currentWorkflowId == 0;
 
                     var auth = GetAuth(Request);

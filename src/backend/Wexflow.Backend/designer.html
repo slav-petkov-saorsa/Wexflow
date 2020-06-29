@@ -4,13 +4,11 @@
     <title>Designer</title>
     <link rel="icon" href="images/logo.png" type="image/png">
 
-    <!--<link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
     <link href="css/flowy.css" rel="stylesheet" />
     <link href="css/jquery.toast.min.css" rel="stylesheet" />
     <link href="css/jBox.all.min.css" rel="stylesheet" />
-    <link href="css/designer.css" rel="stylesheet" />-->
-
-    <link href="css/designer.min.css" rel="stylesheet" />
+    <link href="css/designer.css" rel="stylesheet" />
 </head>
 <body>
     <div id="header">
@@ -81,18 +79,22 @@
         <div id="wfproperties">
             <p id="wfheader2"><span id="wf-settings-label">Workflow Settings</span>&nbsp;<small id="savehelp">Ctrl+S to save.</small></p>
             <div id="wfproplist">
-                <p id="wfid-label" class="inputlabel">Id</p>
-                <input id="wfid" class="form-control inputtext" type="text" autocomplete="off" />
+                <div id="wfIdContainer">
+                    <p id="wfid-label" class="inputlabel">Id</p>
+                    <input id="wfid" class="form-control inputtext" type="text" autocomplete="off" readonly/>
+                </div>
                 <p id="wfname-label" class="inputlabel">Name</p>
-                <input id="wfname" class="form-control form-control inputtext" type="text" autocomplete="off" />
+                <input id="wfname" class="form-control form-control inputtext" type="text" autocomplete="off" placeholder="Enter Workflow Name"/>
                 <p id="wfdesc-label" class="inputlabel">Description</p>
-                <input id="wfdesc" class="form-control inputtext" type="text" autocomplete="off" />
+                <input id="wfdesc" class="form-control inputtext" type="text" autocomplete="off" placeholder="Enter Workflow Description"/>
                 <p id="wflaunchtype-label" class="inputlabel">LaunchType</p>
-                <select id='wflaunchtype' class="form-control inputtext"><option value=''></option><option value='startup'>Startup</option><option value='trigger'>Trigger</option><option value='periodic'>Periodic</option>><option value='cron'>Cron</option></select>
-                <p id="wfperiod-label" class="inputlabel">Period</p>
-                <input id="wfperiod" class="form-control inputtext" type="text" autocomplete="off" />
+                <select id='wflaunchtype' class="form-control inputtext">
+                    <option value='' selected disabled>Select Worfklow Launch Type</option>
+                    <option value='0'>Trigger</option>
+                    <option value='1'>Cron</option>
+                </select>
                 <p id="wfcronexp-label" class="inputlabel">Cron Expression</p>
-                <input id="wfcronexp" class="form-control inputtext" type="text" autocomplete="off" />
+                <input id="wfcronexp" class="form-control inputtext" type="text" autocomplete="off" placeholder="Enter Cron Expression"/>
                 <p id="wfenabled-label" class="inputlabel">Enabled</p>
                 <input id='wfenabled' class="inputtext" type='checkbox' checked />
                 <p id='wfapproval-label' class="inputlabel">Approval</p>
@@ -144,30 +146,22 @@
             </category>-->
         </xml>
     </div>
-    <!-- js scripts -->
-
-    <script src="js/settings.js"></script>
-    <script src="js/language.js"></script>
-
-    <!--<script src="js/jquery.min.js"></script>
+    
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jBox.all.min.js"></script>
     <script src="js/jquery.toast.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="js/lodash.min.js"></script>
+    <script src="js/flowy.js"></script>
     <script src="js/common.js"></script>
     <script src="js/authenticate.js"></script>
-    <script src="js/flowy.js"></script>
-    <script src="js/ace.js"></script>
-    <script src="js/jBox.all.min.js"></script>
-    <script src="js/blockly_compressed.js"></script>
-    <script src="js/blocks_compressed.js"></script>
-    <script src="js/en.js"></script>
-    <script src="js/lodash.min.js"></script>
+    <script src="js/settings.js"></script>
     <script src="js/language.core.js"></script>
-    <script src="js/designer.js"></script>-->
-
+    <script src="js/language.js"></script>
     <script src="js/blockly_compressed.js"></script>
     <script src="js/blocks_compressed.js"></script>
     <script src="js/en.js"></script>
     <script src="js/ace.js"></script>
-    <script src="js/designer.min.js"></script>
+    <script src="js/designer.js"></script>
 </body>
 </html>
