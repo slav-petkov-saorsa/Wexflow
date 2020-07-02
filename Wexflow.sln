@@ -280,6 +280,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ravendb", "ravendb", "{545B
 		src\docker\ravendb\docker-compose.yml = src\docker\ravendb\docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wexflow.CommandLineParserClient", "Wexflow.CommandLineParserClient\Wexflow.CommandLineParserClient.csproj", "{E17B6701-2CAA-46FA-965B-7302C3C183FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2148,6 +2150,22 @@ Global
 		{3B8311AF-E35A-4648-AC20-F6DDFB228DC6}.Release|x64.Build.0 = Release|x64
 		{3B8311AF-E35A-4648-AC20-F6DDFB228DC6}.Release|x86.ActiveCfg = Release|x86
 		{3B8311AF-E35A-4648-AC20-F6DDFB228DC6}.Release|x86.Build.0 = Release|x86
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|x64.Build.0 = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Debug|x86.Build.0 = Debug|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|x64.ActiveCfg = Release|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|x64.Build.0 = Release|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{E17B6701-2CAA-46FA-965B-7302C3C183FB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

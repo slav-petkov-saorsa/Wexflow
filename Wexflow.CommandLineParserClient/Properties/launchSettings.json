@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Wexflow.CommandLineParserClient": {
+      "commandName": "Project",
+      "commandLineArgs": "create -n \"My First Workflow\" -d \"I am created from CLI\" -l 0 -t Id=1:Name=\"My First Task\":Type=\"Wait\";Id=2:Name=\"My Second Task\":Type=\"Wait\" -s TaskId=1|Name=duration|Value=0.00:00:30;TaskId=2|Name=duration|Value=0.00:00:30 --prerequisites TaskId=2|DependsOn=1"
+    }
+  }
+}

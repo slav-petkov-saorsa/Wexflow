@@ -1829,7 +1829,7 @@ namespace Wexflow.Server
         }
 
         private SaveResult SaveJsonWorkflow(Core.Db.User user, string json)
-        {
+         {
             var o = JObject.Parse(json);
             var wi = o.SelectToken("WorkflowInfo");
             var currentWorkflowIdStringValue = wi.Value<string>("Id");
@@ -1856,7 +1856,7 @@ namespace Wexflow.Server
 
                 // Local variables
                 var xLocalVariables = new XElement(xn + "LocalVariables");
-                var variables = wi.SelectToken("LocalVariables");
+                var variables = wi.SelectToken("LocalVariables") ?? JToken.Parse("[]");
                 foreach (var variable in variables)
                 {
                     string key = (string)variable.SelectToken("Key");
@@ -1889,7 +1889,7 @@ namespace Wexflow.Server
                         , new XAttribute("enabled", isTaskEnabled.ToString().ToLower())
                     );
 
-                    var settings = task.SelectToken("Settings");
+                    var settings = task.SelectToken("Settings") ?? JToken.Parse("[]");
                     foreach (var setting in settings)
                     {
                         string settingName = (string)setting.SelectToken("Name");
