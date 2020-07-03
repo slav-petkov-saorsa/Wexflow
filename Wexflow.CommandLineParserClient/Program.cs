@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using Wexflow.CommandLineParserClient.Common.Contents;
 using Wexflow.CommandLineParserClient.Common.Extensions;
@@ -30,9 +31,11 @@ namespace Wexflow.CommandLineParserClient
             ConfigureServices(services);
             ConfigureHttpClient();
 
-            var result = Parser.Default.ParseArguments<CreateWorkflowOptions>(args)
+            var result = Parser.Default.ParseArguments<CreateWorkflowOptions, ListWorkflowsOptions, StartWorfklowOptions>(args)
                 .MapResult(
                     (CreateWorkflowOptions opts) => RunCreateWorkflow(opts),
+                    (ListWorkflowsOptions opts) => RunListWorkflow(opts),
+                    (StartWorfklowOptions opts) => RunStartWorkflow(opts),
                     errors => RunErrors(errors)
                 );
 
@@ -61,6 +64,64 @@ namespace Wexflow.CommandLineParserClient
             }
         }
 
+        private static int RunListWorkflow(ListWorkflowsOptions options)
+        {
+            if (options.Active)
+            {
+                var listActiveOptionsUrl = Configuration["Wexflow:GetActiveWorkflows"];
+                using (var response = Client.GetAsync(listActiveOptionsUrl).Result)
+                {
+                    var responseText = response.Content.ReadAsStringAsync().Result;
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        var activeWorkflows = JsonSerializer.Deserialize<IEnumerable<ActiveWorkflowInstance>>(responseText);
+                        if (activeWorkflows.Any())
+                        {
+                            foreach (var workflow in activeWorkflows)
+                            {
+                                Console.WriteLine(workflow);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("There are no active workflow instances at the moment");
+                        }
+
+                        return 0;
+                    }
+                    else
+                    {
+                        Console.WriteLine("An error occurred while listing active workflows");
+                        var responseMessage = responseText;
+                        Console.Error.WriteLine(responseMessage);
+                        return (int)response.StatusCode;
+                    }
+                }
+            }
+            
+            return -1;
+        }
+
+        private static int RunStartWorkflow(StartWorfklowOptions options)
+        {
+            var startWorkflowUrl = Configuration["Wexflow:StartWorkflow"];
+            using (var response = Client.PostAsync($"{startWorkflowUrl}?w={options.WorkflowId}", JsonContent.Empty).Result)
+            {
+                var responseText = response.Content.ReadAsStringAsync().Result;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    Console.WriteLine($"Workflow instance {responseText} successfully started");
+                    return 0;
+                }
+                else
+                {
+                    Console.WriteLine("An error orccurred");
+                    Console.Error.WriteLine(responseText);
+                    return (int)response.StatusCode;
+                }
+            }
+        }
+
         private static int RunErrors(IEnumerable<Error> errors)
         {
             var result = errors.Any(x => x is HelpRequestedError || x is VersionRequestedError)
@@ -73,7 +134,7 @@ namespace Wexflow.CommandLineParserClient
         {
             // Build configuration
             Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
+                .SetBasePath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
                 .AddJsonFile("appsettings.json", false)
                 .Build();
 
